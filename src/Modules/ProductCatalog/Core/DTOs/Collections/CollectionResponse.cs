@@ -1,0 +1,8 @@
+namespace ProductCatalog.Core.DTOs.Collections;
+
+public class CollectionResponse {
+    public string Title { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public string Slug { get; set; } = string.Empty;
+    public string Image { get; set; } = string.Empty;
+}
