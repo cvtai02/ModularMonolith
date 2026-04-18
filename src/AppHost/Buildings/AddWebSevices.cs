@@ -17,7 +17,7 @@ public static partial class ServiceCollectionExtensions
     extension (IHostApplicationBuilder builder)
     {
         public IServiceCollection AddWebServices()
-        {
+        { 
             var services = builder.Services;
             services.AddOpenApi(options =>
             {

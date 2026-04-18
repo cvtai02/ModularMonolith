@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Hosting;
-using ProductCatalog.Core.DatabaseContext;
 
 namespace ProductCatalog;
 

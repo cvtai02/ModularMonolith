@@ -1,8 +1,8 @@
-using Content.Core.DatabaseContext;
 using Content.Core.DTOs.MetaObjects;
 using Content.Core.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SharedKernel.Exceptions;
 
 namespace Content.Api;
 
@@ -37,12 +37,16 @@ public class MetaObjectController(ContentDbContext db) : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateMetaObjectRequest request, CancellationToken cancellationToken)
     {
-        ContentValidation.ValidateRequest(request);
         var key = request.Key.Trim();
         var exists = await _db.MetaObjects.AnyAsync(x => x.Key == key, cancellationToken);
         if (exists)
         {
-            return Conflict("Meta object already exists.");
+            throw new ValidationException(
+                "Validation failed",
+                new Dictionary<string, string[]>
+                {
+                    [nameof(request.Key)] = ["Meta object already exists."]
+                });
         }
 
         var entity = new MetaObject
@@ -62,7 +66,6 @@ public class MetaObjectController(ContentDbContext db) : ControllerBase
     [HttpPut("{key}")]
     public async Task<IActionResult> Update(string key, [FromBody] UpdateMetaObjectRequest request, CancellationToken cancellationToken)
     {
-        ContentValidation.ValidateRequest(request);
         var metaObject = await _db.MetaObjects.FirstOrDefaultAsync(x => x.Key == key, cancellationToken);
         if (metaObject is null)
         {

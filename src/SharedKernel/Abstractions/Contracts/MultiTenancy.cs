@@ -9,16 +9,11 @@ public abstract class TenancyDbContext : DbContext
 {
     protected readonly IUser _user;
 
-    protected TenancyDbContext(DbContextOptions options, IUser user) : base(options)
+    protected TenancyDbContext(DbContextOptions options, IUser? user) : base(options)
     {
-        _user = user;
+        _user = user??new AnomynousUser();
     }
 
-    // This contructor is used for design time.
-    public TenancyDbContext(DbContextOptions options) : base(options)
-    {
-        _user = new UserForEFCoreMigrationDesign();
-    }
 
     public static readonly string TenantForeignKey = "TenantId";
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -54,7 +49,7 @@ public abstract class TenancyDbContext : DbContext
         }
     }
     
-    private class UserForEFCoreMigrationDesign : IUser
+    private class AnomynousUser : IUser
     {
         public string Id => throw new NotImplementedException();
         public string? UserName => throw new NotImplementedException();

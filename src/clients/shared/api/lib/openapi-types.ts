@@ -640,39 +640,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/Content/Files/health": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/Content/Files": {
         parameters: {
             query?: never;
@@ -1492,6 +1459,156 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/ProductCatalog/inventory/products": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["System.Collections.Generic.List`1[[ProductCatalog.Core.DTOs.Inventory.ProductInventoryResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+                        "application/json": components["schemas"]["System.Collections.Generic.List`1[[ProductCatalog.Core.DTOs.Inventory.ProductInventoryResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+                        "text/json": components["schemas"]["System.Collections.Generic.List`1[[ProductCatalog.Core.DTOs.Inventory.ProductInventoryResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/ProductCatalog/inventory/products/{productId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    productId: components["schemas"]["System.Int32"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProductCatalog.Core.DTOs.Inventory.ProductInventoryResponse"];
+                        "application/json": components["schemas"]["ProductCatalog.Core.DTOs.Inventory.ProductInventoryResponse"];
+                        "text/json": components["schemas"]["ProductCatalog.Core.DTOs.Inventory.ProductInventoryResponse"];
+                    };
+                };
+            };
+        };
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    productId: components["schemas"]["System.Int32"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ProductCatalog.Core.DTOs.Inventory.UpdateProductInventoryRequest"];
+                    "text/json": components["schemas"]["ProductCatalog.Core.DTOs.Inventory.UpdateProductInventoryRequest"];
+                    "application/*+json": components["schemas"]["ProductCatalog.Core.DTOs.Inventory.UpdateProductInventoryRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProductCatalog.Core.DTOs.Inventory.ProductInventoryResponse"];
+                        "application/json": components["schemas"]["ProductCatalog.Core.DTOs.Inventory.ProductInventoryResponse"];
+                        "text/json": components["schemas"]["ProductCatalog.Core.DTOs.Inventory.ProductInventoryResponse"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/ProductCatalog/inventory/products/{productId}/adjust": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    productId: components["schemas"]["System.Int32"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ProductCatalog.Core.DTOs.Inventory.AdjustProductInventoryRequest"];
+                    "text/json": components["schemas"]["ProductCatalog.Core.DTOs.Inventory.AdjustProductInventoryRequest"];
+                    "application/*+json": components["schemas"]["ProductCatalog.Core.DTOs.Inventory.AdjustProductInventoryRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProductCatalog.Core.DTOs.Inventory.ProductInventoryResponse"];
+                        "application/json": components["schemas"]["ProductCatalog.Core.DTOs.Inventory.ProductInventoryResponse"];
+                        "text/json": components["schemas"]["ProductCatalog.Core.DTOs.Inventory.ProductInventoryResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/ProductCatalog/products": {
         parameters: {
             query?: never;
@@ -2008,6 +2125,34 @@ export interface components {
             slug?: components["schemas"]["System.String"];
             image?: components["schemas"]["System.String"];
         };
+        "ProductCatalog.Core.DTOs.Inventory.AdjustProductInventoryRequest": {
+            stockChange?: components["schemas"]["System.Int32"];
+            soldChange?: components["schemas"]["System.Int32"];
+            reservedChange?: components["schemas"]["System.Int32"];
+        };
+        "ProductCatalog.Core.DTOs.Inventory.ProductInventoryResponse": {
+            productId?: components["schemas"]["System.Int32"];
+            productName?: components["schemas"]["System.String"];
+            sku?: components["schemas"]["System.String"];
+            barcode?: components["schemas"]["System.String"];
+            stock?: components["schemas"]["System.Int32"];
+            sold?: components["schemas"]["System.Int32"];
+            trackInventory?: components["schemas"]["System.Boolean"];
+            lowStockThreshold?: components["schemas"]["System.Int32"];
+            allowBackorder?: components["schemas"]["System.Boolean"];
+            reserved?: components["schemas"]["System.Int32"];
+            availableStock?: components["schemas"]["System.Int32"];
+        };
+        "ProductCatalog.Core.DTOs.Inventory.UpdateProductInventoryRequest": {
+            sku: components["schemas"]["System.String"];
+            barcode: components["schemas"]["System.String"];
+            stock?: components["schemas"]["System.Int32"];
+            sold?: components["schemas"]["System.Int32"];
+            trackInventory?: components["schemas"]["System.Boolean"];
+            lowStockThreshold?: components["schemas"]["System.Int32"];
+            allowBackorder?: components["schemas"]["System.Boolean"];
+            reserved?: components["schemas"]["System.Int32"];
+        };
         "ProductCatalog.Core.DTOs.Products.CreateOptionRequest": {
             name: components["schemas"]["System.String"];
             displayOrder?: components["schemas"]["System.Int32"];
@@ -2055,7 +2200,6 @@ export interface components {
             chargeTax?: components["schemas"]["System.Boolean"];
             stock?: components["schemas"]["System.Int32"];
             sku?: components["schemas"]["System.String"];
-            barcode?: components["schemas"]["System.String"];
             trackInventory?: components["schemas"]["System.Boolean"];
             lowStockThreshold?: components["schemas"]["System.Int32"];
             allowBackorder?: components["schemas"]["System.Boolean"];
@@ -2104,6 +2248,7 @@ export interface components {
         "System.Collections.Generic.IDictionary`2[[System.String, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String[], System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]": {
             [key: string]: components["schemas"]["System.String[]"];
         };
+        "System.Collections.Generic.List`1[[ProductCatalog.Core.DTOs.Inventory.ProductInventoryResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["ProductCatalog.Core.DTOs.Inventory.ProductInventoryResponse"][];
         "System.Collections.Generic.List`1[[ProductCatalog.Core.DTOs.Products.OptionResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["ProductCatalog.Core.DTOs.Products.OptionResponse"][];
         "System.Collections.Generic.List`1[[ProductCatalog.Core.DTOs.Products.ProductResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["ProductCatalog.Core.DTOs.Products.ProductResponse"][];
         "System.Collections.Generic.List`1[[ProductCatalog.Core.DTOs.Products.VariantOptionValueDto, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["ProductCatalog.Core.DTOs.Products.VariantOptionValueDto"][];

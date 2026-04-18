@@ -1,8 +1,8 @@
-using Content.Core.DatabaseContext;
 using Content.Core.DTOs.Menus;
 using Content.Core.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SharedKernel.Exceptions;
 
 namespace Content.Api;
 
@@ -38,19 +38,28 @@ public class MenuController(ContentDbContext db) : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateMenuRequest request, CancellationToken cancellationToken)
     {
-        ContentValidation.ValidateRequest(request);
         var name = request.Name.Trim();
         var parentName = string.IsNullOrWhiteSpace(request.ParentName) ? null : request.ParentName.Trim();
 
         if (parentName == name)
         {
-            return BadRequest("Menu cannot be its own parent.");
+            throw new ValidationException(
+                "Validation failed",
+                new Dictionary<string, string[]>
+                {
+                    [nameof(request.ParentName)] = ["Menu cannot be its own parent."]
+                });
         }
 
         var exists = await _db.Menus.AnyAsync(x => x.Name == name, cancellationToken);
         if (exists)
         {
-            return Conflict("Menu already exists.");
+            throw new ValidationException(
+                "Validation failed",
+                new Dictionary<string, string[]>
+                {
+                    [nameof(request.Name)] = ["Menu already exists."]
+                });
         }
 
         if (parentName is not null)
@@ -58,7 +67,12 @@ public class MenuController(ContentDbContext db) : ControllerBase
             var parentExists = await _db.Menus.AnyAsync(x => x.Name == parentName, cancellationToken);
             if (!parentExists)
             {
-                return BadRequest("Parent menu does not exist.");
+                throw new ValidationException(
+                    "Validation failed",
+                    new Dictionary<string, string[]>
+                    {
+                        [nameof(request.ParentName)] = ["Parent menu does not exist."]
+                    });
             }
         }
 
@@ -84,7 +98,6 @@ public class MenuController(ContentDbContext db) : ControllerBase
     [HttpPut("{name}")]
     public async Task<IActionResult> Update(string name, [FromBody] UpdateMenuRequest request, CancellationToken cancellationToken)
     {
-        ContentValidation.ValidateRequest(request);
         var menu = await _db.Menus
             .Include(x => x.Submenus)
             .FirstOrDefaultAsync(x => x.Name == name, cancellationToken);
@@ -97,7 +110,12 @@ public class MenuController(ContentDbContext db) : ControllerBase
         var parentName = string.IsNullOrWhiteSpace(request.ParentName) ? null : request.ParentName.Trim();
         if (parentName == name)
         {
-            return BadRequest("Menu cannot be its own parent.");
+            throw new ValidationException(
+                "Validation failed",
+                new Dictionary<string, string[]>
+                {
+                    [nameof(request.ParentName)] = ["Menu cannot be its own parent."]
+                });
         }
 
         if (parentName is not null)
@@ -105,7 +123,12 @@ public class MenuController(ContentDbContext db) : ControllerBase
             var parentExists = await _db.Menus.AnyAsync(x => x.Name == parentName, cancellationToken);
             if (!parentExists)
             {
-                return BadRequest("Parent menu does not exist.");
+                throw new ValidationException(
+                    "Validation failed",
+                    new Dictionary<string, string[]>
+                    {
+                        [nameof(request.ParentName)] = ["Parent menu does not exist."]
+                    });
             }
         }
 
@@ -132,7 +155,12 @@ public class MenuController(ContentDbContext db) : ControllerBase
         var hasChildren = await _db.Menus.AnyAsync(x => x.ParentName == name, cancellationToken);
         if (hasChildren)
         {
-            return BadRequest("Remove child menus first.");
+            throw new ValidationException(
+                "Validation failed",
+                new Dictionary<string, string[]>
+                {
+                    [nameof(Menu.ParentName)] = ["Remove child menus first."]
+                });
         }
 
         _db.Menus.Remove(menu);

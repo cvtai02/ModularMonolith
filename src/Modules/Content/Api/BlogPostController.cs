@@ -1,9 +1,9 @@
-using Content.Core.DatabaseContext;
 using Content.Core.DTOs.BlogPosts;
 using Content.Core.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel.Extensions;
+using SharedKernel.Exceptions;
 
 namespace Content.Api;
 
@@ -38,12 +38,16 @@ public class BlogPostController(ContentDbContext db) : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateBlogPostRequest request, CancellationToken cancellationToken)
     {
-        ContentValidation.ValidateRequest(request);
         var title = request.Title.Trim();
         var exists = await _db.BlogPosts.AnyAsync(x => x.Title == title, cancellationToken);
         if (exists)
         {
-            return Conflict("Blog post already exists.");
+            throw new ValidationException(
+                "Validation failed",
+                new Dictionary<string, string[]>
+                {
+                    [nameof(request.Title)] = ["Blog post already exists."]
+                });
         }
 
         var entity = new BlogPost
@@ -65,7 +69,6 @@ public class BlogPostController(ContentDbContext db) : ControllerBase
     [HttpPut("{title}")]
     public async Task<IActionResult> Update(string title, [FromBody] UpdateBlogPostRequest request, CancellationToken cancellationToken)
     {
-        ContentValidation.ValidateRequest(request);
         var blogPost = await _db.BlogPosts.FirstOrDefaultAsync(x => x.Title == title, cancellationToken);
         if (blogPost is null)
         {

@@ -1,0 +1,147 @@
+name: Publish API
+
+on:
+  push:
+    branches: [ "release" ]
+    paths:
+      - 'src/AppHost/**'
+      - 'src/Modules/**'
+      - 'src/SharedKernel/**'
+      - 'src/Infrastructure/**'
+      - 'src/Intermediary/**'
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}-api
+
+jobs:
+  deliver:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Log into registry ${{ env.REGISTRY }}
+        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish & Push
+        run: >
+          dotnet publish src/AppHost/AppHost.csproj
+          --os linux --arch x64
+          /t:PublishContainer
+          -p ContainerRegistry=${{ env.REGISTRY }}
+          -p ContainerImageTags=latest
+          -p ContainerRepository=${{ env.IMAGE_NAME }}
+
+      # should be another workflow but i dont have money
+      - name: Detect Migrations Changes
+        id: migrationchanges
+        shell: bash
+        run: |
+          CHANGED=$(git diff --name-only HEAD~1 HEAD)
+          MIGRATION_MODULES=$(echo "$CHANGED" | awk -F'/' '
+            /^src\/Modules\/[^/]+\/Infrastructure\/Data\/Migrations\// { print $3 }
+          ' | sort -u | jq -R . | jq -sc .)
+          echo "migration_modules=$MIGRATION_MODULES" >> $GITHUB_OUTPUT
+
+      - name: Skip if no relevant changes
+        if: steps.migrationchanges.outputs.migration_modules == '[]'
+        shell: bash
+        run: echo "✅ No Migrations Changes"
+
+        
+      - name: Build        
+        if: steps.migrationchanges.outputs.migration_modules != '[]'
+        run: dotnet build --no-restore
+
+      - name: Restore dotnet tools
+        if: steps.migrationchanges.outputs.migration_modules != '[]'
+        shell: bash
+        run: dotnet tool restore
+
+      - name: Bundle Migrations
+        if: steps.migrationchanges.outputs.migration_modules != '[]'
+        shell: bash
+        run: |
+          for MODULE in $(echo '${{ steps.migrationchanges.outputs.migration_modules }}' | jq -r '.[]'); do
+            dotnet ef migrations bundle \
+              --no-build \
+              --startup-project "src/AppHost/AppHost.csproj" \
+              --project "src/Modules/$MODULE/${MODULE}.csproj" \
+              --context "$MODULE.${MODULE}DbContext" \
+              --self-contained \
+              -f \
+              -o ${MODULE}Migrations
+          done
+
+      - name: Build file list
+        if: steps.migrationchanges.outputs.migration_modules != '[]'
+        id: files
+        shell: bash
+        run: |
+          FILES=""
+          for MODULE in $(echo '${{ steps.migrationchanges.outputs.migration_modules }}' | jq -r '.[]'); do
+            FILES+="${MODULE}Migrations,"
+          done
+          echo "files=$FILES" >> $GITHUB_OUTPUT
+
+      - name: Copy files via SSH
+        if: steps.migrationchanges.outputs.migration_modules != '[]'
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.API_IP }}
+          username: ${{ secrets.API_USER }}
+          password: ${{ secrets.API_SSH_PASSWORD }}
+          source: ${{ steps.files.outputs.files }}
+          target: deploy
+          overwrite: true 
+
+      - name: Run Migrations
+        if: steps.migrationchanges.outputs.migration_modules != '[]'
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.API_IP }}
+          username: ${{ secrets.API_USER }}
+          password: ${{ secrets.API_SSH_PASSWORD }}
+          script: |
+            ~/deploy/run-migrations.sh 
+      
+
+
+
+  # create deploy/deploy-api.sh in your VM first
+  # chmod +x ~/deploy/deploy-api.sh to make it an executable file
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: read
+    needs: deliver
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.API_IP }}
+          username: ${{ secrets.API_USER }}
+          password: ${{ secrets.API_SSH_PASSWORD }}
+          script: |
+            export GHCR_USERNAME=${{ github.actor }}
+            export GHCR_PASSWORD=${{ secrets.GITHUB_TOKEN }}
+            export GHCR_REGISTRY=${{ env.REGISTRY }}
+            export GHCR_IMAGE=${{ env.IMAGE_NAME }}
+            ~/deploy/deploy-api.sh
+            

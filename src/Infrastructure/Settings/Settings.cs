@@ -5,12 +5,12 @@ namespace Infrastructure;
 
 public class Settings
 {
-    public DatabaseSettings Database { get; set; } = new();
-    public JwtSettings Jwt { get; set; } = new();
-    public FileStorageSettings FileStorage { get; set; } = new();
-    public EventBusSettings MessageBroker { get; set; } = new();
-    public CacheSettings Cache { get; set; } = new();
-    public RetrySettings Retry { get; set; } = new();
+    public DatabaseSettings? Database { get; set; } = null;
+    public JwtSettings? Jwt { get; set; } = null;
+    public FileStorageSettings? FileStorage { get; set; } = null;
+    public EventBusSettings? MessageBroker { get; set; } = null;
+    public CacheSettings? Cache { get; set; } = null;
+    public RetrySettings? Retry { get; set; } = null;
 
     public static void RegisterModuleSettings(IServiceCollection services, string moduleKey)
     {

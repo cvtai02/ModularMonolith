@@ -10,18 +10,15 @@ const Signup = LazyPage(() => import("@/pages/signup"));
 const Login = LazyPage(() => import("@/pages/login"));
 const NotFound = LazyPage(() => import("@/pages/common/404"));
 const Dashboard = LazyPage(() => import("@/pages/dashboard"));
-
-function AdminSectionPlaceholder({ title }: { title: string }) {
-  return (
-    <section className="flex flex-col gap-2">
-      <h2 className="text-2xl font-semibold text-balance">{title}</h2>
-      <p className="text-sm text-muted-foreground">
-        Build this section with filters, table views, and quick actions for daily operations.
-      </p>
-    </section>
-  );
-}
-
+const Products = LazyPage(() => import("@/pages/products"));
+const Categories = LazyPage(() => import("@/pages/categories"));
+const Contents = LazyPage(() => import("@/pages/contents"));
+const Orders = LazyPage(() => import("@/pages/orders"));
+const Customers = LazyPage(() => import("@/pages/customers"));
+const Inventory = LazyPage(() => import("@/pages/inventory"));
+const Promotions = LazyPage(() => import("@/pages/promotions"));
+const Reviews = LazyPage(() => import("@/pages/reviews"));
+const Settings = LazyPage(() => import("@/pages/settings"));
 
 const AppRoutes: ReactNode =
   <Route>
@@ -31,14 +28,15 @@ const AppRoutes: ReactNode =
       <Route path={ROUTES.root} element={<AppLayout />}>
         <Route index element={<Navigate to={ROUTES.dashboard} replace />} />
         <Route path="dashboard" element={<Dashboard />} />
-        <Route path="products" element={<AdminSectionPlaceholder title="Products" />} />
-        <Route path="categories" element={<AdminSectionPlaceholder title="Categories" />} />
-        <Route path="orders" element={<AdminSectionPlaceholder title="Orders" />} />
-        <Route path="customers" element={<AdminSectionPlaceholder title="Customers" />} />
-        <Route path="inventory" element={<AdminSectionPlaceholder title="Inventory" />} />
-        <Route path="promotions" element={<AdminSectionPlaceholder title="Promotions" />} />
-        <Route path="reviews" element={<AdminSectionPlaceholder title="Reviews" />} />
-        <Route path="settings" element={<AdminSectionPlaceholder title="Settings" />} />
+        <Route path="products" element={<Products />} />
+        <Route path="categories" element={<Categories />} />
+        <Route path="contents" element={<Contents />} />
+        <Route path="orders" element={<Orders />} />
+        <Route path="customers" element={<Customers />} />
+        <Route path="inventory" element={<Inventory />} />
+        <Route path="promotions" element={<Promotions />} />
+        <Route path="reviews" element={<Reviews />} />
+        <Route path="settings" element={<Settings />} />
       </Route>
     </Route>
 

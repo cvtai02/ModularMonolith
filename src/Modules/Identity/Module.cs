@@ -1,8 +1,6 @@
 using Identity.Api;
-using Identity.Core.DatabaseContext;
 using Identity.Core.Entities;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,14 +15,14 @@ public class IdentityModule(IHostApplicationBuilder b) : Module(b)
     public override string Key => ModuleConstants.Key;
     public override void RegisterModule()
     {
-        Services.AddDbContext<ModuleDbContext>((sprovider, options) =>
+        Services.AddDbContext<IdentityDbContext>((sprovider, options) =>
         {
             sprovider.GetRequiredService<IConfigureDbContextStrategy>().ConfigureDbContext(sprovider, options, Key);
         });
 
         Services.AddIdentityApiEndpoints<AppUser>()
             .AddRoles<IdentityRole>()
-            .AddEntityFrameworkStores<ModuleDbContext>()
+            .AddEntityFrameworkStores<IdentityDbContext>()
             .AddDefaultTokenProviders();
 
         Services.Configure<IdentityOptions>(options =>

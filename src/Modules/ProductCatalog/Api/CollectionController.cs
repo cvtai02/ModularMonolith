@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using ProductCatalog.Core.DatabaseContext;
 using ProductCatalog.Core.DTOs.Collections;
 using ProductCatalog.Core.Entities;
 using SharedKernel.Extensions;

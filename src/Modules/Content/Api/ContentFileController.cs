@@ -1,8 +1,8 @@
-using Content.Core.DatabaseContext;
 using Content.Core.DTOs.ContentFiles;
 using Content.Core.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SharedKernel.Exceptions;
 
 namespace Content.Api;
 
@@ -36,12 +36,16 @@ public class ContentFileController(ContentDbContext db) : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateContentFileRequest request, CancellationToken cancellationToken)
     {
-        ContentValidation.ValidateRequest(request);
         var name = request.Name.Trim();
         var exists = await _db.Files.AnyAsync(x => x.Name == name, cancellationToken);
         if (exists)
         {
-            return Conflict("Content file already exists.");
+            throw new ValidationException(
+                "Validation failed",
+                new Dictionary<string, string[]>
+                {
+                    [nameof(request.Name)] = ["Content file already exists."]
+                });
         }
 
         var entity = new ContentFile
@@ -61,7 +65,6 @@ public class ContentFileController(ContentDbContext db) : ControllerBase
     [HttpPut("{name}")]
     public async Task<IActionResult> Update(string name, [FromBody] UpdateContentFileRequest request, CancellationToken cancellationToken)
     {
-        ContentValidation.ValidateRequest(request);
         var file = await _db.Files.FirstOrDefaultAsync(x => x.Name == name, cancellationToken);
         if (file is null)
         {

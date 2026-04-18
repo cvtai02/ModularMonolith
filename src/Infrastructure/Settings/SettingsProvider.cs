@@ -10,7 +10,7 @@ public sealed class SettingsProvider
     private static readonly Lock _lock = new();
 
     public static readonly string CommonSettingsKey = "CommonSettings";
-    private readonly Dictionary<string, Settings> Settings = [];
+    private readonly Dictionary<string, Settings> _settings = [];
     private readonly IConfiguration configuration;
 
     private SettingsProvider(IConfiguration cfg)
@@ -44,14 +44,14 @@ public sealed class SettingsProvider
 
     public Settings GetSettings(string moduleKey)
     {
-        if(!Settings.ContainsKey(moduleKey)) LoadSettings(moduleKey);
-        return Settings.GetValueOrDefault(moduleKey) ?? GetCommonSettings();
+        if(!_settings.ContainsKey(moduleKey)) LoadSettings(moduleKey);
+        return _settings.GetValueOrDefault(moduleKey) ?? GetCommonSettings();
     }
 
     public Settings GetCommonSettings()
     {
-        if(!Settings.ContainsKey(CommonSettingsKey)) LoadDefaultSettings();
-        return Settings.GetValueOrDefault(CommonSettingsKey) ?? new Settings();
+        if(!_settings.ContainsKey(CommonSettingsKey)) LoadDefaultSettings();
+        return _settings.GetValueOrDefault(CommonSettingsKey) ?? new Settings();
     }
 
     private void LoadSettings(string moduleKey)
@@ -63,13 +63,13 @@ public sealed class SettingsProvider
             moduleConfigSection.Bind(settings);
         }
         settings.ApplyDefaults(GetCommonSettings());
-        Settings[moduleKey] = settings;
+        _settings[moduleKey] = settings;
     }
 
     private void LoadDefaultSettings()
     {
         var settings = new Settings();
         configuration.Bind(settings);
-        Settings.Add(CommonSettingsKey, settings);
+        _settings.Add(CommonSettingsKey, settings);
     }
 }

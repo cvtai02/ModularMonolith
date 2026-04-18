@@ -6,15 +6,17 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.0" />
+  </ItemGroup>
 
-    <!-- These belows are not used in SharedKernel but used in many other modules -->
+  <!-- this group is not used in SharedKernel but used in many other modules -->
+  <ItemGroup>  
     <PackageReference Include="MediatR" Version="12.5.0" /> <!-- latest un-commercial version of MediatR. -->
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0" /> 
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" /> 
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.0" /> 
+    <ProjectReference Include="..\Intermediary\Intermediary.csproj" />
   </ItemGroup>
 </Project>

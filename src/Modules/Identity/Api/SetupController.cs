@@ -1,4 +1,3 @@
-using Identity.Core.DatabaseContext;
 using Identity.Core.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -14,9 +13,9 @@ public class AASeedController : ControllerBase
 {
     private readonly UserManager<AppUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
-    private readonly ModuleDbContext _dbContext;
+    private readonly IdentityDbContext _dbContext;
 
-    public AASeedController(ModuleDbContext dbContext, UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager)
+    public AASeedController(IdentityDbContext dbContext, UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager)
     {
         _userManager = userManager;
         _roleManager = roleManager;

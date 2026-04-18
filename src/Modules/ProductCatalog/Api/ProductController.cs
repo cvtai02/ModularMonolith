@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using ProductCatalog.Core.DatabaseContext;
 using ProductCatalog.Core.DTOs.Products;
 using ProductCatalog.Core.Entities;
 using SharedKernel.DTOs;
@@ -296,7 +295,6 @@ public class ProductsController(ProductCatalogDbContext db) : ControllerBase
             ChargeTax = product.Metric.ChargeTax,
             Stock = product.Inventory.Stock,
             Sku = product.Inventory.Sku,
-            Barcode = product.Inventory.Barcode,
             TrackInventory = product.Inventory.TrackInventory,
             LowStockThreshold = product.Inventory.LowStockThreshold,
             AllowBackorder = product.Inventory.AllowBackorder,

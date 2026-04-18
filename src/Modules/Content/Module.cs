@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Hosting;
-using Content.Core.DatabaseContext;
 
 namespace Content;
 

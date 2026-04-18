@@ -1,0 +1,91 @@
+name: Build, Test & Check Migrations API
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - 'src/AppHost/**'
+      - 'src/Modules/**'
+      - 'src/SharedKernel/**'
+      - 'src/Infrastructure/**'
+      - 'src/Intermediary/**'
+  pull_request:
+    branches: ["main"]
+    paths:
+      - 'src/AppHost/**'
+      - 'src/Modules/**'
+      - 'src/SharedKernel/**'
+      - 'src/Infrastructure/**'
+      - 'src/Intermediary/**'
+
+jobs:
+  check-migrations:
+    runs-on: ubuntu-latest  # fix 1: was missing
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2  # fix 2: needed for git diff HEAD~1 HEAD
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore
+
+      - name: Detect dbcontext-changed modules
+        id: dbcontextchanges
+        shell: bash
+        run: |
+          CHANGED=$(git diff --name-only HEAD~1 HEAD)
+          
+          SHARED_TRIGGER=$(echo "$CHANGED" | grep -E \
+            '^src/SharedKernel/Abstractions/Contracts/(AuditableEntity|Entity)\.cs$')
+
+          if [ -n "$SHARED_TRIGGER" ]; then
+            MODULES=$(ls -d src/Modules/*/ | awk -F'/' '{print $3}' | jq -R . | jq -sc .)
+          else
+            # fix 4: removed overly-strict DbContext filename depth check;
+            # Infrastructure/Data/ pattern already covers DbContext files in subdirs
+            MODULES=$(echo "$CHANGED" | awk -F'/' '
+              /^src\/Modules\/[^/]+\/Core\/Entities\// { print $3 }
+              /^src\/Modules\/[^/]+\/Infrastructure\/Data\// { print $3 }
+            ' | sort -u | jq -R . | jq -sc .)
+          fi
+
+          echo "modules=$MODULES" >> $GITHUB_OUTPUT
+
+      - name: Skip if no relevant changes
+        if: steps.dbcontextchanges.outputs.modules == '[]'
+        shell: bash
+        run: echo "✅ No DbContext Changes"
+
+      - name: Restore dotnet tools
+        if: steps.dbcontextchanges.outputs.modules != '[]'
+        shell: bash
+        run: dotnet tool restore
+
+      - name: Check pending model changes
+        if: steps.dbcontextchanges.outputs.modules != '[]'
+        shell: bash
+        run: |
+          echo '${{ steps.dbcontextchanges.outputs.modules }}' | jq -r '.[]' | while read -r MODULE; do
+            CONTEXT="${MODULE}.${MODULE}DbContext"
+            echo "Checking $MODULE with $CONTEXT"
+
+            # fix 3: inverted condition — non-zero exit means pending changes exist
+            if ! dotnet ef migrations has-pending-model-changes \
+              --no-build \
+              --startup-project "src/AppHost/AppHost.csproj" \
+              --context "$CONTEXT"
+            then
+              echo "❌ Pending model changes detected in $MODULE"
+              exit 1
+            else
+              echo "✅ No pending model changes in $MODULE"
+            fi
+          done

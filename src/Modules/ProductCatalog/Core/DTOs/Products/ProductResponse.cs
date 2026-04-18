@@ -17,7 +17,6 @@ public class ProductResponse
     public bool ChargeTax { get; set; }
     public int Stock { get; set; }
     public string Sku { get; set; } = string.Empty;
-    public string Barcode { get; set; } = string.Empty;
     public bool TrackInventory { get; set; }
     public int LowStockThreshold { get; set; }
     public bool AllowBackorder { get; set; }

@@ -3,6 +3,7 @@
     <Project Path="src/AppHost/AppHost.csproj" />
     <Project Path="src/Infrastructure/Infrastructure.csproj" />
     <Project Path="src/SharedKernel/SharedKernel.csproj" />
+    <Project Path="src/Intermediary/Intermediary.csproj" />
   </Folder>
   <Folder Name="/src/Modules/">
     <Project Path="src/Modules/ProductCatalog/ProductCatalog.csproj" />

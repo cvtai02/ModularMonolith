@@ -14,17 +14,17 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-    app.MapOpenApi();
-    app.MapScalarApiReference();
-    app.MapGet("/", () => Results.Redirect("/scalar/v1", true));
-    
-    app.UseHttpsRedirection();
+app.MapOpenApi();
+app.MapScalarApiReference();
+app.MapGet("/", () => Results.Redirect("/scalar/v1", true));
 
-    // No need of cors if not using cookies or cookies samesite.
-    app.UseCors(policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()) 
-    .UseAuthentication()
-    .UseAuthorization()
-    .UseExceptionHandler();
+if(!app.Environment.IsDevelopment()) app.UseHttpsRedirection();
+
+// No need of cors if not using cookies or cookies samesite.
+app.UseCors(policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()) 
+.UseAuthentication()
+.UseAuthorization()
+.UseExceptionHandler();
 
 app.UseModules();
 app.MapControllers();
