@@ -4,7 +4,7 @@ namespace SharedKernel.Abstractions.Services;
 
 public interface IEventBus
 {
-    Task PublishAsync<T>(T @event, CancellationToken ct = default)
+    Task Publish<T>(T @event, CancellationToken ct = default)
         where T : IntegrationEvent;
 
     void Subscribe<T, TH>()

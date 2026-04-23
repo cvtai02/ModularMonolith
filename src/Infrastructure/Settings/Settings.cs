@@ -7,8 +7,8 @@ public class Settings
 {
     public DatabaseSettings? Database { get; set; } = null;
     public JwtSettings? Jwt { get; set; } = null;
-    public FileStorageSettings? FileStorage { get; set; } = null;
-    public EventBusSettings? MessageBroker { get; set; } = null;
+    public ObjectStorageSettings? FileStorage { get; set; } = null;
+    public EventBusSettings? EventBus { get; set; } = null;
     public CacheSettings? Cache { get; set; } = null;
     public RetrySettings? Retry { get; set; } = null;
 
@@ -43,7 +43,7 @@ public class Settings
         Database ??= defaultSettings.Database;
         Jwt ??= defaultSettings.Jwt;
         FileStorage ??= defaultSettings.FileStorage;
-        MessageBroker ??= defaultSettings.MessageBroker;
+        EventBus ??= defaultSettings.EventBus;
         Cache ??= defaultSettings.Cache;
         Retry ??= defaultSettings.Retry;
     }
@@ -63,11 +63,13 @@ public class JwtSettings
     public int ExpiryMinutes { get; set; }
 }
 
-public class FileStorageSettings
+public class ObjectStorageSettings
 {
-    public FileStorageProvider Provider { get; set; } = FileStorageProvider.None;
-    public string ConnectionString { get; set; } = null!;
-    public string ContainerName { get; set; } = null!;
+    public ObjectStorageProvider Provider { get; set; } = ObjectStorageProvider.None;
+    
+    public string ApiUrl { get; set; } = null!;
+    public string AccessKeyId { get; set; } = null!;
+    public string SecretAccessKey { get; set; } = null!;
 }
 
 

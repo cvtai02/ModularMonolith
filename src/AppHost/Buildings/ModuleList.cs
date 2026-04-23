@@ -1,5 +1,8 @@
+using Cart;
 using Content;
 using Identity;
+using Inventory;
+using Order;
 using ProductCatalog;
 using SharedKernel.Abstractions.Contracts;
 
@@ -12,7 +15,10 @@ public static class ModuleList
         return [
             new IdentityModule(builder),
             new ProductCatalogModule(builder),
-            new ContentModule(builder)
+            new ContentModule(builder),
+            new InventoryModule(builder),
+            new CartModule(builder),
+            new OrderModule(builder)
         ];
     }
 };

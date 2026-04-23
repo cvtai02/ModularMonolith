@@ -14,7 +14,7 @@ public class ConfigureDbContextStrategy(SettingsProvider settingsProvider) : ICo
     }
     public void ConfigureDbContext(IServiceProvider sprovider, DbContextOptionsBuilder options, string key)
     {
-        var settings = provider.GetSettings(key).Database;
+        var settings = provider.GetSettings(key).Database!;
         options.AddInterceptors(sprovider.GetServices<ISaveChangesInterceptor>());
         switch (settings.Provider)
         {

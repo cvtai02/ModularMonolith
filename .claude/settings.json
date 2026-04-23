@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(.git/**)",
+      "Read(**/bin/**)",
+      "Read(**/obj/**)",
+      "Read(node_modules/**)",
+      "Read(.github/**)",
+      "Read(.vscode/**)",
+      "Read(assets/**)",
+      "Read(docs/**)",
+      "Read(*.log)",
+      "Read(package-lock.json)"
+    ],
+    "allow": [
+      "PowerShell(.\\\\devtools\\\\ef-add.ps1 -Module Content -Name InitialCreate 2>&1)"
+    ]
+  }
+}

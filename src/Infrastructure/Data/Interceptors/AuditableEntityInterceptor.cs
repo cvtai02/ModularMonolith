@@ -42,6 +42,12 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
             {
                 entry.Entity.ModifiedBy = _user.Id;
                 entry.Entity.LastModified = _dateTime.GetUtcNow();
+
+                if (entry.State == EntityState.Added)
+                {
+                    entry.Entity.CreatedBy = _user.Id;
+                    entry.Entity.Created = _dateTime.GetUtcNow();
+                }
             }
 
             if(entry.State is EntityState.Deleted && entry.Entity.IsSoftDeleted)

@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using SharedKernel.Exceptions;
 
 namespace WebAPI.ExceptionHandlers;
@@ -61,9 +62,10 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger, IHos
         {
             NotFoundException => (StatusCodes.Status404NotFound, exception.Message),
             UnauthorizedAccessException => (StatusCodes.Status403Forbidden, $"Forbidden: {exception.Message}"),
-            // DbUpdateException when exception.InnerException is SqlException sqlEx && (sqlEx.Number == 2627 || sqlEx.Number == 2601) =>
-            // (StatusCodes.Status409Conflict, "Unique Constraint Violation"),
-
+            
+            // Catch-all for other DbUpdateExceptions
+            DbUpdateException => (StatusCodes.Status500InternalServerError, "Database operation failed. " + exception.InnerException?.Message),
+            
             _ => (StatusCodes.Status500InternalServerError, "Unexpected Error")
         };
     }

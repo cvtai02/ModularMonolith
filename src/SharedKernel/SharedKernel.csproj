@@ -7,6 +7,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.0" />
+    <PackageReference Include="System.Security.Cryptography.Xml" Version="9.0.15" />
   </ItemGroup>
 
   <!-- this group is not used in SharedKernel but used in many other modules -->
@@ -17,6 +18,5 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0" /> 
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" /> 
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.0" /> 
-    <ProjectReference Include="..\Intermediary\Intermediary.csproj" />
   </ItemGroup>
 </Project>

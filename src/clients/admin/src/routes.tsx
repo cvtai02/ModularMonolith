@@ -4,45 +4,54 @@ import AppLayout from "@/components/containers/app-layout";
 import { PrivateRoute } from "@/components/containers/private-route";
 import { LazyPage } from "@/components/containers/lazy-page";
 import { ROUTES } from "@/configs/routes";
+import ErrorPage from "@/pages/common/error";
+import Unauthorize from "./pages/common/403";
 
 // Lazy load all pages
 const Signup = LazyPage(() => import("@/pages/signup"));
 const Login = LazyPage(() => import("@/pages/login"));
 const NotFound = LazyPage(() => import("@/pages/common/404"));
-const Dashboard = LazyPage(() => import("@/pages/dashboard"));
+// const Dashboard = LazyPage(() => import("@/pages/dashboard"));
 const Products = LazyPage(() => import("@/pages/products"));
-const Categories = LazyPage(() => import("@/pages/categories"));
-const Contents = LazyPage(() => import("@/pages/contents"));
-const Orders = LazyPage(() => import("@/pages/orders"));
-const Customers = LazyPage(() => import("@/pages/customers"));
+const AddProduct = LazyPage(() => import("@/pages/products/add"));
 const Inventory = LazyPage(() => import("@/pages/inventory"));
-const Promotions = LazyPage(() => import("@/pages/promotions"));
-const Reviews = LazyPage(() => import("@/pages/reviews"));
-const Settings = LazyPage(() => import("@/pages/settings"));
+const Categories = LazyPage(() => import("@/pages/categories"));
+const ContentFilesPage = LazyPage(() => import("@/pages/content/files"));
+const ContentMenusPage = LazyPage(() => import("@/pages/content/menus"));
+const Collections = LazyPage(() => import("@/pages/collections"));
+const Orders = LazyPage(() => import("@/pages/orders"));
+// const Customers = LazyPage(() => import("@/pages/customers"));
+// const Promotions = LazyPage(() => import("@/pages/promotions"));
+// const Reviews = LazyPage(() => import("@/pages/reviews"));
+// const Settings = LazyPage(() => import("@/pages/settings"));
 
 const AppRoutes: ReactNode =
   <Route>
     <Route path={ROUTES.root} element={<Navigate to={ROUTES.dashboard} replace />} />
 
-    <Route element={<PrivateRoute />}>
+    {/* <Route element={<PrivateRoute />}> */}
       <Route path={ROUTES.root} element={<AppLayout />}>
         <Route index element={<Navigate to={ROUTES.dashboard} replace />} />
-        <Route path="dashboard" element={<Dashboard />} />
-        <Route path="products" element={<Products />} />
-        <Route path="categories" element={<Categories />} />
-        <Route path="contents" element={<Contents />} />
-        <Route path="orders" element={<Orders />} />
-        <Route path="customers" element={<Customers />} />
-        <Route path="inventory" element={<Inventory />} />
-        <Route path="promotions" element={<Promotions />} />
-        <Route path="reviews" element={<Reviews />} />
-        <Route path="settings" element={<Settings />} />
+        {/* <Route path={ROUTES.dashboard} element={<Dashboard />} /> */}
+        <Route path={ROUTES.products} element={<Products />} errorElement={<ErrorPage />} />
+        <Route path={ROUTES.productNew} element={<AddProduct />} errorElement={<ErrorPage />} />
+        <Route path={ROUTES.productInventory} element={<Inventory />} errorElement={<ErrorPage />} />
+        <Route path={ROUTES.productCategory} element={<Categories />} errorElement={<ErrorPage />} />
+        <Route path={ROUTES.productCollections} element={<Collections />} errorElement={<ErrorPage />} />
+        <Route path={ROUTES.contentFiles} element={<ContentFilesPage />} errorElement={<ErrorPage />} />
+        <Route path={ROUTES.contentMenus} element={<ContentMenusPage />} errorElement={<ErrorPage />} />
+        <Route path={ROUTES.orders} element={<Orders />} errorElement={<ErrorPage />} />
+        {/* <Route path={ROUTES.customers} element={<Customers />} errorElement={<ErrorPage />} /> */}
+        {/* <Route path={ROUTES.promotions} element={<Promotions />} errorElement={<ErrorPage />} /> */}
+        {/* <Route path={ROUTES.reviews} element={<Reviews />} errorElement={<ErrorPage />} /> */}
+        {/* <Route path={ROUTES.settings} element={<Settings />} errorElement={<ErrorPage />} /> */}
+        <Route path="*" element={<NotFound />} />
       </Route>
-    </Route>
+    {/* </Route> */}
 
     <Route path={ROUTES.signin} element={<Login />} />
     <Route path={ROUTES.signup} element={<Signup />} />
-    <Route path="*" element={<NotFound />} />
+    <Route path={ROUTES.notAuthorized} element={<Unauthorize />} />
   </Route>
 
 export default AppRoutes;

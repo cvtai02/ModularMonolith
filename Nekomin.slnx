@@ -6,6 +6,9 @@
     <Project Path="src/Intermediary/Intermediary.csproj" />
   </Folder>
   <Folder Name="/src/Modules/">
+    <Project Path="src/Modules/Cart/Cart.csproj" />
+    <Project Path="src/Modules/Inventory/Inventory.csproj" />
+    <Project Path="src/Modules/Order/Order.csproj" />
     <Project Path="src/Modules/ProductCatalog/ProductCatalog.csproj" />
     <Project Path="src/Modules/Identity/Identity.csproj" />
     <Project Path="src/Modules/Content/Content.csproj" />

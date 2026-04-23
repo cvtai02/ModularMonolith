@@ -62,6 +62,7 @@ public static partial class ServiceCollectionExtensions
             });
 
             services.AddScoped<IUser, User>();
+            services.AddSingleton<ITenant, Tenant>();
             services.AddScoped<IModuleKeyRetrievable, EndpointModuleKeyRetriever>();
 
             var jwtSettings = SettingsProvider.GetInstance(builder).GetCommonSettings().Jwt;

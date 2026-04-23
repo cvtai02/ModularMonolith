@@ -51,7 +51,7 @@ export function LoginForm({
       redirect?: string
     }) => login(input),
     onSuccess: () => {
-      navigate('/');
+      navigate(ROUTES.dashboard);
     },
     onError: (error) => {
       const message = getLoginErrorMessage(error);

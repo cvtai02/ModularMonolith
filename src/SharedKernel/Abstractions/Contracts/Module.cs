@@ -18,7 +18,7 @@ public abstract class Module(IHostApplicationBuilder builder)
     public virtual void RegisterModule()
     {
         RegisterDbContext();
-        RegisterFileService();
+        RegisterUsecases();
     }
 
     // called after app.Build()
@@ -27,6 +27,10 @@ public abstract class Module(IHostApplicationBuilder builder)
     protected virtual void RegisterDbContext()
     {
         // implement in child
+    }
+
+    protected virtual void RegisterUsecases()
+    {
     }
 
     /// <summary>
@@ -38,11 +42,6 @@ public abstract class Module(IHostApplicationBuilder builder)
         {   
             sprovider.GetRequiredService<IConfigureDbContextStrategy>().ConfigureDbContext(sprovider, options, Key);
         });
-    }
-
-    protected virtual void RegisterFileService()
-    {
-        Services.AddKeyedScoped(Key, (sp, key) => sp.GetRequiredService<IFileManagerFactory>().GetFileManager(Key));
     }
 
     protected virtual void RegisterCacheService()

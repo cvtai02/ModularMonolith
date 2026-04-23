@@ -9,6 +9,6 @@ public class User(IHttpContextAccessor httpContextAccessor) : IUser
     public string? UserName => httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Name);
     public string? Email => httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Email);
     public string? FullName => httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.GivenName);
-    public int? TenantId => null;
+    public int? TenantId => 0;
 }
 

@@ -5,3 +5,9 @@ https://auth0.com/blog/when-aspnet-core-identity-is-no-longer-enough/
 https://openapi-ts.dev/openapi-react-query/
 
 https://ui.shadcn.com/docs/forms/react-hook-form
+
+https://ubuntu.com/tutorials/install-and-configure-nginx#4-setting-up-virtual-host
+
+https://developers.cloudflare.com/ssl/concepts/
+
+https://developers.cloudflare.com/r2/buckets/public-buckets/ 

@@ -5,7 +5,7 @@ namespace Infrastructure.EventBus;
 
 public class RabbitMQ : IEventBus
 {
-    public Task PublishAsync<T>(T @event, CancellationToken ct = default) where T : IntegrationEvent
+    public Task Publish<T>(T @event, CancellationToken ct = default) where T : IntegrationEvent
     {
         throw new NotImplementedException();
     }

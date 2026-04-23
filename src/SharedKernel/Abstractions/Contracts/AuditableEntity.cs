@@ -7,6 +7,8 @@ namespace SharedKernel.Abstractions.Contracts;
 /// </summary>
 public abstract class AuditableEntity : Entity
 {
+    public DateTimeOffset Created { get; set; }    //UTC
+    public string CreatedBy { get; set; } = null!;
     public DateTimeOffset LastModified { get; set; }    //UTC
     public string? ModifiedBy { get; set; }
     public bool IsDeleted { get; set; } = false;

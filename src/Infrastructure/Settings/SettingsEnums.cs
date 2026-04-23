@@ -1,5 +1,5 @@
 namespace Infrastructure;
-public enum FileStorageProvider
+public enum ObjectStorageProvider
 {   
     None,
     CloudflareR2,

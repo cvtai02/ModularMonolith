@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using ProductCatalog.Core.Entities;
+using SharedKernel.Enums;
 
 namespace ProductCatalog.Core.DTOs.Products;
 
@@ -15,6 +16,9 @@ public class CreateProductRequest
     [Required]
     [MaxLength(100)]
     public string CategoryName { get; set; } = string.Empty;
+
+    [MaxLength(200)]
+    public string Brand { get; set; } = string.Empty;
 
     [Required]
     [MaxLength(200)]
@@ -35,17 +39,10 @@ public class CreateProductRequest
     public decimal CostPrice { get; set; }
 
     public bool ChargeTax { get; set; } = true;
+    public Currency Currency { get; set; } = Currency.VND;
 
     [Range(0, int.MaxValue)]
     public int Stock { get; set; }
-
-    [Required]
-    [MaxLength(200)]
-    public string Sku { get; set; } = string.Empty;
-
-    [Required]
-    [MaxLength(200)]
-    public string Barcode { get; set; } = string.Empty;
 
     public bool TrackInventory { get; set; } = true;
 
@@ -53,4 +50,44 @@ public class CreateProductRequest
     public int LowStockThreshold { get; set; }
 
     public bool AllowBackorder { get; set; }
+    public bool PhysicalProduct { get; set; } = true;
+
+    [Range(0, double.MaxValue)]
+    public float Weight { get; set; }
+
+    [Range(0, double.MaxValue)]
+    public float Width { get; set; }
+
+    [Range(0, double.MaxValue)]
+    public float Height { get; set; }
+
+    [Range(0, double.MaxValue)]
+    public float Length { get; set; }
+
+    public List<CreateProductMediaRequest> Medias { get; set; } = [];
+    public List<CreateProductOptionRequest> Options { get; set; } = [];
+    public List<CreateVariantRequest> Variants { get; set; } = [];
+}
+
+public class CreateProductMediaRequest
+{
+    [Required]
+    [MaxLength(2000)]
+    public string Url { get; set; } = string.Empty;
+
+    [MaxLength(50)]
+    public string Type { get; set; } = "image";
+
+    public float DisplayOrder { get; set; }
+}
+
+public class CreateProductOptionRequest
+{
+    [Required]
+    [MaxLength(100)]
+    public string Name { get; set; } = string.Empty;
+
+    public int DisplayOrder { get; set; }
+
+    public List<string> Values { get; set; } = [];
 }

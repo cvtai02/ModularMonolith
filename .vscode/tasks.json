@@ -14,9 +14,10 @@
         },
         {
             "label": "generate-openapi-types",
-            "command": "openapi-typescript",
+            "command": "npx",
             "type": "process",
             "args": [
+                "openapi-typescript",
                 "http://localhost:5265/openapi/v1.json",
                 "-o",
                 "${workspaceFolder}/src/clients/shared/api/lib/types.ts"

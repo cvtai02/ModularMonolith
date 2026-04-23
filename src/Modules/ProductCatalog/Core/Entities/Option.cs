@@ -7,4 +7,5 @@ public class Option : AuditableEntity
     public string Name { get; set; } = null!;
     public int DisplayOrder { get; set; }
     public virtual List<OptionValue> OptionValues { get; set; } = [];
+    public virtual Product Product { get; set; } = null!;
 }

@@ -24,7 +24,17 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("ProductCatalog.Core.Entities.Category", b =>
                 {
-                    b.Property<string>("Name")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Description")
@@ -44,8 +54,12 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                     b.Property<string>("ModifiedBy")
                         .HasColumnType("text");
 
-                    b.Property<string>("ParentName")
+                    b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int?>("ParentId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Slug")
                         .IsRequired()
@@ -54,12 +68,12 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("TenantId")
+                    b.Property<int>("TenantId")
                         .HasColumnType("integer");
 
-                    b.HasKey("Name");
+                    b.HasKey("Id");
 
-                    b.HasIndex("ParentName");
+                    b.HasIndex("ParentId");
 
                     b.HasIndex("TenantId");
 
@@ -68,7 +82,17 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("ProductCatalog.Core.Entities.Collection", b =>
                 {
-                    b.Property<string>("Title")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Description")
@@ -92,10 +116,14 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int?>("TenantId")
+                    b.Property<int>("TenantId")
                         .HasColumnType("integer");
 
-                    b.HasKey("Title");
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("TenantId");
 
@@ -104,10 +132,23 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("ProductCatalog.Core.Entities.CollectionProduct", b =>
                 {
-                    b.Property<string>("CollectionTitle")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CollectionId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("ProductId")
+                    b.Property<int>("DisplayOrder")
                         .HasColumnType("integer");
 
                     b.Property<bool>("IsDeleted")
@@ -119,9 +160,19 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                     b.Property<string>("ModifiedBy")
                         .HasColumnType("text");
 
-                    b.HasKey("CollectionTitle", "ProductId");
+                    b.Property<int>("ProductId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TenantId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CollectionId");
 
                     b.HasIndex("ProductId");
+
+                    b.HasIndex("TenantId");
 
                     b.ToTable("CollectionProducts");
                 });
@@ -133,6 +184,13 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("integer");
@@ -153,9 +211,14 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                     b.Property<int>("ProductId")
                         .HasColumnType("integer");
 
+                    b.Property<int>("TenantId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ProductId");
+
+                    b.HasIndex("TenantId");
 
                     b.ToTable("Options");
                 });
@@ -168,11 +231,15 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                     b.Property<string>("Value")
                         .HasColumnType("text");
 
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("integer");
-
-                    b.Property<string>("ImageUrl")
-                        .HasColumnType("text");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
@@ -183,7 +250,12 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                     b.Property<string>("ModifiedBy")
                         .HasColumnType("text");
 
+                    b.Property<int>("TenantId")
+                        .HasColumnType("integer");
+
                     b.HasKey("OptionId", "Value");
+
+                    b.HasIndex("TenantId");
 
                     b.ToTable("OptionValues");
                 });
@@ -196,9 +268,38 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("AllowBackorder")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Brand")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("CategoryName")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<bool>("ChargeTax")
+                        .HasColumnType("boolean");
+
+                    b.Property<decimal>("CompareAtPrice")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("CostPrice")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Currency")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -221,6 +322,9 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric");
+
                     b.Property<string>("Slug")
                         .IsRequired()
                         .HasColumnType("text");
@@ -228,57 +332,19 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("TenantId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CategoryName");
-
-                    b.HasIndex("TenantId");
-
-                    b.ToTable("Products");
-                });
-
-            modelBuilder.Entity("ProductCatalog.Core.Entities.ProductInventory", b =>
-                {
-                    b.Property<int>("ProductId")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("AllowBackorder")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Barcode")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("LowStockThreshold")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Reserved")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Sku")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("Sold")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Stock")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("TenantId")
+                    b.Property<int>("TenantId")
                         .HasColumnType("integer");
 
                     b.Property<bool>("TrackInventory")
                         .HasColumnType("boolean");
 
-                    b.HasKey("ProductId");
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("ProductInventory");
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("ProductCatalog.Core.Entities.ProductMedia", b =>
@@ -289,22 +355,34 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<float>("DisplayOrder")
                         .HasColumnType("real");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("text");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("TenantId")
+                    b.Property<int>("TenantId")
                         .HasColumnType("integer");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Url")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -320,18 +398,6 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                     b.Property<int>("ProductId")
                         .HasColumnType("integer");
 
-                    b.Property<bool>("ChargeTax")
-                        .HasColumnType("boolean");
-
-                    b.Property<decimal>("CompareAtPrice")
-                        .HasColumnType("numeric");
-
-                    b.Property<decimal>("CostPrice")
-                        .HasColumnType("numeric");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("numeric");
-
                     b.Property<float>("RatingAvg")
                         .HasColumnType("real");
 
@@ -344,7 +410,7 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                     b.Property<int>("Stock")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("TenantId")
+                    b.Property<int>("TenantId")
                         .HasColumnType("integer");
 
                     b.Property<int>("ViewCount")
@@ -354,7 +420,53 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("ProductMetric");
+                    b.ToTable("ProductMetrics");
+                });
+
+            modelBuilder.Entity("ProductCatalog.Core.Entities.ProductShipping", b =>
+                {
+                    b.Property<int>("ProductId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<float>("Height")
+                        .HasColumnType("real");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<float>("Length")
+                        .HasColumnType("real");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("Physical")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("TenantId")
+                        .HasColumnType("integer");
+
+                    b.Property<float>("Weight")
+                        .HasColumnType("real");
+
+                    b.Property<float>("Width")
+                        .HasColumnType("real");
+
+                    b.HasKey("ProductId");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("ProductShippings");
                 });
 
             modelBuilder.Entity("ProductCatalog.Core.Entities.Variant", b =>
@@ -365,11 +477,39 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("AllowBackorder")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("ChargeTax")
+                        .HasColumnType("boolean");
+
+                    b.Property<decimal>("CompareAtPrice")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("CostPrice")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Currency")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("text");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
                     b.Property<DateTimeOffset>("LastModified")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("LowStockThreshold")
+                        .HasColumnType("integer");
 
                     b.Property<string>("ModifiedBy")
                         .HasColumnType("text");
@@ -380,8 +520,14 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                     b.Property<int>("ProductId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("TenantId")
+                    b.Property<int>("TenantId")
                         .HasColumnType("integer");
+
+                    b.Property<bool>("TrackInventory")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("UseProductPricing")
+                        .HasColumnType("boolean");
 
                     b.HasKey("Id");
 
@@ -392,6 +538,27 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                     b.ToTable("Variants");
                 });
 
+            modelBuilder.Entity("ProductCatalog.Core.Entities.VariantMetric", b =>
+                {
+                    b.Property<int>("VariantId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Sold")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Stock")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TenantId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("VariantId");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("VariantMetrics");
+                });
+
             modelBuilder.Entity("ProductCatalog.Core.Entities.VariantOptionValue", b =>
                 {
                     b.Property<int>("Id")
@@ -399,6 +566,13 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
@@ -416,6 +590,9 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("TenantId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Value")
                         .IsRequired()
                         .HasColumnType("text");
@@ -425,16 +602,67 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("TenantId");
+
                     b.HasIndex("VariantId");
 
                     b.ToTable("VariantOptionValues");
+                });
+
+            modelBuilder.Entity("ProductCatalog.Core.Entities.VariantShipping", b =>
+                {
+                    b.Property<int>("VariantId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<float>("Height")
+                        .HasColumnType("real");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<float>("Length")
+                        .HasColumnType("real");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("Physical")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("TenantId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("UseProductShipping")
+                        .HasColumnType("boolean");
+
+                    b.Property<float>("Weight")
+                        .HasColumnType("real");
+
+                    b.Property<float>("Width")
+                        .HasColumnType("real");
+
+                    b.HasKey("VariantId");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("VariantShippings");
                 });
 
             modelBuilder.Entity("ProductCatalog.Core.Entities.Category", b =>
                 {
                     b.HasOne("ProductCatalog.Core.Entities.Category", "Parent")
                         .WithMany("Subcategories")
-                        .HasForeignKey("ParentName");
+                        .HasForeignKey("ParentId");
 
                     b.Navigation("Parent");
                 });
@@ -443,7 +671,7 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                 {
                     b.HasOne("ProductCatalog.Core.Entities.Collection", "Collection")
                         .WithMany()
-                        .HasForeignKey("CollectionTitle")
+                        .HasForeignKey("CollectionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -460,11 +688,13 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("ProductCatalog.Core.Entities.Option", b =>
                 {
-                    b.HasOne("ProductCatalog.Core.Entities.Product", null)
+                    b.HasOne("ProductCatalog.Core.Entities.Product", "Product")
                         .WithMany("Options")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("ProductCatalog.Core.Entities.OptionValue", b =>
@@ -480,22 +710,11 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                 {
                     b.HasOne("ProductCatalog.Core.Entities.Category", "Category")
                         .WithMany("Products")
-                        .HasForeignKey("CategoryName")
+                        .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Category");
-                });
-
-            modelBuilder.Entity("ProductCatalog.Core.Entities.ProductInventory", b =>
-                {
-                    b.HasOne("ProductCatalog.Core.Entities.Product", "Product")
-                        .WithOne("Inventory")
-                        .HasForeignKey("ProductCatalog.Core.Entities.ProductInventory", "ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("ProductCatalog.Core.Entities.ProductMedia", b =>
@@ -520,15 +739,37 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("ProductCatalog.Core.Entities.ProductShipping", b =>
+                {
+                    b.HasOne("ProductCatalog.Core.Entities.Product", "Product")
+                        .WithOne("ShippingInfo")
+                        .HasForeignKey("ProductCatalog.Core.Entities.ProductShipping", "ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("ProductCatalog.Core.Entities.Variant", b =>
                 {
                     b.HasOne("ProductCatalog.Core.Entities.Product", "Product")
-                        .WithMany()
+                        .WithMany("Variants")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("ProductCatalog.Core.Entities.VariantMetric", b =>
+                {
+                    b.HasOne("ProductCatalog.Core.Entities.Variant", "Variant")
+                        .WithOne("Metric")
+                        .HasForeignKey("ProductCatalog.Core.Entities.VariantMetric", "VariantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Variant");
                 });
 
             modelBuilder.Entity("ProductCatalog.Core.Entities.VariantOptionValue", b =>
@@ -538,6 +779,17 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                         .HasForeignKey("VariantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("ProductCatalog.Core.Entities.VariantShipping", b =>
+                {
+                    b.HasOne("ProductCatalog.Core.Entities.Variant", "Variant")
+                        .WithOne("ShippingInfo")
+                        .HasForeignKey("ProductCatalog.Core.Entities.VariantShipping", "VariantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Variant");
                 });
 
             modelBuilder.Entity("ProductCatalog.Core.Entities.Category", b =>
@@ -554,20 +806,25 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("ProductCatalog.Core.Entities.Product", b =>
                 {
-                    b.Navigation("Inventory")
-                        .IsRequired();
-
                     b.Navigation("Medias");
 
                     b.Navigation("Metric")
                         .IsRequired();
 
                     b.Navigation("Options");
+
+                    b.Navigation("ShippingInfo");
+
+                    b.Navigation("Variants");
                 });
 
             modelBuilder.Entity("ProductCatalog.Core.Entities.Variant", b =>
                 {
+                    b.Navigation("Metric");
+
                     b.Navigation("OptionValues");
+
+                    b.Navigation("ShippingInfo");
                 });
 #pragma warning restore 612, 618
         }

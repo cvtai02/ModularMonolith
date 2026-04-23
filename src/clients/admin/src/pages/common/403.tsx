@@ -1,5 +1,8 @@
-import { useNavigate } from 'react-router-dom';
-import { useIdentityStore } from '@/stores/identity';
+import { useNavigate } from "react-router-dom";
+import { ArrowLeftIcon, LogOutIcon, ShieldOffIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useIdentityStore } from "@/stores/identity";
+import { ROUTES } from "@/configs/routes";
 
 export default function Unauthorize() {
   const navigate = useNavigate();
@@ -7,46 +10,70 @@ export default function Unauthorize() {
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate(ROUTES.signin);
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-      <div className="max-w-md w-full text-center">
-        <div className="mb-8">
-          <h1 className="text-9xl font-bold text-gray-800">403</h1>
-          <div className="text-6xl mb-4">🚫</div>
-          <h2 className="text-2xl font-semibold text-gray-700 mb-2">
-            Access Denied
-          </h2>
-          <p className="text-gray-600 mb-4">
-            You don't have permission to access this resource.
-          </p>
-          {/* {user && (
-            <p className="text-sm text-gray-500">
-              Current role: <span className="font-semibold">{user.role}</span>
-            </p>
-          )} */}
+    <div
+      className="relative flex flex-1 min-h-screen items-center justify-center overflow-hidden bg-background"
+      style={{
+        backgroundImage: `
+          linear-gradient(oklch(0.556 0 0 / 0.06) 1px, transparent 1px),
+          linear-gradient(90deg, oklch(0.556 0 0 / 0.06) 1px, transparent 1px)
+        `,
+        backgroundSize: "40px 40px",
+      }}
+    >
+      {/* Ghost number */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0 flex select-none items-center justify-center font-bold text-destructive"
+        style={{ fontSize: "clamp(12rem, 40vw, 36rem)", opacity: 0.04, letterSpacing: "-0.05em", lineHeight: 1 }}
+      >
+        403
+      </span>
+
+      {/* Decorative corner marks */}
+      <div aria-hidden className="pointer-events-none absolute inset-8 hidden md:block">
+        <div className="absolute top-0 left-0 size-4 border-t border-l border-border/60" />
+        <div className="absolute top-0 right-0 size-4 border-t border-r border-border/60" />
+        <div className="absolute bottom-0 left-0 size-4 border-b border-l border-border/60" />
+        <div className="absolute bottom-0 right-0 size-4 border-b border-r border-border/60" />
+      </div>
+
+      {/* Content */}
+      <div className="relative z-10 flex flex-col items-center gap-8 text-center px-6">
+        {/* Icon */}
+        <div className="flex size-14 items-center justify-center rounded-xl border border-destructive/20 bg-destructive/8 text-destructive">
+          <ShieldOffIcon className="size-6" />
         </div>
-        <div className="space-y-3">
-          <button
-            onClick={() => navigate(-1)}
-            className="w-full px-6 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
-          >
-            Go Back
-          </button>
-          <button
-            onClick={() => navigate('/')}
-            className="w-full px-6 py-3 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
-          >
-            Go to Home
-          </button>
-          <button
-            onClick={handleLogout}
-            className="w-full px-6 py-3 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 transition-colors"
-          >
-            Logout & Switch Account
-          </button>
+
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-center gap-2">
+            <div className="h-px w-8 bg-border" />
+            <span className="font-mono text-xs tracking-widest text-muted-foreground uppercase">
+              Error 403
+            </span>
+            <div className="h-px w-8 bg-border" />
+          </div>
+          <h1 className="text-4xl font-semibold tracking-tight">
+            Access denied
+          </h1>
+          <p className="max-w-sm text-sm leading-relaxed text-muted-foreground">
+            You don't have permission to view this page. Contact your
+            administrator or sign in with a different account.
+          </p>
+        </div>
+
+        <div className="flex flex-col items-center gap-3 sm:flex-row">
+          <Button variant="outline" onClick={() => navigate(-1)}>
+            <ArrowLeftIcon data-icon="inline-start" />
+            Go back
+          </Button>
+          <Button variant="destructive" onClick={handleLogout}>
+            <LogOutIcon data-icon="inline-start" />
+            Switch account
+          </Button>
         </div>
       </div>
     </div>

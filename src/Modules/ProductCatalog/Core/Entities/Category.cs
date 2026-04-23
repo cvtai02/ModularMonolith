@@ -1,14 +1,14 @@
 using System.ComponentModel.DataAnnotations;
 namespace ProductCatalog.Core.Entities;
 
-public class Category : AuditableEntity, IReferTenantEntity
+public class Category : AuditableEntity
 {
-    [Key]
+    public int Id { get; set; }
     public string Name { get; set; } = null!;
     public string Description { get; set; } = string.Empty;
     public string Slug { get; set; } = string.Empty;
     public string ImageUrl { get; set; } = string.Empty;
-    public string? ParentName { get; set; }
+    public int? ParentId { get; set; }
     public CategoryStatus Status { get; set; } = CategoryStatus.Active;
     
     public Category? Parent { get; set; }

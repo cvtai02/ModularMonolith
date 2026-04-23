@@ -1,109 +1,47 @@
 using Content.Core.DTOs.MetaObjects;
-using Content.Core.Entities;
+using Content.Core.Usecases.MetaObjects;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using SharedKernel.Exceptions;
 
 namespace Content.Api;
 
 [ApiController]
 [Route($"api/{ModuleConstants.Key}/MetaObject")]
-public class MetaObjectController(ContentDbContext db) : ControllerBase
+public class MetaObjectController(
+    GetAllMetaObjects getAll,
+    GetMetaObjectByKey getByKey,
+    CreateMetaObject create,
+    UpdateMetaObject update,
+    DeleteMetaObject delete) : ControllerBase
 {
-    private readonly ContentDbContext _db = db;
-
     [HttpGet]
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
-    {
-        var metaObjects = await _db.MetaObjects
-            .AsNoTracking()
-            .OrderBy(x => x.Namespace)
-            .ThenBy(x => x.Key)
-            .ToListAsync(cancellationToken);
-
-        return Ok(metaObjects.Select(MapToResponse));
-    }
+        => Ok(await getAll.ExecuteAsync(cancellationToken));
 
     [HttpGet("{key}")]
     public async Task<IActionResult> GetByKey(string key, CancellationToken cancellationToken)
     {
-        var metaObject = await _db.MetaObjects
-            .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.Key == key, cancellationToken);
-
-        return metaObject is null ? NotFound() : Ok(MapToResponse(metaObject));
+        var result = await getByKey.ExecuteAsync(key, cancellationToken);
+        return result is null ? NotFound() : Ok(result);
     }
 
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateMetaObjectRequest request, CancellationToken cancellationToken)
     {
-        var key = request.Key.Trim();
-        var exists = await _db.MetaObjects.AnyAsync(x => x.Key == key, cancellationToken);
-        if (exists)
-        {
-            throw new ValidationException(
-                "Validation failed",
-                new Dictionary<string, string[]>
-                {
-                    [nameof(request.Key)] = ["Meta object already exists."]
-                });
-        }
-
-        var entity = new MetaObject
-        {
-            Key = key,
-            Namespace = request.Namespace.Trim(),
-            Value = request.Value.Trim(),
-            Type = request.Type.Trim()
-        };
-
-        _db.MetaObjects.Add(entity);
-        await _db.SaveChangesAsync(cancellationToken);
-
-        return CreatedAtAction(nameof(GetByKey), new { key = entity.Key }, MapToResponse(entity));
+        var result = await create.ExecuteAsync(request, cancellationToken);
+        return CreatedAtAction(nameof(GetByKey), new { key = result.Key }, result);
     }
 
     [HttpPut("{key}")]
     public async Task<IActionResult> Update(string key, [FromBody] UpdateMetaObjectRequest request, CancellationToken cancellationToken)
     {
-        var metaObject = await _db.MetaObjects.FirstOrDefaultAsync(x => x.Key == key, cancellationToken);
-        if (metaObject is null)
-        {
-            return NotFound();
-        }
-
-        metaObject.Namespace = request.Namespace.Trim();
-        metaObject.Value = request.Value.Trim();
-        metaObject.Type = request.Type.Trim();
-
-        await _db.SaveChangesAsync(cancellationToken);
-
-        return Ok(MapToResponse(metaObject));
+        var result = await update.ExecuteAsync(key, request, cancellationToken);
+        return result is null ? NotFound() : Ok(result);
     }
 
     [HttpDelete("{key}")]
     public async Task<IActionResult> Delete(string key, CancellationToken cancellationToken)
     {
-        var metaObject = await _db.MetaObjects.FirstOrDefaultAsync(x => x.Key == key, cancellationToken);
-        if (metaObject is null)
-        {
-            return NotFound();
-        }
-
-        _db.MetaObjects.Remove(metaObject);
-        await _db.SaveChangesAsync(cancellationToken);
-
-        return NoContent();
-    }
-
-    private static MetaObjectResponse MapToResponse(MetaObject metaObject)
-    {
-        return new MetaObjectResponse
-        {
-            Key = metaObject.Key,
-            Namespace = metaObject.Namespace,
-            Value = metaObject.Value,
-            Type = metaObject.Type
-        };
+        var result = await delete.ExecuteAsync(key, cancellationToken);
+        return result ? NoContent() : NotFound();
     }
 }

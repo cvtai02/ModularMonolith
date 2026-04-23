@@ -1,11 +1,11 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Common;
 
 namespace SharedKernel.Abstractions.Contracts;
 
 public class Entity
 {
-    // Events will be persist with entity in the same transaction 
+    public int TenantId { get; set; }
+
     [NotMapped]
     public List<IntegrationEvent> Events { get; } = [];
 }
