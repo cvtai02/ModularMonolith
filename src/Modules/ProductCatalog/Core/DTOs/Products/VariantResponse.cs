@@ -3,6 +3,8 @@ namespace ProductCatalog.Core.DTOs.Products;
 public class VariantResponse
 {
     public int Id { get; set; }
+    public bool UseProductPricing { get; set; }
+    public bool UseProductShipping { get; set; }
     public decimal Price { get; set; }
     public decimal CompareAtPrice { get; set; }
     public decimal CostPrice { get; set; }

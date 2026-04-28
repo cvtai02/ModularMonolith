@@ -6,11 +6,9 @@ public class Product : AuditableEntity
 {
     public int Id { get; set; }
     public string Name { get; set; } = null!;
+    public string Slug { get; set; } = null!;
     public string Description { get; set; } = string.Empty;
     public int CategoryId { get; set; }
-    public string CategoryName { get; set; } = string.Empty;
-    public string Slug { get; set; } = null!;
-    public string Brand { get; set; } = string.Empty;
     public string ImageUrl { get; set; } = string.Empty;
 
     // Pricing
@@ -20,7 +18,7 @@ public class Product : AuditableEntity
     public decimal CostPrice { get; set; }
     public bool ChargeTax { get; set; }
 
-    // Inventory defaults
+    // Inventory
     public bool TrackInventory { get; set; } = true;
     public bool AllowBackorder { get; set; }
 

@@ -14,15 +14,7 @@ public class CreateProductRequest
     public string Description { get; set; } = string.Empty;
 
     [Required]
-    [MaxLength(100)]
-    public string CategoryName { get; set; } = string.Empty;
-
-    [MaxLength(200)]
-    public string Brand { get; set; } = string.Empty;
-
-    [Required]
-    [MaxLength(200)]
-    public string Slug { get; set; } = string.Empty;
+    public int CategoryId { get; set; }
 
     [MaxLength(2000)]
     public string ImageUrl { get; set; } = string.Empty;

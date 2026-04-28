@@ -19,5 +19,3 @@ description: Implement/Update API endpoints.
 
 # Api strategies: 
 - Pagination, Filtering, Sorting, ... -> Use graphql
-- PUT API: look at POST API
-- POST API: look at existing POST API.

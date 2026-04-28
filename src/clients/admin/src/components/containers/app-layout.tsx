@@ -42,6 +42,7 @@ import {
 import { ROUTES } from "@/configs/routes";
 import { useIdentityStore } from "@/stores/identity";
 import { cn } from "@/lib/utils";
+import { ModeToggle } from "../ui/mode-toggle";
 
 type NavSubItem = { label: string; to: string };
 type NavItem = {
@@ -232,9 +233,7 @@ export default function AppLayout() {
             </kbd>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" className="text-sm text-muted-foreground">
-              View as
-            </Button>
+            <ModeToggle />
             <Button variant="ghost" size="icon" className="size-8">
               <BellIcon className="size-4" />
             </Button>

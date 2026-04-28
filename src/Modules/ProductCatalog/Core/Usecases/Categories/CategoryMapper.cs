@@ -7,6 +7,7 @@ internal static class CategoryMapper
 {
     internal static CategoryResponse ToResponse(Category c) => new()
     {
+        Id = c.Id,
         Name = c.Name,
         Description = c.Description,
         ImageUrl = c.ImageUrl,

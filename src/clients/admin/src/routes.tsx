@@ -14,6 +14,7 @@ const NotFound = LazyPage(() => import("@/pages/common/404"));
 // const Dashboard = LazyPage(() => import("@/pages/dashboard"));
 const Products = LazyPage(() => import("@/pages/products"));
 const AddProduct = LazyPage(() => import("@/pages/products/add"));
+const EditProduct = LazyPage(() => import("@/pages/products/edit"));
 const Inventory = LazyPage(() => import("@/pages/inventory"));
 const Categories = LazyPage(() => import("@/pages/categories"));
 const ContentFilesPage = LazyPage(() => import("@/pages/content/files"));
@@ -29,12 +30,13 @@ const AppRoutes: ReactNode =
   <Route>
     <Route path={ROUTES.root} element={<Navigate to={ROUTES.dashboard} replace />} />
 
-    {/* <Route element={<PrivateRoute />}> */}
+    <Route element={<PrivateRoute />}> 
       <Route path={ROUTES.root} element={<AppLayout />}>
         <Route index element={<Navigate to={ROUTES.dashboard} replace />} />
         {/* <Route path={ROUTES.dashboard} element={<Dashboard />} /> */}
         <Route path={ROUTES.products} element={<Products />} errorElement={<ErrorPage />} />
         <Route path={ROUTES.productNew} element={<AddProduct />} errorElement={<ErrorPage />} />
+        <Route path="/products/:id/edit" element={<EditProduct />} errorElement={<ErrorPage />} />
         <Route path={ROUTES.productInventory} element={<Inventory />} errorElement={<ErrorPage />} />
         <Route path={ROUTES.productCategory} element={<Categories />} errorElement={<ErrorPage />} />
         <Route path={ROUTES.productCollections} element={<Collections />} errorElement={<ErrorPage />} />
@@ -47,7 +49,7 @@ const AppRoutes: ReactNode =
         {/* <Route path={ROUTES.settings} element={<Settings />} errorElement={<ErrorPage />} /> */}
         <Route path="*" element={<NotFound />} />
       </Route>
-    {/* </Route> */}
+    </Route>
 
     <Route path={ROUTES.signin} element={<Login />} />
     <Route path={ROUTES.signup} element={<Signup />} />

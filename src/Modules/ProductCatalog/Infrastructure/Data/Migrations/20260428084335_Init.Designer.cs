@@ -12,8 +12,8 @@ using ProductCatalog;
 namespace ProductCatalog.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ProductCatalogDbContext))]
-    [Migration("20260427122605_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20260428084335_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -274,16 +274,8 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                     b.Property<bool>("AllowBackorder")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("Brand")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<int>("CategoryId")
                         .HasColumnType("integer");
-
-                    b.Property<string>("CategoryName")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<bool>("ChargeTax")
                         .HasColumnType("boolean");
@@ -502,7 +494,7 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                     b.Property<int>("Currency")
                         .HasColumnType("integer");
 
-                    b.Property<string>("ImageUrl")
+                    b.Property<string>("ImageKey")
                         .HasColumnType("text");
 
                     b.Property<bool>("IsDeleted")
@@ -510,9 +502,6 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
 
                     b.Property<DateTimeOffset>("LastModified")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("LowStockThreshold")
-                        .HasColumnType("integer");
 
                     b.Property<string>("ModifiedBy")
                         .HasColumnType("text");
@@ -544,6 +533,12 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
             modelBuilder.Entity("ProductCatalog.Core.Entities.VariantMetric", b =>
                 {
                     b.Property<int>("VariantId")
+                        .HasColumnType("integer");
+
+                    b.Property<float>("RatingAvg")
+                        .HasColumnType("real");
+
+                    b.Property<int>("RatingCount")
                         .HasColumnType("integer");
 
                     b.Property<int>("Sold")

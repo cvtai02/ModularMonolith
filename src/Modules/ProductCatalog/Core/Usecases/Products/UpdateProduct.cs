@@ -7,60 +7,76 @@ using SharedKernel.Extensions;
 
 namespace ProductCatalog.Core.Usecases.Products;
 
-public class CreateProduct(ProductCatalogDbContext db, IFileManager fileManager)
+public class UpdateProduct(ProductCatalogDbContext db, IFileManager fileManager)
 {
-    public async Task<ProductResponse> ExecuteAsync(CreateProductRequest request, CancellationToken ct)
+    public async Task<ProductResponse?> ExecuteAsync(int id, CreateProductRequest request, CancellationToken ct)
     {
+        var product = await db.Products.FirstOrDefaultAsync(x => x.Id == id, ct);
+        if (product is null) return null;
+
         var name = request.Name.Trim();
         var slug = name.ToSlug();
 
-        await ValidateRequest(request, name, slug, ct);
+        await ValidateRequest(request, id, slug, ct);
 
         var category = await db.Categories.FirstAsync(x => x.Id == request.CategoryId, ct);
-        var medias = BuildMedias(request);
 
-        var product = new Product
-        {
-            Name = name,
-            Description = request.Description.Trim(),
-            CategoryId = category.Id,
-            Slug = slug,
-            ImageUrl = medias.OrderBy(x => x.DisplayOrder).Select(x => fileManager.BuildPublicUrl(x.Key)).FirstOrDefault()
-                ?? request.ImageUrl.Trim(),
-            Price = request.Price,
-            Currency = request.Currency,
-            CompareAtPrice = request.CompareAtPrice,
-            CostPrice = request.CostPrice,
-            ChargeTax = request.ChargeTax,
-            TrackInventory = request.TrackInventory,
-            AllowBackorder = request.AllowBackorder,
-            Status = request.Status,
-            Category = category,
-            Medias = medias,
-            Options = BuildOptions(request),
-            Metric = new ProductMetric(),
-        };
-
-        db.Products.Add(product);
+        product.Name = name;
+        product.Slug = slug;
+        product.Description = request.Description.Trim();
+        product.CategoryId = category.Id;
+        product.Category = category;
+        product.ImageUrl = request.ImageUrl.Trim();
+        product.Price = request.Price;
+        product.Currency = request.Currency;
+        product.CompareAtPrice = request.CompareAtPrice;
+        product.CostPrice = request.CostPrice;
+        product.ChargeTax = request.ChargeTax;
+        product.TrackInventory = request.TrackInventory;
+        product.AllowBackorder = request.AllowBackorder;
+        product.Status = request.Status;
 
         await using var transaction = await db.Database.BeginTransactionAsync(ct);
+
+        var variantIds = await db.Variants.Where(v => v.ProductId == id).Select(v => v.Id).ToListAsync(ct);
+        var optionIds = await db.Options.Where(o => o.ProductId == id).Select(o => o.Id).ToListAsync(ct);
+
+        if (variantIds.Count > 0)
+        {
+            await db.VariantShippings.Where(x => variantIds.Contains(x.VariantId)).ExecuteDeleteAsync(ct);
+            await db.VariantOptionValues.Where(x => variantIds.Contains(x.VariantId)).ExecuteDeleteAsync(ct);
+            await db.VariantMetrics.Where(x => variantIds.Contains(x.VariantId)).ExecuteDeleteAsync(ct);
+            await db.Variants.Where(x => variantIds.Contains(x.Id)).ExecuteDeleteAsync(ct);
+        }
+
+        if (optionIds.Count > 0)
+        {
+            await db.OptionValues.Where(x => optionIds.Contains(x.OptionId)).ExecuteDeleteAsync(ct);
+            await db.Options.Where(x => optionIds.Contains(x.Id)).ExecuteDeleteAsync(ct);
+        }
+
+        await db.SaveChangesAsync(ct);
+
+        var newOptions = BuildOptions(request, product.Id);
+        db.Options.AddRange(newOptions);
         await db.SaveChangesAsync(ct);
 
         var optionLookup = await db.Options
             .Where(x => x.ProductId == product.Id)
             .ToDictionaryAsync(x => x.Name, x => x, StringComparer.OrdinalIgnoreCase, ct);
 
-        var variants = BuildVariants(request, product, optionLookup);
-        db.Variants.AddRange(variants);
+        var newVariants = BuildVariants(request, product, optionLookup);
+        db.Variants.AddRange(newVariants);
         await db.SaveChangesAsync(ct);
 
-        var shippingInfos = variants.Select(variant =>
+        var shippingInfos = newVariants.Select(variant =>
         {
             var variantInput = request.Variants.FirstOrDefault(x => MatchesVariant(x, variant));
             var useProductShipping = variantInput?.UseProductShipping ?? true;
             return new VariantShipping
             {
                 VariantId = variant.Id,
+                UseProductShipping = useProductShipping,
                 Physical = useProductShipping ? request.PhysicalProduct : (variantInput?.PhysicalProduct ?? request.PhysicalProduct),
                 Weight = useProductShipping ? request.Weight : (variantInput?.Weight ?? request.Weight),
                 Width = useProductShipping ? request.Width : (variantInput?.Width ?? request.Width),
@@ -75,7 +91,7 @@ public class CreateProduct(ProductCatalogDbContext db, IFileManager fileManager)
         await db.SaveChangesAsync(ct);
         await transaction.CommitAsync(ct);
 
-        var created = await db.Products
+        var updated = await db.Products
             .AsNoTracking()
             .Include(x => x.Category)
             .Include(x => x.Medias)
@@ -83,21 +99,20 @@ public class CreateProduct(ProductCatalogDbContext db, IFileManager fileManager)
             .Include(x => x.Variants).ThenInclude(x => x.OptionValues)
             .Include(x => x.Variants).ThenInclude(x => x.ShippingInfo)
             .Include(x => x.Metric)
-            .FirstAsync(x => x.Id == product.Id, ct);
+            .FirstAsync(x => x.Id == id, ct);
 
-        return ProductMapper.ToResponse(created, fileManager);
+        return ProductMapper.ToResponse(updated, fileManager);
     }
 
-    private async Task ValidateRequest(
-        CreateProductRequest request, string name, string slug, CancellationToken ct)
+    private async Task ValidateRequest(CreateProductRequest request, int productId, string slug, CancellationToken ct)
     {
         var errors = new Dictionary<string, string[]>();
 
         if (!await db.Categories.AnyAsync(x => x.Id == request.CategoryId, ct))
             errors[nameof(request.CategoryId)] = ["Category does not exist."];
 
-        if (await db.Products.AnyAsync(x => x.Slug == slug, ct))
-            errors["slug"] = [$"A product with a similar name already exists. Try a different name."];
+        if (await db.Products.AnyAsync(x => x.Slug == slug && x.Id != productId, ct))
+            errors["slug"] = ["A product with a similar name already exists. Try a different name."];
 
         if (request.Options.Count > 2)
             errors[nameof(request.Options)] = ["A product can have at most 2 options."];
@@ -110,65 +125,11 @@ public class CreateProduct(ProductCatalogDbContext db, IFileManager fileManager)
         if (optionNames.Count != optionNames.Distinct(StringComparer.OrdinalIgnoreCase).Count())
             errors[nameof(request.Options)] = ["Option names must be unique."];
 
-        foreach (var option in request.Options)
-        {
-            var distinctValues = option.Values
-                .Select(x => x.Trim())
-                .Where(x => !string.IsNullOrWhiteSpace(x))
-                .Distinct(StringComparer.OrdinalIgnoreCase)
-                .ToList();
-
-            if (distinctValues.Count == 0)
-                errors[$"{nameof(request.Options)}.{option.Name}"] = ["Each option must have at least one value."];
-        }
-
         if (request.Options.Count > 0 && request.Variants.Count == 0)
             errors[nameof(request.Variants)] = ["Variants are required when product options are provided."];
 
         if (request.Options.Count == 0 && request.Variants.Count > 1)
-            errors[nameof(request.Variants)] = ["Products without options can only create one default variant."];
-
-        if (request.Variants.Count > 0)
-        {
-            var optionNameSet = request.Options.Select(x => x.Name.Trim()).ToHashSet(StringComparer.OrdinalIgnoreCase);
-            var variantKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-            foreach (var variant in request.Variants)
-            {
-                if (request.Options.Count > 0 && variant.OptionValues.Count != request.Options.Count)
-                {
-                    errors[nameof(request.Variants)] = ["Each variant must provide a value for every option."];
-                    break;
-                }
-
-                foreach (var optionValue in variant.OptionValues)
-                {
-                    if (!optionNameSet.Contains(optionValue.OptionName.Trim()))
-                    {
-                        errors[nameof(request.Variants)] = ["Variant option values must reference defined product options."];
-                        break;
-                    }
-                }
-
-                var variantKey = string.Join("|", variant.OptionValues
-                    .OrderBy(x => x.OptionName, StringComparer.OrdinalIgnoreCase)
-                    .Select(x => $"{x.OptionName.Trim()}:{x.Value.Trim()}"));
-
-                if (!variantKeys.Add(variantKey))
-                {
-                    errors[nameof(request.Variants)] = ["Duplicate variant combinations are not allowed."];
-                    break;
-                }
-
-                var variantPrice = variant.Price ?? request.Price;
-                var variantCompareAtPrice = variant.CompareAtPrice ?? request.CompareAtPrice;
-                if (variantCompareAtPrice > 0 && variantCompareAtPrice < variantPrice)
-                {
-                    errors[nameof(request.Variants)] = ["Variant compare-at price must be greater than or equal to price."];
-                    break;
-                }
-            }
-        }
+            errors[nameof(request.Variants)] = ["Products without options can only have one default variant."];
 
         if (request.CompareAtPrice > 0 && request.CompareAtPrice < request.Price)
             errors[nameof(request.CompareAtPrice)] = ["Compare-at price must be greater than or equal to price."];
@@ -177,23 +138,10 @@ public class CreateProduct(ProductCatalogDbContext db, IFileManager fileManager)
             throw new ValidationException("Validation failed", errors);
     }
 
-    private static List<ProductMedia> BuildMedias(CreateProductRequest request)
-    {
-        var medias = request.Medias
-            .Where(x => !string.IsNullOrWhiteSpace(x.Url))
-            .Select(x => new ProductMedia { Key = NormalizeMediaKey(x.Url), DisplayOrder = x.DisplayOrder })
-            .OrderBy(x => x.DisplayOrder)
-            .ToList();
-
-        if (medias.Count == 0 && !string.IsNullOrWhiteSpace(request.ImageUrl))
-            medias.Add(new ProductMedia { Key = NormalizeMediaKey(request.ImageUrl), DisplayOrder = 0 });
-
-        return medias;
-    }
-
-    private static List<Option> BuildOptions(CreateProductRequest request) =>
+    private static List<Option> BuildOptions(CreateProductRequest request, int productId) =>
         request.Options.Select(option => new Option
         {
+            ProductId = productId,
             Name = option.Name.Trim(),
             DisplayOrder = option.DisplayOrder,
             OptionValues = option.Values
@@ -215,7 +163,7 @@ public class CreateProduct(ProductCatalogDbContext db, IFileManager fileManager)
                 new Variant
                 {
                     ProductId = product.Id,
-                    ImageKey = string.IsNullOrWhiteSpace(request.ImageUrl) ? null : NormalizeMediaKey(request.ImageUrl),
+                    ImageKey = string.IsNullOrWhiteSpace(product.ImageUrl) ? null : NormalizeMediaKey(product.ImageUrl),
                     UseProductPricing = true,
                     TrackInventory = request.TrackInventory,
                     AllowBackorder = request.AllowBackorder,

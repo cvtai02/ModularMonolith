@@ -13,6 +13,7 @@ public class ListProducts(ProductCatalogDbContext db, IFileManager fileManager)
     {
         var query = db.Products
             .AsNoTracking()
+            .Include(x => x.Category)
             .Include(x => x.Medias)
             .Include(x => x.Options).ThenInclude(x => x.OptionValues)
             .Include(x => x.Variants).ThenInclude(x => x.OptionValues)
@@ -30,7 +31,7 @@ public class ListProducts(ProductCatalogDbContext db, IFileManager fileManager)
         }
 
         if (!string.IsNullOrWhiteSpace(request.CategoryName))
-            query = query.Where(x => x.CategoryName == request.CategoryName.Trim());
+            query = query.Where(x => x.Category.Name == request.CategoryName.Trim());
 
         if (request.Status.HasValue)
             query = query.Where(x => x.Status == request.Status.Value);
@@ -55,7 +56,7 @@ public class ListProducts(ProductCatalogDbContext db, IFileManager fileManager)
         {
             "price" => descending ? query.OrderByDescending(x => x.Price) : query.OrderBy(x => x.Price),
             "status" => descending ? query.OrderByDescending(x => x.Status) : query.OrderBy(x => x.Status),
-            "category" => descending ? query.OrderByDescending(x => x.CategoryName) : query.OrderBy(x => x.CategoryName),
+            "category" => descending ? query.OrderByDescending(x => x.Category.Name) : query.OrderBy(x => x.Category.Name),
             _ => descending ? query.OrderByDescending(x => x.LastModified) : query.OrderBy(x => x.Name)
         };
     }

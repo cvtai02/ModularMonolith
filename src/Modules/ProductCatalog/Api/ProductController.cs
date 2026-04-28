@@ -10,7 +10,8 @@ namespace ProductCatalog.Api;
 public class ProductController(
     ListProducts listProducts,
     GetProductById getProductById,
-    CreateProduct createProduct) : ControllerBase
+    CreateProduct createProduct,
+    UpdateProduct updateProduct) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<PaginatedList<ProductResponse>>> GetAll(
@@ -30,5 +31,13 @@ public class ProductController(
     {
         var result = await createProduct.ExecuteAsync(request, cancellationToken);
         return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
+    }
+
+    [HttpPut("{id:int}")]
+    public async Task<ActionResult<ProductResponse>> Update(
+        int id, [FromBody] CreateProductRequest request, CancellationToken cancellationToken)
+    {
+        var result = await updateProduct.ExecuteAsync(id, request, cancellationToken);
+        return result is null ? NotFound() : Ok(result);
     }
 }

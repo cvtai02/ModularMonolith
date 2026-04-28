@@ -37,6 +37,7 @@ public class ProductCatalogModule(IHostApplicationBuilder b) : Module(b)
         Services.AddScoped<ListProducts>();
         Services.AddScoped<GetProductById>();
         Services.AddScoped<CreateProduct>();
+        Services.AddScoped<UpdateProduct>();
     }
 }
 

@@ -22,3 +22,6 @@ description: >
 ### 2. API Client
 Use the TanStack Query wrapper in [api-client.ts](../../../src/clients/admin/src/api/api-client.ts).
 - `tanstackQueryClient` — mostly used
+
+### 3. React Components
+- break down the UI into reusable components

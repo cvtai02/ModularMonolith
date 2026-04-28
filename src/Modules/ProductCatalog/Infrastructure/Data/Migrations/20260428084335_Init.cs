@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ProductCatalog.Infrastructure.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -19,8 +19,8 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: false),
                     Slug = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
                     ImageUrl = table.Column<string>(type: "text", nullable: false),
                     ParentId = table.Column<int>(type: "integer", nullable: true),
                     Status = table.Column<int>(type: "integer", nullable: false),
@@ -70,11 +70,9 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
+                    Slug = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
                     CategoryId = table.Column<int>(type: "integer", nullable: false),
-                    CategoryName = table.Column<string>(type: "text", nullable: false),
-                    Slug = table.Column<string>(type: "text", nullable: false),
-                    Brand = table.Column<string>(type: "text", nullable: false),
                     ImageUrl = table.Column<string>(type: "text", nullable: false),
                     Price = table.Column<decimal>(type: "numeric", nullable: false),
                     Currency = table.Column<int>(type: "integer", nullable: false),
@@ -247,7 +245,7 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     ProductId = table.Column<int>(type: "integer", nullable: false),
-                    ImageUrl = table.Column<string>(type: "text", nullable: true),
+                    ImageKey = table.Column<string>(type: "text", nullable: true),
                     UseProductPricing = table.Column<bool>(type: "boolean", nullable: false),
                     Price = table.Column<decimal>(type: "numeric", nullable: false),
                     Currency = table.Column<int>(type: "integer", nullable: false),
@@ -255,7 +253,6 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                     CostPrice = table.Column<decimal>(type: "numeric", nullable: false),
                     ChargeTax = table.Column<bool>(type: "boolean", nullable: false),
                     TrackInventory = table.Column<bool>(type: "boolean", nullable: false),
-                    LowStockThreshold = table.Column<int>(type: "integer", nullable: false),
                     AllowBackorder = table.Column<bool>(type: "boolean", nullable: false),
                     TenantId = table.Column<int>(type: "integer", nullable: false),
                     Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
@@ -307,6 +304,8 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                     VariantId = table.Column<int>(type: "integer", nullable: false),
                     Stock = table.Column<int>(type: "integer", nullable: false),
                     Sold = table.Column<int>(type: "integer", nullable: false),
+                    RatingAvg = table.Column<float>(type: "real", nullable: false),
+                    RatingCount = table.Column<int>(type: "integer", nullable: false),
                     TenantId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>

@@ -1518,7 +1518,43 @@ export interface paths {
                 };
             };
         };
-        put?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: components["schemas"]["System.Int32"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ProductCatalog.Core.DTOs.Products.CreateProductRequest"];
+                    "text/json": components["schemas"]["ProductCatalog.Core.DTOs.Products.CreateProductRequest"];
+                    "application/*+json": components["schemas"]["ProductCatalog.Core.DTOs.Products.CreateProductRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProductCatalog.Core.DTOs.Products.ProductResponse"];
+                        "application/json": components["schemas"]["ProductCatalog.Core.DTOs.Products.ProductResponse"];
+                        "text/json": components["schemas"]["ProductCatalog.Core.DTOs.Products.ProductResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
         post?: never;
         delete?: never;
         options?: never;
@@ -1685,6 +1721,7 @@ export interface components {
         };
         "Order.Core.Entities.OrderStatus": number;
         "ProductCatalog.Core.DTOs.Categories.CategoryResponse": {
+            id?: components["schemas"]["System.Int32"];
             name?: components["schemas"]["System.String"];
             description?: components["schemas"]["System.String"];
             imageUrl?: components["schemas"]["System.String"];
@@ -1738,9 +1775,7 @@ export interface components {
         "ProductCatalog.Core.DTOs.Products.CreateProductRequest": {
             name: components["schemas"]["System.String"];
             description?: components["schemas"]["System.String"];
-            categoryName: components["schemas"]["System.String"];
-            brand?: components["schemas"]["System.String"];
-            slug: components["schemas"]["System.String"];
+            categoryId: components["schemas"]["System.Int32"];
             imageUrl?: components["schemas"]["System.String"];
             status?: components["schemas"]["ProductCatalog.Core.Entities.ProductStatus"];
             price?: components["schemas"]["System.Decimal"];
@@ -1762,15 +1797,18 @@ export interface components {
             variants?: components["schemas"]["System.Collections.Generic.List`1[[ProductCatalog.Core.DTOs.Products.CreateVariantRequest, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
         };
         "ProductCatalog.Core.DTOs.Products.CreateVariantRequest": {
+            useProductPricing?: components["schemas"]["System.Boolean"];
             price?: null | components["schemas"]["System.Nullable`1[[System.Decimal, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
             compareAtPrice?: null | components["schemas"]["System.Nullable`1[[System.Decimal, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
             costPrice?: null | components["schemas"]["System.Nullable`1[[System.Decimal, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
             chargeTax?: null | components["schemas"]["System.Nullable`1[[System.Boolean, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
-            imageUrl?: null | components["schemas"]["System.String"];
-            stock?: components["schemas"]["System.Int32"];
+            imageKey?: null | components["schemas"]["System.String"];
+            useProductInventory?: components["schemas"]["System.Boolean"];
+            quantity?: components["schemas"]["System.Int32"];
             trackInventory?: null | components["schemas"]["System.Nullable`1[[System.Boolean, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
             lowStockThreshold?: null | components["schemas"]["System.Nullable`1[[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
             allowBackorder?: null | components["schemas"]["System.Nullable`1[[System.Boolean, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
+            useProductShipping?: components["schemas"]["System.Boolean"];
             physicalProduct?: null | components["schemas"]["System.Nullable`1[[System.Boolean, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
             weight?: null | components["schemas"]["System.Nullable`1[[System.Single, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
             width?: null | components["schemas"]["System.Nullable`1[[System.Single, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
@@ -1794,6 +1832,7 @@ export interface components {
             id?: components["schemas"]["System.Int32"];
             name?: components["schemas"]["System.String"];
             description?: components["schemas"]["System.String"];
+            categoryId?: components["schemas"]["System.Int32"];
             categoryName?: components["schemas"]["System.String"];
             brand?: components["schemas"]["System.String"];
             slug?: components["schemas"]["System.String"];
@@ -1826,6 +1865,8 @@ export interface components {
         };
         "ProductCatalog.Core.DTOs.Products.VariantResponse": {
             id?: components["schemas"]["System.Int32"];
+            useProductPricing?: components["schemas"]["System.Boolean"];
+            useProductShipping?: components["schemas"]["System.Boolean"];
             price?: components["schemas"]["System.Decimal"];
             compareAtPrice?: components["schemas"]["System.Decimal"];
             costPrice?: components["schemas"]["System.Decimal"];

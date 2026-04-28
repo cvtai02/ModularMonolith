@@ -9,5 +9,7 @@ public class VariantMetric : Entity
     public int Stock { get; set; }
     public int Sold { get; set; }
 
+    public float RatingAvg { get; set; }
+    public int RatingCount { get; set; }
     public virtual Variant Variant { get; set; } = null!;
 }

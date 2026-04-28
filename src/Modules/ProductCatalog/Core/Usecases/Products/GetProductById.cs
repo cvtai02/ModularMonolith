@@ -10,6 +10,7 @@ public class GetProductById(ProductCatalogDbContext db, IFileManager fileManager
     {
         var product = await db.Products
             .AsNoTracking()
+            .Include(x => x.Category)
             .Include(x => x.Medias)
             .Include(x => x.Options).ThenInclude(x => x.OptionValues)
             .Include(x => x.Variants).ThenInclude(x => x.OptionValues)

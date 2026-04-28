@@ -8,7 +8,6 @@
       "Read(.github/**)",
       "Read(.vscode/**)",
       "Read(assets/**)",
-      "Read(docs/**)",
       "Read(*.log)",
       "Read(package-lock.json)"
     ],

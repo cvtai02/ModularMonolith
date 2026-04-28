@@ -6,7 +6,7 @@ public class Variant : AuditableEntity
 {
     public int Id { get; set; }
     public int ProductId { get; set; }
-    public string? ImageUrl { get; set; }
+    public string? ImageKey { get; set; }
 
     // Pricing
     public bool UseProductPricing { get; set; } = true;
@@ -16,9 +16,8 @@ public class Variant : AuditableEntity
     public decimal CostPrice { get; set; }
     public bool ChargeTax { get; set; }
 
-    // Inventory settings
+    // Inventory
     public bool TrackInventory { get; set; } = true;
-    public int LowStockThreshold { get; set; }
     public bool AllowBackorder { get; set; }
 
     public Product Product { get; set; } = null!;
