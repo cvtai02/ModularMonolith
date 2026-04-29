@@ -6,13 +6,22 @@ import {
   Field,
   FieldDescription,
   FieldGroup,
+  FieldLabel,
 } from "@/components/ui/field";
-import { FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import type { FormValues, Variant, VariantOverride } from "./types";
+
+const CURRENCY_OPTIONS = [{ value: 0, label: "VND" }] as const;
 
 type Props = {
   register: UseFormRegister<FormValues>;
@@ -21,6 +30,7 @@ type Props = {
   watchCostPrice: string;
   selectedVariant: Variant | null;
   onUpdateVariant: (localId: string, update: Partial<VariantOverride>) => void;
+  isCreating?: boolean;
 };
 
 export function PricingCard({
@@ -30,11 +40,18 @@ export function PricingCard({
   watchCostPrice,
   selectedVariant,
   onUpdateVariant,
+  isCreating,
 }: Props) {
-  const price = parseFloat(watchPrice) || 0;
-  const cost = parseFloat(watchCostPrice) || 0;
-  const profit = price > 0 && cost > 0 ? price - cost : null;
-  const margin = profit !== null && price > 0 ? ((profit / price) * 100).toFixed(1) : null;
+  const useVariantPricing = selectedVariant !== null && !selectedVariant.useProductPrice;
+
+  const effectivePrice = useVariantPricing
+    ? parseFloat(selectedVariant.price) || 0
+    : parseFloat(watchPrice) || 0;
+  const effectiveCost = useVariantPricing
+    ? parseFloat(selectedVariant.costPrice) || 0
+    : parseFloat(watchCostPrice) || 0;
+  const profit = effectivePrice > 0 && effectiveCost > 0 ? effectivePrice - effectiveCost : null;
+  const margin = profit !== null && effectivePrice > 0 ? ((profit / effectivePrice) * 100).toFixed(1) : null;
 
   return (
     <Card>
@@ -49,20 +66,70 @@ export function PricingCard({
               </div>
               <Switch
                 checked={selectedVariant.useProductPrice}
+                disabled={isCreating}
                 onCheckedChange={(v) => onUpdateVariant(selectedVariant.localId, { useProductPrice: v })}
               />
             </div>
           )}
 
           <Field>
-            <FieldLabel>Price (VND)</FieldLabel>
-            {selectedVariant && !selectedVariant.useProductPrice ? (
+            <FieldLabel>Price</FieldLabel>
+            <div className="flex gap-2">
+              {useVariantPricing ? (
+                <Input
+                  type="number"
+                  min="0"
+                  step="1000"
+                  value={selectedVariant.price}
+                  onChange={(e) => onUpdateVariant(selectedVariant.localId, { price: e.target.value })}
+                  placeholder="0"
+                  className="flex-1"
+                />
+              ) : (
+                <Input
+                  type="number"
+                  min="0"
+                  step="1000"
+                  {...register("price")}
+                  disabled={!!selectedVariant?.useProductPrice}
+                  placeholder="0"
+                  className="flex-1"
+                />
+              )}
+              <Controller
+                control={control}
+                name="currency"
+                render={({ field }) => (
+                  <Select
+                    value={String(field.value)}
+                    onValueChange={(v) => field.onChange(parseInt(v ?? "0"))}
+                    disabled={!!selectedVariant}
+                  >
+                    <SelectTrigger className="w-20">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {CURRENCY_OPTIONS.map((c) => (
+                        <SelectItem key={c.value} value={String(c.value)}>
+                          {c.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+            </div>
+          </Field>
+
+          <Field>
+            <FieldLabel>Compare-at price</FieldLabel>
+            {useVariantPricing ? (
               <Input
                 type="number"
                 min="0"
                 step="1000"
-                value={selectedVariant.price}
-                onChange={(e) => onUpdateVariant(selectedVariant.localId, { price: e.target.value })}
+                value={selectedVariant.compareAtPrice}
+                onChange={(e) => onUpdateVariant(selectedVariant.localId, { compareAtPrice: e.target.value })}
                 placeholder="0"
               />
             ) : (
@@ -70,47 +137,57 @@ export function PricingCard({
                 type="number"
                 min="0"
                 step="1000"
-                {...register("price")}
+                {...register("compareAtPrice")}
                 disabled={!!selectedVariant?.useProductPrice}
                 placeholder="0"
               />
             )}
           </Field>
 
-          <Field>
-            <FieldLabel>Compare-at price (VND)</FieldLabel>
-            <Input
-              type="number"
-              min="0"
-              step="1000"
-              {...register("compareAtPrice")}
-              disabled={!!selectedVariant?.useProductPrice}
-              placeholder="0"
-            />
-          </Field>
-
           <Field orientation="horizontal">
             <FieldLabel>Charge tax</FieldLabel>
-            <Controller
-              control={control}
-              name="chargeTax"
-              render={({ field }) => (
-                <Switch checked={field.value} onCheckedChange={field.onChange} />
-              )}
-            />
+            {useVariantPricing ? (
+              <Switch
+                checked={selectedVariant.chargeTax}
+                onCheckedChange={(v) => onUpdateVariant(selectedVariant.localId, { chargeTax: v })}
+              />
+            ) : (
+              <Controller
+                control={control}
+                name="chargeTax"
+                render={({ field }) => (
+                  <Switch
+                    checked={field.value}
+                    disabled={!!selectedVariant?.useProductPrice}
+                    onCheckedChange={field.onChange}
+                  />
+                )}
+              />
+            )}
           </Field>
 
           <Separator />
 
           <Field>
-            <FieldLabel>Cost per item (VND)</FieldLabel>
-            <Input
-              type="number"
-              min="0"
-              step="1000"
-              {...register("costPrice")}
-              placeholder="0"
-            />
+            <FieldLabel>Cost per item</FieldLabel>
+            {useVariantPricing ? (
+              <Input
+                type="number"
+                min="0"
+                step="1000"
+                value={selectedVariant.costPrice}
+                onChange={(e) => onUpdateVariant(selectedVariant.localId, { costPrice: e.target.value })}
+                placeholder="0"
+              />
+            ) : (
+              <Input
+                type="number"
+                min="0"
+                step="1000"
+                {...register("costPrice")}
+                placeholder="0"
+              />
+            )}
             <FieldDescription>Customers won't see this</FieldDescription>
           </Field>
 

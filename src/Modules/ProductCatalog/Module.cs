@@ -1,8 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Intermediary.Media;
+using ProductCatalog.Core.Services;
+using ProductCatalog.Core.Usecases.Products;
 using ProductCatalog.Core.Usecases.Categories;
 using ProductCatalog.Core.Usecases.Collections;
-using ProductCatalog.Core.Usecases.Products;
 
 namespace ProductCatalog;
 
@@ -38,6 +40,8 @@ public class ProductCatalogModule(IHostApplicationBuilder b) : Module(b)
         Services.AddScoped<GetProductById>();
         Services.AddScoped<CreateProduct>();
         Services.AddScoped<UpdateProduct>();
+
+        Services.AddScoped<IMediaUsageChecker, ProductMediaUsageChecker>();
     }
 }
 

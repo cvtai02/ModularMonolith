@@ -505,6 +505,78 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/Content/file-objects": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    PageNumber?: components["schemas"]["System.Int32"];
+                    PageSize?: components["schemas"]["System.Int32"];
+                    Search?: components["schemas"]["System.String"];
+                    Category?: components["schemas"]["System.String"];
+                    ContentType?: components["schemas"]["System.String"];
+                    MinSize?: components["schemas"]["System.Nullable`1[[System.Int64, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
+                    MaxSize?: components["schemas"]["System.Nullable`1[[System.Int64, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
+                    CreatedFrom?: components["schemas"]["System.Nullable`1[[System.DateTimeOffset, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
+                    CreatedTo?: components["schemas"]["System.Nullable`1[[System.DateTimeOffset, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
+                    SortBy?: components["schemas"]["System.String"];
+                    SortDirection?: components["schemas"]["System.String"];
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["SharedKernel.DTOs.PaginatedList`1[[Content.Core.DTOs.FileObjects.MediaFileResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+                        "application/json": components["schemas"]["SharedKernel.DTOs.PaginatedList`1[[Content.Core.DTOs.FileObjects.MediaFileResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+                        "text/json": components["schemas"]["SharedKernel.DTOs.PaginatedList`1[[Content.Core.DTOs.FileObjects.MediaFileResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["Content.Core.DTOs.FileObjects.DeleteMediaFilesRequest"];
+                    "text/json": components["schemas"]["Content.Core.DTOs.FileObjects.DeleteMediaFilesRequest"];
+                    "application/*+json": components["schemas"]["Content.Core.DTOs.FileObjects.DeleteMediaFilesRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Content/file-objects/presigned-upload": {
         parameters: {
             query?: never;
@@ -535,9 +607,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["System.Collections.Generic.List`1[[Content.Core.DTOs.FileObjects.PresignedUploadUrlResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
-                        "application/json": components["schemas"]["System.Collections.Generic.List`1[[Content.Core.DTOs.FileObjects.PresignedUploadUrlResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
-                        "text/json": components["schemas"]["System.Collections.Generic.List`1[[Content.Core.DTOs.FileObjects.PresignedUploadUrlResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+                        "text/plain": components["schemas"]["Content.Core.DTOs.FileObjects.PresignedUploadBulkUrlResponse"];
+                        "application/json": components["schemas"]["Content.Core.DTOs.FileObjects.PresignedUploadBulkUrlResponse"];
+                        "text/json": components["schemas"]["Content.Core.DTOs.FileObjects.PresignedUploadBulkUrlResponse"];
                     };
                 };
             };
@@ -548,7 +620,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/Content/file-objects": {
+    "/api/Content/file-objects/confirm-upload": {
         parameters: {
             query?: never;
             header?: never;
@@ -578,284 +650,14 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["System.Collections.Generic.List`1[[Content.Core.DTOs.FileObjects.UploadResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
-                        "application/json": components["schemas"]["System.Collections.Generic.List`1[[Content.Core.DTOs.FileObjects.UploadResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
-                        "text/json": components["schemas"]["System.Collections.Generic.List`1[[Content.Core.DTOs.FileObjects.UploadResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+                        "text/plain": components["schemas"]["Content.Core.DTOs.FileObjects.ConfirmUploadResponse"];
+                        "application/json": components["schemas"]["Content.Core.DTOs.FileObjects.ConfirmUploadResponse"];
+                        "text/json": components["schemas"]["Content.Core.DTOs.FileObjects.ConfirmUploadResponse"];
                     };
                 };
             };
         };
         delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/Content/Menu": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        put?: never;
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["Content.Core.DTOs.Menus.CreateMenuRequest"];
-                    "text/json": components["schemas"]["Content.Core.DTOs.Menus.CreateMenuRequest"];
-                    "application/*+json": components["schemas"]["Content.Core.DTOs.Menus.CreateMenuRequest"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/Content/Menu/{name}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    name: components["schemas"]["System.String"];
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        put: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    name: components["schemas"]["System.String"];
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["Content.Core.DTOs.Menus.UpdateMenuRequest"];
-                    "text/json": components["schemas"]["Content.Core.DTOs.Menus.UpdateMenuRequest"];
-                    "application/*+json": components["schemas"]["Content.Core.DTOs.Menus.UpdateMenuRequest"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        post?: never;
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    name: components["schemas"]["System.String"];
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/Content/MetaObject": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        put?: never;
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["Content.Core.DTOs.MetaObjects.CreateMetaObjectRequest"];
-                    "text/json": components["schemas"]["Content.Core.DTOs.MetaObjects.CreateMetaObjectRequest"];
-                    "application/*+json": components["schemas"]["Content.Core.DTOs.MetaObjects.CreateMetaObjectRequest"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/Content/MetaObject/{key}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    key: components["schemas"]["System.String"];
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        put: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    key: components["schemas"]["System.String"];
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["Content.Core.DTOs.MetaObjects.UpdateMetaObjectRequest"];
-                    "text/json": components["schemas"]["Content.Core.DTOs.MetaObjects.UpdateMetaObjectRequest"];
-                    "application/*+json": components["schemas"]["Content.Core.DTOs.MetaObjects.UpdateMetaObjectRequest"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        post?: never;
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    key: components["schemas"]["System.String"];
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
         options?: never;
         head?: never;
         patch?: never;
@@ -933,134 +735,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/Order/orders": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: {
-            parameters: {
-                query?: {
-                    pageNumber?: components["schemas"]["System.Int32"];
-                    pageSize?: components["schemas"]["System.Int32"];
-                    search?: components["schemas"]["System.String"];
-                    status?: components["schemas"]["System.Nullable`1[[Order.Core.Entities.OrderStatus, Order, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["SharedKernel.DTOs.PaginatedList`1[[Order.Core.DTOs.OrderResponse, Order, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
-                        "application/json": components["schemas"]["SharedKernel.DTOs.PaginatedList`1[[Order.Core.DTOs.OrderResponse, Order, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
-                        "text/json": components["schemas"]["SharedKernel.DTOs.PaginatedList`1[[Order.Core.DTOs.OrderResponse, Order, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["Order.Core.DTOs.CreateOrderRequest"];
-                    "text/json": components["schemas"]["Order.Core.DTOs.CreateOrderRequest"];
-                    "application/*+json": components["schemas"]["Order.Core.DTOs.CreateOrderRequest"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["Order.Core.DTOs.OrderResponse"];
-                        "application/json": components["schemas"]["Order.Core.DTOs.OrderResponse"];
-                        "text/json": components["schemas"]["Order.Core.DTOs.OrderResponse"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/Order/orders/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: components["schemas"]["System.Int32"];
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["Order.Core.DTOs.OrderResponse"];
-                        "application/json": components["schemas"]["Order.Core.DTOs.OrderResponse"];
-                        "text/json": components["schemas"]["Order.Core.DTOs.OrderResponse"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: components["schemas"]["System.Int32"];
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/Order/orders/{id}/status": {
+    "/api/Inventory/products/{productId}/initialize": {
         parameters: {
             query?: never;
             header?: never;
@@ -1069,24 +744,20 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch: {
+        post: {
             parameters: {
                 query?: never;
                 header?: never;
                 path: {
-                    id: components["schemas"]["System.Int32"];
+                    productId: components["schemas"]["System.Int32"];
                 };
                 cookie?: never;
             };
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["Order.Core.DTOs.UpdateOrderStatusRequest"];
-                    "text/json": components["schemas"]["Order.Core.DTOs.UpdateOrderStatusRequest"];
-                    "application/*+json": components["schemas"]["Order.Core.DTOs.UpdateOrderStatusRequest"];
+                    "application/json": components["schemas"]["Inventory.Core.DTOs.Inventory.InitializeProductInventoryRequest"];
+                    "text/json": components["schemas"]["Inventory.Core.DTOs.Inventory.InitializeProductInventoryRequest"];
+                    "application/*+json": components["schemas"]["Inventory.Core.DTOs.Inventory.InitializeProductInventoryRequest"];
                 };
             };
             responses: {
@@ -1096,13 +767,17 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["Order.Core.DTOs.OrderResponse"];
-                        "application/json": components["schemas"]["Order.Core.DTOs.OrderResponse"];
-                        "text/json": components["schemas"]["Order.Core.DTOs.OrderResponse"];
+                        "text/plain": components["schemas"]["Inventory.Core.DTOs.Inventory.InitializeProductInventoryResponse"];
+                        "application/json": components["schemas"]["Inventory.Core.DTOs.Inventory.InitializeProductInventoryResponse"];
+                        "text/json": components["schemas"]["Inventory.Core.DTOs.Inventory.InitializeProductInventoryResponse"];
                     };
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/ProductCatalog/categories": {
@@ -1546,13 +1221,6 @@ export interface paths {
                         "text/json": components["schemas"]["ProductCatalog.Core.DTOs.Products.ProductResponse"];
                     };
                 };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
             };
         };
         post?: never;
@@ -1567,64 +1235,98 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         "Content.Core.DTOs.FileObjects.ConfirmUploadFileRequest": {
+            uploadId: components["schemas"]["System.String"];
             key: components["schemas"]["System.String"];
-            category: components["schemas"]["System.String"];
-            contentType?: components["schemas"]["System.String"];
-            name: components["schemas"]["System.String"];
-            size?: components["schemas"]["System.Int64"];
         };
         "Content.Core.DTOs.FileObjects.ConfirmUploadRequest": {
             files: components["schemas"]["System.Collections.Generic.List`1[[Content.Core.DTOs.FileObjects.ConfirmUploadFileRequest, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
         };
+        "Content.Core.DTOs.FileObjects.ConfirmUploadResponse": {
+            files: components["schemas"]["System.Collections.Generic.List`1[[Content.Core.DTOs.FileObjects.UploadResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+        };
+        "Content.Core.DTOs.FileObjects.CreatePresignedUploadFileRequest": {
+            category: components["schemas"]["System.String"];
+            fileName: components["schemas"]["System.String"];
+            contentType: components["schemas"]["System.String"];
+            size?: components["schemas"]["System.Int64"];
+        };
+        "Content.Core.DTOs.FileObjects.DeleteMediaFilesRequest": {
+            ids: components["schemas"]["System.Collections.Generic.List`1[[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
+        };
         "Content.Core.DTOs.FileObjects.GetPresignedUploadBulkUrlRequest": {
-            files: components["schemas"]["System.Collections.Generic.List`1[[Content.Core.DTOs.FileObjects.PresignedUploadFileRequest, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+            files: components["schemas"]["System.Collections.Generic.List`1[[Content.Core.DTOs.FileObjects.CreatePresignedUploadFileRequest, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
             expiryMinutes?: components["schemas"]["System.Int32"];
         };
-        "Content.Core.DTOs.FileObjects.PresignedUploadFileRequest": {
-            key?: null | components["schemas"]["System.String"];
+        "Content.Core.DTOs.FileObjects.MediaFileResponse": {
+            id: components["schemas"]["System.Int32"];
+            url: components["schemas"]["System.String"];
             category: components["schemas"]["System.String"];
-            ext: components["schemas"]["System.String"];
-            contentType?: components["schemas"]["System.String"];
+            name: components["schemas"]["System.String"];
+            contentType: components["schemas"]["System.String"];
+            size: components["schemas"]["System.Int64"];
+            created: components["schemas"]["System.DateTimeOffset"];
+            lastModified: components["schemas"]["System.DateTimeOffset"];
+        };
+        "Content.Core.DTOs.FileObjects.PresignedUploadBulkUrlResponse": {
+            files: components["schemas"]["System.Collections.Generic.List`1[[Content.Core.DTOs.FileObjects.PresignedUploadUrlResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
         };
         "Content.Core.DTOs.FileObjects.PresignedUploadUrlResponse": {
-            key?: components["schemas"]["System.String"];
-            uploadUrl?: components["schemas"]["System.String"];
-            publicUrl?: components["schemas"]["System.String"];
+            uploadId: components["schemas"]["System.String"];
+            key: components["schemas"]["System.String"];
+            uploadUrl: components["schemas"]["System.String"];
+            publicUrl: components["schemas"]["System.String"];
+            method: components["schemas"]["System.String"];
+            headers: components["schemas"]["System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
+            expiresAt: components["schemas"]["System.DateTimeOffset"];
         };
         "Content.Core.DTOs.FileObjects.UploadResponse": {
-            key?: components["schemas"]["System.String"];
-            publicUrl?: components["schemas"]["System.String"];
-        };
-        "Content.Core.DTOs.Menus.CreateMenuRequest": {
-            name: components["schemas"]["System.String"];
-            description?: components["schemas"]["System.String"];
-            url: components["schemas"]["System.String"];
-            parentName?: null | components["schemas"]["System.String"];
-        };
-        "Content.Core.DTOs.Menus.UpdateMenuRequest": {
-            description?: components["schemas"]["System.String"];
-            url: components["schemas"]["System.String"];
-            parentName?: null | components["schemas"]["System.String"];
-        };
-        "Content.Core.DTOs.MetaObjects.CreateMetaObjectRequest": {
+            id: components["schemas"]["System.Int32"];
             key: components["schemas"]["System.String"];
-            namespace: components["schemas"]["System.String"];
-            value: components["schemas"]["System.String"];
-            type: components["schemas"]["System.String"];
-        };
-        "Content.Core.DTOs.MetaObjects.UpdateMetaObjectRequest": {
-            namespace: components["schemas"]["System.String"];
-            value: components["schemas"]["System.String"];
-            type: components["schemas"]["System.String"];
+            category: components["schemas"]["System.String"];
+            name: components["schemas"]["System.String"];
+            contentType: components["schemas"]["System.String"];
+            size: components["schemas"]["System.Int64"];
+            publicUrl: components["schemas"]["System.String"];
         };
         "Identity.Api.AdminAccountInput": {
-            email?: components["schemas"]["System.String"];
-            password?: components["schemas"]["System.String"];
+            email: components["schemas"]["System.String"];
+            password: components["schemas"]["System.String"];
         };
         "Identity.Api.UserInfo": {
-            email?: components["schemas"]["System.String"];
-            role?: components["schemas"]["System.String"];
-            name?: components["schemas"]["System.String"];
+            email: components["schemas"]["System.String"];
+            role: components["schemas"]["System.String"];
+            name: components["schemas"]["System.String"];
+        };
+        "Inventory.Core.DTOs.Inventory.InitializeProductInventoryRequest": {
+            trackInventory: components["schemas"]["System.Boolean"];
+            allowBackorder: components["schemas"]["System.Boolean"];
+            lowStockThreshold: components["schemas"]["System.Int32"];
+            variants: components["schemas"]["System.Collections.Generic.List`1[[Inventory.Core.DTOs.Inventory.VariantInventoryConfig, Inventory, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+        };
+        "Inventory.Core.DTOs.Inventory.InitializeProductInventoryResponse": {
+            productId: components["schemas"]["System.Int32"];
+            trackInventory: components["schemas"]["System.Boolean"];
+            allowBackorder: components["schemas"]["System.Boolean"];
+            lowStockThreshold: components["schemas"]["System.Int32"];
+            variants: components["schemas"]["System.Collections.Generic.List`1[[Inventory.Core.DTOs.Inventory.VariantInventoryResponse, Inventory, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+        };
+        "Inventory.Core.DTOs.Inventory.VariantInventoryConfig": {
+            variantId: components["schemas"]["System.Int32"];
+            useProductInventory?: components["schemas"]["System.Boolean"];
+            trackInventory?: components["schemas"]["System.Boolean"];
+            allowBackorder?: components["schemas"]["System.Boolean"];
+            lowStockThreshold?: components["schemas"]["System.Int32"];
+            quantity?: components["schemas"]["System.Int32"];
+        };
+        "Inventory.Core.DTOs.Inventory.VariantInventoryResponse": {
+            variantId: components["schemas"]["System.Int32"];
+            useProductInventory: components["schemas"]["System.Boolean"];
+            trackInventory: components["schemas"]["System.Boolean"];
+            allowBackorder: components["schemas"]["System.Boolean"];
+            lowStockThreshold: components["schemas"]["System.Int32"];
+            quantity: components["schemas"]["System.Int32"];
+            reserved: components["schemas"]["System.Int32"];
+            available: components["schemas"]["System.Int32"];
         };
         "Microsoft.AspNetCore.Authentication.BearerToken.AccessTokenResponse": {
             tokenType?: components["schemas"]["System.String"];
@@ -1633,20 +1335,20 @@ export interface components {
             refreshToken: components["schemas"]["System.String"];
         };
         "Microsoft.AspNetCore.Http.HttpValidationProblemDetails": {
-            type?: null | components["schemas"]["System.String"];
-            title?: null | components["schemas"]["System.String"];
-            status?: null | components["schemas"]["System.Nullable`1[[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
-            detail?: null | components["schemas"]["System.String"];
-            instance?: null | components["schemas"]["System.String"];
-            errors?: components["schemas"]["System.Collections.Generic.IDictionary`2[[System.String, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String[], System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
+            type: null | components["schemas"]["System.String"];
+            title: null | components["schemas"]["System.String"];
+            status: null | components["schemas"]["System.Nullable`1[[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
+            detail: null | components["schemas"]["System.String"];
+            instance: null | components["schemas"]["System.String"];
+            errors: components["schemas"]["System.Collections.Generic.IDictionary`2[[System.String, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String[], System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
         };
         "Microsoft.AspNetCore.Identity.Data.ForgotPasswordRequest": {
             email: components["schemas"]["System.String"];
         };
         "Microsoft.AspNetCore.Identity.Data.InfoRequest": {
-            newEmail?: null | components["schemas"]["System.String"];
-            newPassword?: null | components["schemas"]["System.String"];
-            oldPassword?: null | components["schemas"]["System.String"];
+            newEmail: null | components["schemas"]["System.String"];
+            newPassword: null | components["schemas"]["System.String"];
+            oldPassword: null | components["schemas"]["System.String"];
         };
         "Microsoft.AspNetCore.Identity.Data.InfoResponse": {
             email: components["schemas"]["System.String"];
@@ -1674,11 +1376,11 @@ export interface components {
             newPassword: components["schemas"]["System.String"];
         };
         "Microsoft.AspNetCore.Identity.Data.TwoFactorRequest": {
-            enable?: null | components["schemas"]["System.Nullable`1[[System.Boolean, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
-            twoFactorCode?: null | components["schemas"]["System.String"];
-            resetSharedKey?: components["schemas"]["System.Boolean"];
-            resetRecoveryCodes?: components["schemas"]["System.Boolean"];
-            forgetMachine?: components["schemas"]["System.Boolean"];
+            enable: null | components["schemas"]["System.Nullable`1[[System.Boolean, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
+            twoFactorCode: null | components["schemas"]["System.String"];
+            resetSharedKey: components["schemas"]["System.Boolean"];
+            resetRecoveryCodes: components["schemas"]["System.Boolean"];
+            forgetMachine: components["schemas"]["System.Boolean"];
         };
         "Microsoft.AspNetCore.Identity.Data.TwoFactorResponse": {
             sharedKey: components["schemas"]["System.String"];
@@ -1687,80 +1389,47 @@ export interface components {
             isTwoFactorEnabled: components["schemas"]["System.Boolean"];
             isMachineRemembered: components["schemas"]["System.Boolean"];
         };
-        "Order.Core.DTOs.CreateOrderLineRequest": {
-            variantId: components["schemas"]["System.Int32"];
-            productName: components["schemas"]["System.String"];
-            unitPrice?: components["schemas"]["System.Decimal"];
-            quantity?: components["schemas"]["System.Int32"];
-        };
-        "Order.Core.DTOs.CreateOrderRequest": {
-            customerId?: null | components["schemas"]["System.String"];
-            currencyCode?: components["schemas"]["System.String"];
-            lines?: components["schemas"]["System.Collections.Generic.List`1[[Order.Core.DTOs.CreateOrderLineRequest, Order, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
-        };
-        "Order.Core.DTOs.OrderLineResponse": {
-            id?: components["schemas"]["System.Int32"];
-            variantId?: components["schemas"]["System.Int32"];
-            productName?: components["schemas"]["System.String"];
-            unitPrice?: components["schemas"]["System.Decimal"];
-            quantity?: components["schemas"]["System.Int32"];
-            subtotal?: components["schemas"]["System.Decimal"];
-        };
-        "Order.Core.DTOs.OrderResponse": {
-            id?: components["schemas"]["System.Int32"];
-            code?: components["schemas"]["System.String"];
-            customerId?: null | components["schemas"]["System.String"];
-            status?: components["schemas"]["Order.Core.Entities.OrderStatus"];
-            currencyCode?: components["schemas"]["System.String"];
-            totalAmount?: components["schemas"]["System.Decimal"];
-            lines?: components["schemas"]["System.Collections.Generic.List`1[[Order.Core.DTOs.OrderLineResponse, Order, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
-            createdAt?: components["schemas"]["System.DateTimeOffset"];
-        };
-        "Order.Core.DTOs.UpdateOrderStatusRequest": {
-            status: components["schemas"]["Order.Core.Entities.OrderStatus"];
-        };
-        "Order.Core.Entities.OrderStatus": number;
         "ProductCatalog.Core.DTOs.Categories.CategoryResponse": {
-            id?: components["schemas"]["System.Int32"];
-            name?: components["schemas"]["System.String"];
-            description?: components["schemas"]["System.String"];
-            imageUrl?: components["schemas"]["System.String"];
-            status?: components["schemas"]["ProductCatalog.Core.Entities.CategoryStatus"];
-            parentName?: null | components["schemas"]["System.String"];
-            slug?: components["schemas"]["System.String"];
+            id: components["schemas"]["System.Int32"];
+            name: components["schemas"]["System.String"];
+            description: components["schemas"]["System.String"];
+            imageUrl: null | components["schemas"]["System.String"];
+            status: components["schemas"]["ProductCatalog.Core.Entities.CategoryStatus"];
+            parentName: null | components["schemas"]["System.String"];
+            slug: components["schemas"]["System.String"];
         };
         "ProductCatalog.Core.DTOs.Categories.CreateCategoryRequest": {
             name: components["schemas"]["System.String"];
             description?: components["schemas"]["System.String"];
-            imageUrl?: components["schemas"]["System.String"];
+            imageKey?: null | components["schemas"]["System.String"];
             status?: components["schemas"]["ProductCatalog.Core.Entities.CategoryStatus"];
             parentName?: null | components["schemas"]["System.String"];
             slug?: null | components["schemas"]["System.String"];
         };
         "ProductCatalog.Core.DTOs.Categories.UpdateCategoryRequest": {
-            description?: components["schemas"]["System.String"];
-            imageUrl?: components["schemas"]["System.String"];
-            status?: components["schemas"]["ProductCatalog.Core.Entities.CategoryStatus"];
-            parentName?: null | components["schemas"]["System.String"];
-            slug?: components["schemas"]["System.String"];
+            description: components["schemas"]["System.String"];
+            imageKey: null | components["schemas"]["System.String"];
+            status: components["schemas"]["ProductCatalog.Core.Entities.CategoryStatus"];
+            parentName: null | components["schemas"]["System.String"];
+            slug: components["schemas"]["System.String"];
         };
         "ProductCatalog.Core.DTOs.Collections.CollectionResponse": {
-            id?: components["schemas"]["System.Int32"];
-            title?: components["schemas"]["System.String"];
-            description?: components["schemas"]["System.String"];
-            slug?: components["schemas"]["System.String"];
-            image?: components["schemas"]["System.String"];
+            id: components["schemas"]["System.Int32"];
+            title: components["schemas"]["System.String"];
+            description: components["schemas"]["System.String"];
+            slug: components["schemas"]["System.String"];
+            imageUrl: null | components["schemas"]["System.String"];
         };
         "ProductCatalog.Core.DTOs.Collections.CreateCollectionRequest": {
             title: components["schemas"]["System.String"];
             description?: components["schemas"]["System.String"];
             slug?: components["schemas"]["System.String"];
-            image?: components["schemas"]["System.String"];
+            imageKey?: null | components["schemas"]["System.String"];
         };
         "ProductCatalog.Core.DTOs.Collections.UpdateCollectionRequest": {
-            description?: components["schemas"]["System.String"];
-            slug?: components["schemas"]["System.String"];
-            image?: components["schemas"]["System.String"];
+            description: components["schemas"]["System.String"];
+            slug: components["schemas"]["System.String"];
+            imageKey: null | components["schemas"]["System.String"];
         };
         "ProductCatalog.Core.DTOs.Products.CreateProductMediaRequest": {
             url: components["schemas"]["System.String"];
@@ -1792,145 +1461,148 @@ export interface components {
             width?: components["schemas"]["System.Single"];
             height?: components["schemas"]["System.Single"];
             length?: components["schemas"]["System.Single"];
+            mediaKeys?: components["schemas"]["System.Collections.Generic.List`1[[System.String, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
             medias?: components["schemas"]["System.Collections.Generic.List`1[[ProductCatalog.Core.DTOs.Products.CreateProductMediaRequest, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
             options?: components["schemas"]["System.Collections.Generic.List`1[[ProductCatalog.Core.DTOs.Products.CreateProductOptionRequest, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
             variants?: components["schemas"]["System.Collections.Generic.List`1[[ProductCatalog.Core.DTOs.Products.CreateVariantRequest, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
         };
         "ProductCatalog.Core.DTOs.Products.CreateVariantRequest": {
-            useProductPricing?: components["schemas"]["System.Boolean"];
-            price?: null | components["schemas"]["System.Nullable`1[[System.Decimal, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
-            compareAtPrice?: null | components["schemas"]["System.Nullable`1[[System.Decimal, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
-            costPrice?: null | components["schemas"]["System.Nullable`1[[System.Decimal, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
-            chargeTax?: null | components["schemas"]["System.Nullable`1[[System.Boolean, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
-            imageKey?: null | components["schemas"]["System.String"];
-            useProductInventory?: components["schemas"]["System.Boolean"];
-            quantity?: components["schemas"]["System.Int32"];
-            trackInventory?: null | components["schemas"]["System.Nullable`1[[System.Boolean, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
-            lowStockThreshold?: null | components["schemas"]["System.Nullable`1[[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
-            allowBackorder?: null | components["schemas"]["System.Nullable`1[[System.Boolean, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
-            useProductShipping?: components["schemas"]["System.Boolean"];
-            physicalProduct?: null | components["schemas"]["System.Nullable`1[[System.Boolean, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
-            weight?: null | components["schemas"]["System.Nullable`1[[System.Single, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
-            width?: null | components["schemas"]["System.Nullable`1[[System.Single, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
-            height?: null | components["schemas"]["System.Nullable`1[[System.Single, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
-            length?: null | components["schemas"]["System.Nullable`1[[System.Single, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
-            optionValues?: components["schemas"]["System.Collections.Generic.List`1[[ProductCatalog.Core.DTOs.Products.VariantOptionValueDto, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+            useProductPricing: components["schemas"]["System.Boolean"];
+            price: null | components["schemas"]["System.Nullable`1[[System.Decimal, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
+            compareAtPrice: null | components["schemas"]["System.Nullable`1[[System.Decimal, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
+            costPrice: null | components["schemas"]["System.Nullable`1[[System.Decimal, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
+            chargeTax: null | components["schemas"]["System.Nullable`1[[System.Boolean, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
+            imageKey: null | components["schemas"]["System.String"];
+            useProductInventory: components["schemas"]["System.Boolean"];
+            quantity: components["schemas"]["System.Int32"];
+            trackInventory: null | components["schemas"]["System.Nullable`1[[System.Boolean, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
+            lowStockThreshold: null | components["schemas"]["System.Nullable`1[[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
+            allowBackorder: null | components["schemas"]["System.Nullable`1[[System.Boolean, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
+            useProductShipping: components["schemas"]["System.Boolean"];
+            physicalProduct: null | components["schemas"]["System.Nullable`1[[System.Boolean, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
+            weight: null | components["schemas"]["System.Nullable`1[[System.Single, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
+            width: null | components["schemas"]["System.Nullable`1[[System.Single, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
+            height: null | components["schemas"]["System.Nullable`1[[System.Single, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
+            length: null | components["schemas"]["System.Nullable`1[[System.Single, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
+            optionValues: components["schemas"]["System.Collections.Generic.List`1[[ProductCatalog.Core.DTOs.Products.VariantOptionValueDto, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
         };
         "ProductCatalog.Core.DTOs.Products.OptionResponse": {
-            id?: components["schemas"]["System.Int32"];
-            name?: components["schemas"]["System.String"];
-            displayOrder?: components["schemas"]["System.Int32"];
-            values?: components["schemas"]["System.Collections.Generic.List`1[[System.String, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
+            id: components["schemas"]["System.Int32"];
+            name: components["schemas"]["System.String"];
+            displayOrder: components["schemas"]["System.Int32"];
+            values: components["schemas"]["System.Collections.Generic.List`1[[System.String, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
         };
         "ProductCatalog.Core.DTOs.Products.ProductMediaResponse": {
-            id?: components["schemas"]["System.Int32"];
-            url?: components["schemas"]["System.String"];
-            type?: components["schemas"]["System.String"];
-            displayOrder?: components["schemas"]["System.Single"];
+            id: components["schemas"]["System.Int32"];
+            url: components["schemas"]["System.String"];
+            type: components["schemas"]["System.String"];
+            displayOrder: components["schemas"]["System.Single"];
         };
         "ProductCatalog.Core.DTOs.Products.ProductResponse": {
-            id?: components["schemas"]["System.Int32"];
-            name?: components["schemas"]["System.String"];
-            description?: components["schemas"]["System.String"];
-            categoryId?: components["schemas"]["System.Int32"];
-            categoryName?: components["schemas"]["System.String"];
-            brand?: components["schemas"]["System.String"];
-            slug?: components["schemas"]["System.String"];
-            imageUrl?: components["schemas"]["System.String"];
-            status?: components["schemas"]["ProductCatalog.Core.Entities.ProductStatus"];
-            price?: components["schemas"]["System.Decimal"];
-            currency?: components["schemas"]["SharedKernel.Enums.Currency"];
-            compareAtPrice?: components["schemas"]["System.Decimal"];
-            costPrice?: components["schemas"]["System.Decimal"];
-            chargeTax?: components["schemas"]["System.Boolean"];
-            stock?: components["schemas"]["System.Int32"];
-            trackInventory?: components["schemas"]["System.Boolean"];
-            lowStockThreshold?: components["schemas"]["System.Int32"];
-            allowBackorder?: components["schemas"]["System.Boolean"];
-            sold?: components["schemas"]["System.Int32"];
-            reserved?: components["schemas"]["System.Int32"];
-            physicalProduct?: components["schemas"]["System.Boolean"];
-            weight?: components["schemas"]["System.Single"];
-            width?: components["schemas"]["System.Single"];
-            height?: components["schemas"]["System.Single"];
-            length?: components["schemas"]["System.Single"];
-            medias?: components["schemas"]["System.Collections.Generic.List`1[[ProductCatalog.Core.DTOs.Products.ProductMediaResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
-            options?: components["schemas"]["System.Collections.Generic.List`1[[ProductCatalog.Core.DTOs.Products.OptionResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
-            variants?: components["schemas"]["System.Collections.Generic.List`1[[ProductCatalog.Core.DTOs.Products.VariantResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+            id: components["schemas"]["System.Int32"];
+            name: components["schemas"]["System.String"];
+            description: components["schemas"]["System.String"];
+            categoryId: components["schemas"]["System.Int32"];
+            categoryName: components["schemas"]["System.String"];
+            slug: components["schemas"]["System.String"];
+            imageUrl: components["schemas"]["System.String"];
+            status: components["schemas"]["ProductCatalog.Core.Entities.ProductStatus"];
+            price: components["schemas"]["System.Decimal"];
+            currency: components["schemas"]["SharedKernel.Enums.Currency"];
+            compareAtPrice: components["schemas"]["System.Decimal"];
+            costPrice: components["schemas"]["System.Decimal"];
+            chargeTax: components["schemas"]["System.Boolean"];
+            stock: components["schemas"]["System.Int32"];
+            trackInventory: components["schemas"]["System.Boolean"];
+            lowStockThreshold: components["schemas"]["System.Int32"];
+            allowBackorder: components["schemas"]["System.Boolean"];
+            sold: components["schemas"]["System.Int32"];
+            reserved: components["schemas"]["System.Int32"];
+            physicalProduct: components["schemas"]["System.Boolean"];
+            weight: components["schemas"]["System.Single"];
+            width: components["schemas"]["System.Single"];
+            height: components["schemas"]["System.Single"];
+            length: components["schemas"]["System.Single"];
+            medias: components["schemas"]["System.Collections.Generic.List`1[[ProductCatalog.Core.DTOs.Products.ProductMediaResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+            options: components["schemas"]["System.Collections.Generic.List`1[[ProductCatalog.Core.DTOs.Products.OptionResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+            variants: components["schemas"]["System.Collections.Generic.List`1[[ProductCatalog.Core.DTOs.Products.VariantResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
         };
         "ProductCatalog.Core.DTOs.Products.VariantOptionValueDto": {
-            optionId?: components["schemas"]["System.Int32"];
-            optionName?: components["schemas"]["System.String"];
-            value?: components["schemas"]["System.String"];
+            optionId: null | components["schemas"]["System.Nullable`1[[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
+            optionName: components["schemas"]["System.String"];
+            value: components["schemas"]["System.String"];
         };
         "ProductCatalog.Core.DTOs.Products.VariantResponse": {
-            id?: components["schemas"]["System.Int32"];
-            useProductPricing?: components["schemas"]["System.Boolean"];
-            useProductShipping?: components["schemas"]["System.Boolean"];
-            price?: components["schemas"]["System.Decimal"];
-            compareAtPrice?: components["schemas"]["System.Decimal"];
-            costPrice?: components["schemas"]["System.Decimal"];
-            chargeTax?: components["schemas"]["System.Boolean"];
-            imageUrl?: components["schemas"]["System.String"];
-            stock?: components["schemas"]["System.Int32"];
-            sold?: components["schemas"]["System.Int32"];
-            reserved?: components["schemas"]["System.Int32"];
-            trackInventory?: components["schemas"]["System.Boolean"];
-            lowStockThreshold?: components["schemas"]["System.Int32"];
-            allowBackorder?: components["schemas"]["System.Boolean"];
-            physicalProduct?: components["schemas"]["System.Boolean"];
-            weight?: components["schemas"]["System.Single"];
-            width?: components["schemas"]["System.Single"];
-            height?: components["schemas"]["System.Single"];
-            length?: components["schemas"]["System.Single"];
-            optionValues?: components["schemas"]["System.Collections.Generic.List`1[[ProductCatalog.Core.DTOs.Products.VariantOptionValueDto, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+            id: components["schemas"]["System.Int32"];
+            useProductPricing: components["schemas"]["System.Boolean"];
+            useProductShipping: components["schemas"]["System.Boolean"];
+            price: components["schemas"]["System.Decimal"];
+            compareAtPrice: components["schemas"]["System.Decimal"];
+            costPrice: components["schemas"]["System.Decimal"];
+            chargeTax: components["schemas"]["System.Boolean"];
+            imageUrl: components["schemas"]["System.String"];
+            stock: components["schemas"]["System.Int32"];
+            sold: components["schemas"]["System.Int32"];
+            reserved: components["schemas"]["System.Int32"];
+            trackInventory: components["schemas"]["System.Boolean"];
+            lowStockThreshold: components["schemas"]["System.Int32"];
+            allowBackorder: components["schemas"]["System.Boolean"];
+            physicalProduct: components["schemas"]["System.Boolean"];
+            weight: components["schemas"]["System.Single"];
+            width: components["schemas"]["System.Single"];
+            height: components["schemas"]["System.Single"];
+            length: components["schemas"]["System.Single"];
+            optionValues: components["schemas"]["System.Collections.Generic.List`1[[ProductCatalog.Core.DTOs.Products.VariantOptionValueDto, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
         };
         "ProductCatalog.Core.Entities.CategoryStatus": number;
         "ProductCatalog.Core.Entities.ProductStatus": number;
-        "SharedKernel.DTOs.PaginatedList`1[[Order.Core.DTOs.OrderResponse, Order, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": {
-            items?: components["schemas"]["System.Collections.Generic.List`1[[Order.Core.DTOs.OrderResponse, Order, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
-            pageNumber?: components["schemas"]["System.Int32"];
-            totalPages?: components["schemas"]["System.Int32"];
-            totalCount?: components["schemas"]["System.Int32"];
-            hasPreviousPage?: components["schemas"]["System.Boolean"];
-            hasNextPage?: components["schemas"]["System.Boolean"];
+        "SharedKernel.DTOs.PaginatedList`1[[Content.Core.DTOs.FileObjects.MediaFileResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": {
+            items: components["schemas"]["System.Collections.Generic.List`1[[Content.Core.DTOs.FileObjects.MediaFileResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+            pageNumber: components["schemas"]["System.Int32"];
+            totalPages: components["schemas"]["System.Int32"];
+            totalCount: components["schemas"]["System.Int32"];
+            hasPreviousPage: components["schemas"]["System.Boolean"];
+            hasNextPage: components["schemas"]["System.Boolean"];
         };
         "SharedKernel.DTOs.PaginatedList`1[[ProductCatalog.Core.DTOs.Categories.CategoryResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": {
-            items?: components["schemas"]["System.Collections.Generic.List`1[[ProductCatalog.Core.DTOs.Categories.CategoryResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
-            pageNumber?: components["schemas"]["System.Int32"];
-            totalPages?: components["schemas"]["System.Int32"];
-            totalCount?: components["schemas"]["System.Int32"];
-            hasPreviousPage?: components["schemas"]["System.Boolean"];
-            hasNextPage?: components["schemas"]["System.Boolean"];
+            items: components["schemas"]["System.Collections.Generic.List`1[[ProductCatalog.Core.DTOs.Categories.CategoryResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+            pageNumber: components["schemas"]["System.Int32"];
+            totalPages: components["schemas"]["System.Int32"];
+            totalCount: components["schemas"]["System.Int32"];
+            hasPreviousPage: components["schemas"]["System.Boolean"];
+            hasNextPage: components["schemas"]["System.Boolean"];
         };
         "SharedKernel.DTOs.PaginatedList`1[[ProductCatalog.Core.DTOs.Collections.CollectionResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": {
-            items?: components["schemas"]["System.Collections.Generic.List`1[[ProductCatalog.Core.DTOs.Collections.CollectionResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
-            pageNumber?: components["schemas"]["System.Int32"];
-            totalPages?: components["schemas"]["System.Int32"];
-            totalCount?: components["schemas"]["System.Int32"];
-            hasPreviousPage?: components["schemas"]["System.Boolean"];
-            hasNextPage?: components["schemas"]["System.Boolean"];
+            items: components["schemas"]["System.Collections.Generic.List`1[[ProductCatalog.Core.DTOs.Collections.CollectionResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+            pageNumber: components["schemas"]["System.Int32"];
+            totalPages: components["schemas"]["System.Int32"];
+            totalCount: components["schemas"]["System.Int32"];
+            hasPreviousPage: components["schemas"]["System.Boolean"];
+            hasNextPage: components["schemas"]["System.Boolean"];
         };
         "SharedKernel.DTOs.PaginatedList`1[[ProductCatalog.Core.DTOs.Products.ProductResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": {
-            items?: components["schemas"]["System.Collections.Generic.List`1[[ProductCatalog.Core.DTOs.Products.ProductResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
-            pageNumber?: components["schemas"]["System.Int32"];
-            totalPages?: components["schemas"]["System.Int32"];
-            totalCount?: components["schemas"]["System.Int32"];
-            hasPreviousPage?: components["schemas"]["System.Boolean"];
-            hasNextPage?: components["schemas"]["System.Boolean"];
+            items: components["schemas"]["System.Collections.Generic.List`1[[ProductCatalog.Core.DTOs.Products.ProductResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+            pageNumber: components["schemas"]["System.Int32"];
+            totalPages: components["schemas"]["System.Int32"];
+            totalCount: components["schemas"]["System.Int32"];
+            hasPreviousPage: components["schemas"]["System.Boolean"];
+            hasNextPage: components["schemas"]["System.Boolean"];
         };
         "SharedKernel.Enums.Currency": number;
         "System.Boolean": boolean;
+        "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]": {
+            [key: string]: components["schemas"]["System.String"];
+        };
         "System.Collections.Generic.IDictionary`2[[System.String, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String[], System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]": {
             [key: string]: components["schemas"]["System.String[]"];
         };
         "System.Collections.Generic.List`1[[Content.Core.DTOs.FileObjects.ConfirmUploadFileRequest, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["Content.Core.DTOs.FileObjects.ConfirmUploadFileRequest"][];
-        "System.Collections.Generic.List`1[[Content.Core.DTOs.FileObjects.PresignedUploadFileRequest, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["Content.Core.DTOs.FileObjects.PresignedUploadFileRequest"][];
+        "System.Collections.Generic.List`1[[Content.Core.DTOs.FileObjects.CreatePresignedUploadFileRequest, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["Content.Core.DTOs.FileObjects.CreatePresignedUploadFileRequest"][];
+        "System.Collections.Generic.List`1[[Content.Core.DTOs.FileObjects.MediaFileResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["Content.Core.DTOs.FileObjects.MediaFileResponse"][];
         "System.Collections.Generic.List`1[[Content.Core.DTOs.FileObjects.PresignedUploadUrlResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["Content.Core.DTOs.FileObjects.PresignedUploadUrlResponse"][];
         "System.Collections.Generic.List`1[[Content.Core.DTOs.FileObjects.UploadResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["Content.Core.DTOs.FileObjects.UploadResponse"][];
-        "System.Collections.Generic.List`1[[Order.Core.DTOs.CreateOrderLineRequest, Order, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["Order.Core.DTOs.CreateOrderLineRequest"][];
-        "System.Collections.Generic.List`1[[Order.Core.DTOs.OrderLineResponse, Order, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["Order.Core.DTOs.OrderLineResponse"][];
-        "System.Collections.Generic.List`1[[Order.Core.DTOs.OrderResponse, Order, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["Order.Core.DTOs.OrderResponse"][];
+        "System.Collections.Generic.List`1[[Inventory.Core.DTOs.Inventory.VariantInventoryConfig, Inventory, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["Inventory.Core.DTOs.Inventory.VariantInventoryConfig"][];
+        "System.Collections.Generic.List`1[[Inventory.Core.DTOs.Inventory.VariantInventoryResponse, Inventory, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["Inventory.Core.DTOs.Inventory.VariantInventoryResponse"][];
         "System.Collections.Generic.List`1[[ProductCatalog.Core.DTOs.Categories.CategoryResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["ProductCatalog.Core.DTOs.Categories.CategoryResponse"][];
         "System.Collections.Generic.List`1[[ProductCatalog.Core.DTOs.Collections.CollectionResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["ProductCatalog.Core.DTOs.Collections.CollectionResponse"][];
         "System.Collections.Generic.List`1[[ProductCatalog.Core.DTOs.Products.CreateProductMediaRequest, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["ProductCatalog.Core.DTOs.Products.CreateProductMediaRequest"][];
@@ -1941,26 +1613,30 @@ export interface components {
         "System.Collections.Generic.List`1[[ProductCatalog.Core.DTOs.Products.ProductResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["ProductCatalog.Core.DTOs.Products.ProductResponse"][];
         "System.Collections.Generic.List`1[[ProductCatalog.Core.DTOs.Products.VariantOptionValueDto, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["ProductCatalog.Core.DTOs.Products.VariantOptionValueDto"][];
         "System.Collections.Generic.List`1[[ProductCatalog.Core.DTOs.Products.VariantResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["ProductCatalog.Core.DTOs.Products.VariantResponse"][];
+        "System.Collections.Generic.List`1[[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]": components["schemas"]["System.Int32"][];
         "System.Collections.Generic.List`1[[System.String, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]": components["schemas"]["System.String"][];
         /** Format: date-time */
         "System.DateTimeOffset": string;
         /** Format: double */
-        "System.Decimal": number | string;
+        "System.Decimal": number;
         /** Format: int32 */
         "System.Int32": number;
         /** Format: int64 */
-        "System.Int64": number | string;
-        "System.Nullable`1[[Order.Core.Entities.OrderStatus, Order, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": number;
+        "System.Int64": number;
         "System.Nullable`1[[ProductCatalog.Core.Entities.ProductStatus, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": number;
         "System.Nullable`1[[System.Boolean, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]": boolean;
+        /** Format: date-time */
+        "System.Nullable`1[[System.DateTimeOffset, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]": string;
         /** Format: double */
-        "System.Nullable`1[[System.Decimal, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]": number | string;
+        "System.Nullable`1[[System.Decimal, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]": number;
         /** Format: int32 */
-        "System.Nullable`1[[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]": number | string;
+        "System.Nullable`1[[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]": number;
+        /** Format: int64 */
+        "System.Nullable`1[[System.Int64, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]": number;
         /** Format: float */
-        "System.Nullable`1[[System.Single, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]": number | string;
+        "System.Nullable`1[[System.Single, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]": number;
         /** Format: float */
-        "System.Single": number | string;
+        "System.Single": number;
         "System.String": string;
         "System.String[]": components["schemas"]["System.String"][];
     };

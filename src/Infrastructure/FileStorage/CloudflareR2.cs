@@ -1,6 +1,7 @@
 using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
+using System.Net;
 using SharedKernel.Abstractions.Services;
 using SharedKernel.Extensions;
 
@@ -19,8 +20,9 @@ public class CloudflareR2 : IFileManager
         _client = CreateClient();
     }
 
-    public string BuildPublicUrl(string key)
+    public string? BuildPublicUrl(string? key)
     {
+        if(key is null) return null;
         var normalizedKey = key;
         var cdnBaseUrl = _tenant.CdnBaseUrl.TrimEnd('/');
         return  $"{cdnBaseUrl}/{normalizedKey}";
@@ -55,6 +57,29 @@ public class CloudflareR2 : IFileManager
         }
 
         return urls;
+    }
+
+    public async Task<FileObjectMetadata?> GetObjectMetadataAsync(string key, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var response = await _client.GetObjectMetadataAsync(new GetObjectMetadataRequest
+            {
+                BucketName = GetBucketName(),
+                Key = key
+            }, cancellationToken);
+
+            return new FileObjectMetadata
+            {
+                Key = key,
+                ContentType = response.Headers.ContentType ?? string.Empty,
+                Size = response.ContentLength
+            };
+        }
+        catch (AmazonS3Exception ex) when (ex.StatusCode is HttpStatusCode.NotFound)
+        {
+            return null;
+        }
     }
 
     public async Task<string> UploadAsync(IEnumerable<UploadFileDto> dto, CancellationToken cancellationToken = default)

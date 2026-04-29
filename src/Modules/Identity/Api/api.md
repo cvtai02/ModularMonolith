@@ -4,8 +4,8 @@
 ## API Endpoints
 
 ### Setup
-- [SeedAdmin](SetupController.cs#L28)
-- [SeedRoles](SetupController.cs#L60)
+- [SeedAdmin](SetupController.cs#L31)
+- [SeedRoles](SetupController.cs#L85)
 
 ### User
-- [GetCurrentUser](MinimalApi.cs)
+- [GetCurrentUser](MinimalApi.cs#L13)

@@ -96,8 +96,16 @@ public static partial class ServiceCollectionExtensions
                 .AddControllers()
                 .AddJsonOptions(options =>
                 {
+                    //MVC's JSON
                     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                    options.JsonSerializerOptions.NumberHandling = JsonNumberHandling.Strict; 
                 });
+
+            services.ConfigureHttpJsonOptions(options =>
+            {
+                // Tell OpenApi generator to report number fields as integers/floats only, not strings
+                options.SerializerOptions.NumberHandling = JsonNumberHandling.Strict;
+            });
 
             return services;
         }

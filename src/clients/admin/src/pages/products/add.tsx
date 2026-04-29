@@ -5,7 +5,7 @@ import { tanstackQueryClient } from "@/api/api-client";
 import { ROUTES } from "@/configs/routes";
 
 import type { FormValues, OptionEntry, Variant } from "./components/types";
-import { getFilledValues } from "./components/helpers";
+import { buildVariantsPayload, getFilledValues } from "./components/helpers";
 import { ProductFormLayout } from "./components/ProductFormLayout";
 
 export default function AddProductPage() {
@@ -38,6 +38,7 @@ export default function AddProductPage() {
           description: values.description || undefined,
           imageUrl: values.imageUrl || undefined,
           status: finalStatus,
+          currency: values.currency,
           price: values.price ? parseFloat(values.price) : undefined,
           compareAtPrice: values.compareAtPrice ? parseFloat(values.compareAtPrice) : undefined,
           costPrice: values.costPrice ? parseFloat(values.costPrice) : undefined,
@@ -56,21 +57,7 @@ export default function AddProductPage() {
             displayOrder,
             values: getFilledValues(opt.inputValues),
           })),
-          variants: hasVariants
-            ? variants.map((variant) => ({
-                useProductPricing: variant.useProductPrice,
-                price: !variant.useProductPrice && variant.price ? parseFloat(variant.price) : undefined,
-                useProductShipping: variant.useProductShipping,
-                useProductInventory: variant.useProductInventory,
-                trackInventory: variant.useProductInventory ? undefined : variant.trackInventory,
-                allowBackorder: variant.useProductInventory ? undefined : variant.allowBackorder,
-                quantity: parseInt(variant.stock) || 0,
-                optionValues: variant.optionValues.map((ov) => ({
-                  optionName: ov.optionName,
-                  value: ov.value,
-                })),
-              }))
-            : [],
+          variants: buildVariantsPayload(variants, hasVariants),
         },
       });
 
@@ -86,6 +73,7 @@ export default function AddProductPage() {
       title="Add product"
       categories={categories}
       isPending={isPending}
+      isCreating
       onDiscard={() => navigate(ROUTES.products)}
       onSubmit={handleSubmit}
     />

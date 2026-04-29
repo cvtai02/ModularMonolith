@@ -41,8 +41,7 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
+                    b.Property<string>("ImageKey")
                         .HasColumnType("text");
 
                     b.Property<bool>("IsDeleted")
@@ -99,8 +98,7 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Image")
-                        .IsRequired()
+                    b.Property<string>("ImageKey")
                         .HasColumnType("text");
 
                     b.Property<bool>("IsDeleted")

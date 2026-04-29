@@ -6,72 +6,171 @@ using SharedKernel.Extensions;
 
 namespace Content.Core.Usecases.FileObjects;
 
-public class GetPresignedUpload(IFileManager fileManager)
+public class GetPresignedUpload(IFileManager fileManager, ICacheService cache)
 {
+    private const int MaxBatchSize = 20;
     private static readonly HashSet<string> AllowedCategories = [.. FileCategory.List];
+    private static readonly HashSet<string> AllowedContentTypes =
+    [
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+        "image/gif",
+        "video/mp4",
+        "application/pdf"
+    ];
 
-    public async Task<List<PresignedUploadUrlResponse>> ExecuteAsync(
+    private static readonly Dictionary<string, long> MaxSizeByCategory = new()
+    {
+        [FileCategory.Avatar] = 5 * 1024 * 1024,
+        [FileCategory.Product] = 10 * 1024 * 1024,
+        [FileCategory.Review] = 20 * 1024 * 1024,
+        [FileCategory.Content] = 20 * 1024 * 1024
+    };
+
+    public async Task<PresignedUploadBulkUrlResponse> ExecuteAsync(
         GetPresignedUploadBulkUrlRequest request,
         CancellationToken cancellationToken)
     {
-        if (request.Files.Count == 0)
-            throw new ValidationException("Validation failed", new Dictionary<string, string[]>
-            {
-                [nameof(request.Files)] = ["At least one file is required."]
-            });
+        ValidateRequest(request);
 
-        var resolvedFiles = request.Files.Select((file, index) =>
-        {
-            ValidateCategory(file.Category, $"{nameof(request.Files)}[{index}].{nameof(file.Category)}");
-            var key = ResolveKey(file.Key, file.Category, file.Ext);
-            return new
-            {
-                Key = key,
-                Parameter = new PresignedUploadParameters
-                {
-                    Key = key,
-                    Category = file.Category.Trim(),
-                    ContentType = file.ContentType,
-                    Ext = NormalizeExtension(file.Ext)
-                }
-            };
-        }).ToList();
+        var expiresIn = TimeSpan.FromMinutes(request.ExpiryMinutes);
+        var expiresAt = DateTimeOffset.UtcNow.Add(expiresIn);
+        var intents = request.Files.Select(file => CreateIntent(file, expiresAt)).ToList();
 
         var urls = await fileManager.GetPresignedUploadBulkUrlAsync(
-            [.. resolvedFiles.Select(x => x.Parameter)],
-            TimeSpan.FromMinutes(request.ExpiryMinutes),
+            intents.Select(intent => new PresignedUploadParameters
+            {
+                Key = intent.Key,
+                Category = intent.Category,
+                ContentType = intent.ContentType,
+                Ext = Path.GetExtension(intent.Name)
+            }),
+            expiresIn,
             cancellationToken);
 
-        return resolvedFiles.Zip(urls, (file, url) => new PresignedUploadUrlResponse
+        foreach (var intent in intents)
         {
-            Key = file.Key,
-            UploadUrl = url,
-            PublicUrl = fileManager.BuildPublicUrl(file.Key)
-        }).ToList();
-    }
+            await cache.SetAsync(GetCacheKey(intent.UploadId), intent, expiresIn);
+        }
 
-    private static void ValidateCategory(string category, string key)
-    {
-        if (!AllowedCategories.Contains(category.Trim()))
-            throw new ValidationException("Validation failed", new Dictionary<string, string[]>
+        return new PresignedUploadBulkUrlResponse
+        {
+            Files = intents.Zip(urls, (intent, url) => new PresignedUploadUrlResponse
             {
-                [key] = [$"Unsupported category '{category}'."]
-            });
+                UploadId = intent.UploadId,
+                Key = intent.Key,
+                UploadUrl = url,
+                PublicUrl = fileManager.BuildPublicUrl(intent.Key)!,
+                Method = "PUT",
+                Headers = new Dictionary<string, string>
+                {
+                    ["Content-Type"] = intent.ContentType
+                },
+                ExpiresAt = expiresAt
+            }).ToList()
+        };
     }
 
-    private static string ResolveKey(string? key, string category, string ext)
-    {
-        if (!string.IsNullOrWhiteSpace(key))
-            return key.Trim().TrimStart('/');
+    public static string GetCacheKey(string uploadId) => $"content:file-upload-intent:{uploadId}";
 
-        var now = DateTime.UtcNow;
-        var ulid = UlidGenerator.NewUlid(now).ToLowerInvariant();
-        return $"{category}/{ulid}{NormalizeExtension(ext)}";
+    private static UploadIntent CreateIntent(CreatePresignedUploadFileRequest file, DateTimeOffset expiresAt)
+    {
+        var category = file.Category.Trim();
+        var safeFileName = ToSafeFileName(file.FileName);
+        var uploadId = UlidGenerator.NewUlid(DateTime.UtcNow).ToLowerInvariant();
+
+        return new UploadIntent
+        {
+            UploadId = uploadId,
+            Key = $"{category}/{uploadId}/{safeFileName}",
+            Category = category,
+            Name = safeFileName,
+            ContentType = file.ContentType.Trim().ToLowerInvariant(),
+            Size = file.Size,
+            ExpiresAt = expiresAt
+        };
     }
 
-    private static string NormalizeExtension(string ext)
+    private static void ValidateRequest(GetPresignedUploadBulkUrlRequest request)
     {
-        var trimmed = ext.Trim();
-        return trimmed.StartsWith('.') ? trimmed : $".{trimmed}";
+        var errors = new Dictionary<string, string[]>();
+
+        if (request.Files.Count == 0)
+            errors[nameof(request.Files)] = ["At least one file is required."];
+
+        if (request.Files.Count > MaxBatchSize)
+            errors[nameof(request.Files)] = [$"No more than {MaxBatchSize} files are allowed per request."];
+
+        for (var i = 0; i < request.Files.Count; i++)
+        {
+            ValidateFile(request.Files[i], i, errors);
+        }
+
+        if (errors.Count > 0)
+            throw new ValidationException("Validation failed", errors);
+    }
+
+    private static void ValidateFile(
+        CreatePresignedUploadFileRequest file,
+        int index,
+        Dictionary<string, string[]> errors)
+    {
+        var category = file.Category.Trim();
+        var contentType = file.ContentType.Trim().ToLowerInvariant();
+        var fileNameKey = $"{nameof(GetPresignedUploadBulkUrlRequest.Files)}[{index}].{nameof(file.FileName)}";
+
+        if (!AllowedCategories.Contains(category))
+        {
+            errors[$"{nameof(GetPresignedUploadBulkUrlRequest.Files)}[{index}].{nameof(file.Category)}"] =
+                [$"Unsupported category '{file.Category}'."];
+        }
+
+        if (!AllowedContentTypes.Contains(contentType))
+        {
+            errors[$"{nameof(GetPresignedUploadBulkUrlRequest.Files)}[{index}].{nameof(file.ContentType)}"] =
+                [$"Unsupported content type '{file.ContentType}'."];
+        }
+
+        if (file.Size <= 0)
+        {
+            errors[$"{nameof(GetPresignedUploadBulkUrlRequest.Files)}[{index}].{nameof(file.Size)}"] =
+                ["File size must be greater than 0."];
+        }
+        else if (MaxSizeByCategory.TryGetValue(category, out var maxSize) && file.Size > maxSize)
+        {
+            errors[$"{nameof(GetPresignedUploadBulkUrlRequest.Files)}[{index}].{nameof(file.Size)}"] =
+                [$"File size exceeds the {maxSize} byte limit for category '{category}'."];
+        }
+
+        try
+        {
+            ToSafeFileName(file.FileName);
+        }
+        catch (ArgumentException ex)
+        {
+            errors[fileNameKey] = [ex.Message];
+        }
+    }
+
+    private static string ToSafeFileName(string fileName)
+    {
+        var trimmed = fileName.Trim();
+        var leafName = Path.GetFileName(trimmed);
+
+        if (string.IsNullOrWhiteSpace(leafName) || leafName is "." or ".." || leafName != trimmed)
+            throw new ArgumentException("File name must be a safe leaf file name.");
+
+        var safe = new string(leafName.Select(ch =>
+            char.IsAsciiLetterOrDigit(ch) || ch is '.' or '_' or '-' ? ch :
+            char.IsWhiteSpace(ch) ? '-' :
+            '\0').Where(ch => ch != '\0').ToArray());
+
+        safe = string.Join('-', safe.Split('-', StringSplitOptions.RemoveEmptyEntries));
+
+        if (string.IsNullOrWhiteSpace(safe) || string.IsNullOrWhiteSpace(Path.GetExtension(safe)))
+            throw new ArgumentException("File name must include a safe base name and extension.");
+
+        return safe;
     }
 }

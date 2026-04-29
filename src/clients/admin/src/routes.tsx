@@ -15,38 +15,34 @@ const NotFound = LazyPage(() => import("@/pages/common/404"));
 const Products = LazyPage(() => import("@/pages/products"));
 const AddProduct = LazyPage(() => import("@/pages/products/add"));
 const EditProduct = LazyPage(() => import("@/pages/products/edit"));
-const Inventory = LazyPage(() => import("@/pages/inventory"));
 const Categories = LazyPage(() => import("@/pages/categories"));
 const ContentFilesPage = LazyPage(() => import("@/pages/content/files"));
-const ContentMenusPage = LazyPage(() => import("@/pages/content/menus"));
 const Collections = LazyPage(() => import("@/pages/collections"));
-const Orders = LazyPage(() => import("@/pages/orders"));
 // const Customers = LazyPage(() => import("@/pages/customers"));
 // const Promotions = LazyPage(() => import("@/pages/promotions"));
 // const Reviews = LazyPage(() => import("@/pages/reviews"));
 // const Settings = LazyPage(() => import("@/pages/settings"));
 
 const AppRoutes: ReactNode =
-  <Route>
+  <Route errorElement={<ErrorPage />}>
     <Route path={ROUTES.root} element={<Navigate to={ROUTES.dashboard} replace />} />
 
-    <Route element={<PrivateRoute />}> 
+    <Route element={<PrivateRoute />}>
       <Route path={ROUTES.root} element={<AppLayout />}>
         <Route index element={<Navigate to={ROUTES.dashboard} replace />} />
         {/* <Route path={ROUTES.dashboard} element={<Dashboard />} /> */}
         <Route path={ROUTES.products} element={<Products />} errorElement={<ErrorPage />} />
         <Route path={ROUTES.productNew} element={<AddProduct />} errorElement={<ErrorPage />} />
         <Route path="/products/:id/edit" element={<EditProduct />} errorElement={<ErrorPage />} />
-        <Route path={ROUTES.productInventory} element={<Inventory />} errorElement={<ErrorPage />} />
+        {/* <Route path={ROUTES.productInventory} element={<Inventory />} /> */}
         <Route path={ROUTES.productCategory} element={<Categories />} errorElement={<ErrorPage />} />
         <Route path={ROUTES.productCollections} element={<Collections />} errorElement={<ErrorPage />} />
         <Route path={ROUTES.contentFiles} element={<ContentFilesPage />} errorElement={<ErrorPage />} />
-        <Route path={ROUTES.contentMenus} element={<ContentMenusPage />} errorElement={<ErrorPage />} />
-        <Route path={ROUTES.orders} element={<Orders />} errorElement={<ErrorPage />} />
-        {/* <Route path={ROUTES.customers} element={<Customers />} errorElement={<ErrorPage />} /> */}
-        {/* <Route path={ROUTES.promotions} element={<Promotions />} errorElement={<ErrorPage />} /> */}
-        {/* <Route path={ROUTES.reviews} element={<Reviews />} errorElement={<ErrorPage />} /> */}
-        {/* <Route path={ROUTES.settings} element={<Settings />} errorElement={<ErrorPage />} /> */}
+        {/* <Route path={ROUTES.orders} element={<Orders />} /> */}
+        {/* <Route path={ROUTES.customers} element={<Customers />} /> */}
+        {/* <Route path={ROUTES.promotions} element={<Promotions />} /> */}
+        {/* <Route path={ROUTES.reviews} element={<Reviews />} /> */}
+        {/* <Route path={ROUTES.settings} element={<Settings />} /> */}
         <Route path="*" element={<NotFound />} />
       </Route>
     </Route>

@@ -56,6 +56,7 @@ public class CreateProductRequest
     [Range(0, double.MaxValue)]
     public float Length { get; set; }
 
+    public List<string> MediaKeys { get; set; } = [];
     public List<CreateProductMediaRequest> Medias { get; set; } = [];
     public List<CreateProductOptionRequest> Options { get; set; } = [];
     public List<CreateVariantRequest> Variants { get; set; } = [];

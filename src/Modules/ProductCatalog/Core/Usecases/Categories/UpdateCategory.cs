@@ -1,10 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using ProductCatalog.Core.DTOs.Categories;
+using SharedKernel.Abstractions.Services;
 using SharedKernel.Exceptions;
 
 namespace ProductCatalog.Core.Usecases.Categories;
 
-public class UpdateCategory(ProductCatalogDbContext db)
+public class UpdateCategory(ProductCatalogDbContext db, IFileManager fm)
 {
     public async Task<CategoryResponse?> ExecuteAsync(string name, UpdateCategoryRequest request, CancellationToken ct)
     {
@@ -29,7 +30,7 @@ public class UpdateCategory(ProductCatalogDbContext db)
         if (errors.Count > 0) throw new ValidationException("Validation failed", errors);
 
         category.Description = request.Description.Trim();
-        category.ImageUrl = request.ImageUrl.Trim();
+        category.ImageKey = request.ImageKey?.Trim();
         category.Status = request.Status;
         if (!string.IsNullOrWhiteSpace(slug)) category.Slug = slug;
 
@@ -45,6 +46,6 @@ public class UpdateCategory(ProductCatalogDbContext db)
         }
 
         await db.SaveChangesAsync(ct);
-        return CategoryMapper.ToResponse(category);
+        return CategoryMapper.ToResponse(category, fm);
     }
 }

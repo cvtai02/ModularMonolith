@@ -4,22 +4,7 @@
 ## API Endpoints
 
 ### FileObject
+- [GetAll](FileObjectController.cs#L17)
 - [GetPresignedUploadBulkUrl](FileObjectController.cs#L22)
-- [ConfirmUpload](FileObjectController.cs#L65)
-
-### Menu
-- [GetAll](MenuController.cs#L18)
-- [GetByName](MenuController.cs#L32)
-- [Create](MenuController.cs#L43)
-- [Update](MenuController.cs#L95)
-- [Delete](MenuController.cs#L110)
-
-### MetaObject
-- [GetAll](MetaObjectController.cs#L15)
-- [GetByKey](MetaObjectController.cs#L27)
-- [Create](MetaObjectController.cs#L38)
-- [Update](MetaObjectController.cs#L56)
-- [Delete](MetaObjectController.cs#L72)
-
-### BlogPost
-- Not implemented
+- [ConfirmUpload](FileObjectController.cs#L27)
+- [Delete](FileObjectController.cs#L32)

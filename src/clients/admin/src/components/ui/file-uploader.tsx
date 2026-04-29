@@ -24,15 +24,6 @@ export interface FileUploaderProps {
   className?: string;
 }
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
-function getExt(file: File): string {
-  const dot = file.name.lastIndexOf(".");
-  return dot >= 0 ? file.name.slice(dot).toLowerCase() : ".bin";
-}
-
-// ─── Component ───────────────────────────────────────────────────────────────
-
 export function FileUploader({
   category,
   accept = "image/*",
@@ -54,7 +45,7 @@ export function FileUploader({
 
   const { mutateAsync: confirmUpload } = tanstackQueryClient.useMutation(
     "post",
-    "/api/Content/file-objects"
+    "/api/Content/file-objects/confirm-upload"
   );
 
   const processFiles = useCallback(
@@ -75,13 +66,13 @@ export function FileUploader({
       try {
         const presignedUrls = await getPresignedUrls({
           body: {
-            files: fileArray.map((f) => ({ category, ext: getExt(f), contentType: f.type })),
+            files: fileArray.map((f) => ({ category, fileName: f.name, contentType: f.type })),
           },
         });
 
         await Promise.all(
           fileArray.map(async (file, i) => {
-            const res = await fetch(presignedUrls[i].uploadUrl!, {
+            const res = await fetch(presignedUrls.files[i].uploadUrl!, {
               method: "PUT",
               body: file,
               headers: { "Content-Type": file.type || "application/octet-stream" },
@@ -96,7 +87,8 @@ export function FileUploader({
         const confirmed = await confirmUpload({
           body: {
             files: fileArray.map((f, i) => ({
-              key: presignedUrls[i].key!,
+              uploadId: presignedUrls.files[i].uploadId!,
+              key: presignedUrls.files[i].key!,
               category,
               contentType: f.type,
               name: f.name,
@@ -105,7 +97,7 @@ export function FileUploader({
           },
         });
 
-        const publicUrls = confirmed.map((r) => r.publicUrl!);
+        const publicUrls = confirmed.files.map((r) => r.publicUrl!);
         onChange?.(multiple ? [...value, ...publicUrls] : publicUrls);
       } catch {
         toast.error("Upload failed. Please try again.");

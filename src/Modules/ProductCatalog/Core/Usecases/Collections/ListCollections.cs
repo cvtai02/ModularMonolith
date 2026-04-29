@@ -1,10 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using ProductCatalog.Core.DTOs.Collections;
+using SharedKernel.Abstractions.Services;
 using SharedKernel.DTOs;
 
 namespace ProductCatalog.Core.Usecases.Collections;
 
-public class ListCollections(ProductCatalogDbContext db)
+public class ListCollections(ProductCatalogDbContext db, IFileManager fm)
 {
     public async Task<PaginatedList<CollectionResponse>> ExecuteAsync(
         int pageNumber, int pageSize, string? search, CancellationToken ct)
@@ -28,7 +29,7 @@ public class ListCollections(ProductCatalogDbContext db)
                 Title = x.Title,
                 Description = x.Description,
                 Slug = x.Slug,
-                Image = x.Image,
+                ImageUrl = fm.BuildPublicUrl(x.ImageKey),
             })
             .ToListAsync(ct);
 

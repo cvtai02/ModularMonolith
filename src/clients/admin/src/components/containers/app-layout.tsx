@@ -8,13 +8,11 @@ import {
   SettingsIcon,
   UsersIcon,
   ChevronDownIcon,
-  SearchIcon,
   BellIcon,
   LogOutIcon,
   TagIcon,
 } from "lucide-react";
 import { type ComponentType } from "react";
-import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -179,7 +177,7 @@ export default function AppLayout() {
             <SidebarMenuItem>
               <SidebarMenuButton size="lg" tooltip="My Store">
                 <div className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground text-sm font-bold shrink-0">
-                  S
+                  N
                 </div>
                 <div className="flex flex-col">
                   <span className="font-semibold text-sm leading-tight">My Store</span>
@@ -224,13 +222,7 @@ export default function AppLayout() {
         {/* Top bar */}
         <header className="flex h-12 shrink-0 items-center gap-3 border-b bg-background px-4">
           <SidebarTrigger className="-ml-1" />
-          <Separator orientation="vertical" className="h-4" />
           <div className="flex flex-1 items-center gap-2 text-muted-foreground">
-            <SearchIcon className="size-4" />
-            <span className="text-sm">Search</span>
-            <kbd className="ml-1 hidden rounded border bg-muted px-1.5 py-0.5 text-[10px] font-medium sm:inline-flex">
-              CTRL K
-            </kbd>
           </div>
           <div className="flex items-center gap-2">
             <ModeToggle />

@@ -1,10 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using ProductCatalog.Core.DTOs.Collections;
+using SharedKernel.Abstractions.Services;
 using SharedKernel.Exceptions;
 
 namespace ProductCatalog.Core.Usecases.Collections;
 
-public class UpdateCollection(ProductCatalogDbContext db)
+public class UpdateCollection(ProductCatalogDbContext db, IFileManager fm)
 {
     public async Task<CollectionResponse?> ExecuteAsync(int id, UpdateCollectionRequest request, CancellationToken ct)
     {
@@ -21,9 +22,9 @@ public class UpdateCollection(ProductCatalogDbContext db)
 
         collection.Description = request.Description.Trim();
         if (!string.IsNullOrWhiteSpace(slug)) collection.Slug = slug;
-        collection.Image = request.Image.Trim();
+        collection.ImageKey = request.ImageKey;
 
         await db.SaveChangesAsync(ct);
-        return CollectionMapper.ToResponse(collection);
+        return CollectionMapper.ToResponse(collection, fm);
     }
 }

@@ -3,6 +3,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\SharedKernel\SharedKernel.csproj" />
     <ProjectReference Include="..\..\Intermediary\Intermediary.csproj" />
+    <ProjectReference Include="..\Inventory\Inventory.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

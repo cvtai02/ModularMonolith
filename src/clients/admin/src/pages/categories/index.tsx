@@ -125,9 +125,10 @@ export default function CategoriesPage() {
           params: { path: { name: editing.name! } },
           body: {
             description: values.description,
-            slug: values.slug || undefined,
+            slug: values.slug,
             status: editing.status,
-            parentName: editing.parentName ?? undefined,
+            parentName: editing.parentName,
+            imageKey: null,
           },
         });
         toast.success("Category updated");

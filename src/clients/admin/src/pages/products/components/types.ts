@@ -7,7 +7,14 @@ export type OptionEntry = {
 export type VariantOverride = {
   useProductPrice: boolean;
   price: string;
+  compareAtPrice: string;
+  costPrice: string;
+  chargeTax: boolean;
   useProductShipping: boolean;
+  weight: string;
+  width: string;
+  height: string;
+  length: string;
   useProductInventory: boolean;
   stock: string;
   trackInventory: boolean;
@@ -27,6 +34,7 @@ export type FormValues = {
   description: string;
   status: string;
   imageUrl: string;
+  currency: number;
   trackInventory: boolean;
   stock: string;
   allowBackorder: boolean;
@@ -46,8 +54,9 @@ export const DEFAULT_FORM_VALUES: FormValues = {
   name: "",
   categoryId: 0,
   description: "",
-  status: "1",
+  status: "2", // Draft
   imageUrl: "",
+  currency: 0, // VND
   trackInventory: true,
   stock: "",
   allowBackorder: false,
@@ -66,7 +75,14 @@ export const DEFAULT_FORM_VALUES: FormValues = {
 export const DEFAULT_VARIANT_OVERRIDE: VariantOverride = {
   useProductPrice: true,
   price: "",
+  compareAtPrice: "",
+  costPrice: "",
+  chargeTax: false,
   useProductShipping: true,
+  weight: "",
+  width: "",
+  height: "",
+  length: "",
   useProductInventory: true,
   stock: "0",
   trackInventory: true,

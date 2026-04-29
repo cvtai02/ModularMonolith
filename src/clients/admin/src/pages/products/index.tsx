@@ -27,14 +27,6 @@ import { AdminErrorState } from "@/components/admin/admin-page";
 
 const PAGE_SIZE = 10;
 
-function statusLabel(status?: number): string {
-  switch (status) {
-    case 1: return "Active";
-    case 2: return "Draft";
-    default: return "Archived";
-  }
-}
-
 function StatusBadge({ status }: { status?: number }) {
   if (status === 1) {
     return <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200 hover:bg-emerald-100">Active</Badge>;
@@ -63,7 +55,7 @@ export default function ProductsPage() {
   );
 
   const products = data?.items ?? [];
-  const totalPages = data?.totalPages ?? 1;
+  const totalPages = Number(data?.totalPages) ?? 1;
 
   return (
     <div className="flex flex-col gap-6 p-6">
@@ -171,12 +163,9 @@ export default function ProductsPage() {
                       <TableCell className="text-muted-foreground">
                         {product.categoryName ?? "Uncategorized"}
                       </TableCell>
-                      <TableCell className="text-muted-foreground font-mono text-sm">
-                        {product.sku ?? "—"}
-                      </TableCell>
                       <TableCell>
                         {product.price != null
-                          ? new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(product.price)
+                          ? new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(Number(product.price))
                           : "—"}
                       </TableCell>
                     </TableRow>

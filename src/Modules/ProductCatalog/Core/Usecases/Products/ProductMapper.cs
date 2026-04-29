@@ -1,16 +1,27 @@
 using ProductCatalog.Core.DTOs.Products;
 using ProductCatalog.Core.Entities;
+using Inventory.Core.Entities;
 using SharedKernel.Abstractions.Services;
 
 namespace ProductCatalog.Core.Usecases.Products;
 
 internal static class ProductMapper
 {
-    internal static ProductResponse ToResponse(Product product, IFileManager fileManager)
+    internal static ProductResponse ToResponse(
+        Product product,
+        IFileManager fileManager,
+        ProductInventory? productInventory = null,
+        IReadOnlyDictionary<int, VariantInventory>? variantInventories = null)
     {
-        var variants = product.Variants.OrderBy(x => x.Id).Select(MapVariantToResponse).ToList();
+        variantInventories ??= new Dictionary<int, VariantInventory>();
+        var variants = product.Variants
+            .OrderBy(x => x.Id)
+            .Select(x => MapVariantToResponse(x, variantInventories))
+            .ToList();
         var primaryVariant = product.Variants.OrderBy(x => x.Id).FirstOrDefault();
-        var primaryShipping = primaryVariant?.ShippingInfo;
+        var primaryVariantShipping = primaryVariant?.ShippingInfo;
+        var stock = variantInventories.Values.Sum(x => x.Tracking?.OnHand ?? 0);
+        var reserved = variantInventories.Values.Sum(x => x.Tracking?.Reserved ?? 0);
 
         return new ProductResponse
         {
@@ -19,7 +30,6 @@ internal static class ProductMapper
             Description = product.Description,
             CategoryId = product.CategoryId,
             CategoryName = product.Category?.Name ?? string.Empty,
-            Brand = string.Empty,
             Slug = product.Slug,
             ImageUrl = string.IsNullOrWhiteSpace(product.ImageUrl)
                 ? product.Medias.OrderBy(x => x.DisplayOrder).Select(x => fileManager.BuildPublicUrl(x.Key)).FirstOrDefault() ?? string.Empty
@@ -30,23 +40,23 @@ internal static class ProductMapper
             CompareAtPrice = primaryVariant?.CompareAtPrice ?? product.CompareAtPrice,
             CostPrice = primaryVariant?.CostPrice ?? product.CostPrice,
             ChargeTax = primaryVariant?.ChargeTax ?? product.ChargeTax,
-            Stock = product.Metric?.Stock ?? 0,
+            Stock = variantInventories.Count > 0 ? stock : product.Metric?.Stock ?? 0,
             TrackInventory = primaryVariant?.TrackInventory ?? product.TrackInventory,
-            LowStockThreshold = 0,
-            AllowBackorder = primaryVariant?.AllowBackorder ?? product.AllowBackorder,
+            LowStockThreshold = productInventory?.LowStockThreshold ?? 0,
+            AllowBackorder = productInventory?.AllowBackorder ?? primaryVariant?.AllowBackorder ?? product.AllowBackorder,
             Sold = product.Metric?.Sold ?? 0,
-            Reserved = 0,
-            PhysicalProduct = primaryShipping?.Physical ?? false,
-            Weight = primaryShipping?.Weight ?? 0,
-            Width = primaryShipping?.Width ?? 0,
-            Height = primaryShipping?.Height ?? 0,
-            Length = primaryShipping?.Length ?? 0,
+            Reserved = reserved,
+            PhysicalProduct = product.ShippingInfo?.Physical ?? primaryVariantShipping?.Physical ?? false,
+            Weight = product.ShippingInfo?.Weight ?? primaryVariantShipping?.Weight ?? 0,
+            Width = product.ShippingInfo?.Width ?? primaryVariantShipping?.Width ?? 0,
+            Height = product.ShippingInfo?.Height ?? primaryVariantShipping?.Height ?? 0,
+            Length = product.ShippingInfo?.Length ?? primaryVariantShipping?.Length ?? 0,
             Medias = product.Medias
                 .OrderBy(x => x.DisplayOrder)
                 .Select(x => new ProductMediaResponse
                 {
                     Id = x.Id,
-                    Url = fileManager.BuildPublicUrl(x.Key),
+                    Url = fileManager.BuildPublicUrl(x.Key)!,
                     Type = GetMediaType(x.Key),
                     DisplayOrder = x.DisplayOrder
                 })
@@ -65,7 +75,12 @@ internal static class ProductMapper
         };
     }
 
-    private static VariantResponse MapVariantToResponse(Variant variant) => new()
+    private static VariantResponse MapVariantToResponse(
+        Variant variant,
+        IReadOnlyDictionary<int, VariantInventory> variantInventories)
+    {
+        variantInventories.TryGetValue(variant.Id, out var inventory);
+        return new()
     {
         Id = variant.Id,
         UseProductPricing = variant.UseProductPricing,
@@ -75,12 +90,12 @@ internal static class ProductMapper
         CostPrice = variant.CostPrice,
         ChargeTax = variant.ChargeTax,
         ImageUrl = variant.ImageKey ?? string.Empty,
-        Stock = 0,
+        Stock = inventory?.Tracking?.OnHand ?? variant.Metric?.Stock ?? 0,
         Sold = 0,
-        Reserved = 0,
-        TrackInventory = variant.TrackInventory,
-        LowStockThreshold = 0,
-        AllowBackorder = variant.AllowBackorder,
+        Reserved = inventory?.Tracking?.Reserved ?? 0,
+        TrackInventory = inventory?.TrackInventory ?? variant.TrackInventory,
+        LowStockThreshold = inventory?.LowStockThreshold ?? 0,
+        AllowBackorder = inventory?.AllowBackorder ?? variant.AllowBackorder,
         PhysicalProduct = variant.ShippingInfo?.Physical ?? false,
         Weight = variant.ShippingInfo?.Weight ?? 0,
         Width = variant.ShippingInfo?.Width ?? 0,
@@ -96,6 +111,7 @@ internal static class ProductMapper
             })
             .ToList()
     };
+    }
 
     private static string GetMediaType(string key)
     {

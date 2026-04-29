@@ -24,6 +24,9 @@ export const useIdentityStore = create<IdentityState>()(
       refreshToken: '',
       expiresIn:    0,
       expiresTime: 0,
+      email: '',
+      role: '' ,
+      name: '',
       isLoading:    false,
       isHydrated:   false,
 

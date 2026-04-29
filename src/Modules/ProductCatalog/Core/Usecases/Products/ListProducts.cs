@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Inventory;
 using ProductCatalog.Core.DTOs.Products;
 using ProductCatalog.Core.Entities;
 using SharedKernel.Abstractions.Services;
@@ -6,7 +7,7 @@ using SharedKernel.DTOs;
 
 namespace ProductCatalog.Core.Usecases.Products;
 
-public class ListProducts(ProductCatalogDbContext db, IFileManager fileManager)
+public class ListProducts(ProductCatalogDbContext db, InventoryDbContext inventoryDb, IFileManager fileManager)
 {
     public async Task<PaginatedList<ProductResponse>> ExecuteAsync(
         ListProductsRequest request, CancellationToken ct)
@@ -14,6 +15,7 @@ public class ListProducts(ProductCatalogDbContext db, IFileManager fileManager)
         var query = db.Products
             .AsNoTracking()
             .Include(x => x.Category)
+            .Include(x => x.ShippingInfo)
             .Include(x => x.Medias)
             .Include(x => x.Options).ThenInclude(x => x.OptionValues)
             .Include(x => x.Variants).ThenInclude(x => x.OptionValues)
@@ -44,7 +46,28 @@ public class ListProducts(ProductCatalogDbContext db, IFileManager fileManager)
             .Take(request.PageSize)
             .ToListAsync(ct);
 
-        var items = products.Select(p => ProductMapper.ToResponse(p, fileManager)).ToList();
+        var productIds = products.Select(x => x.Id).ToList();
+        var variantIds = products.SelectMany(x => x.Variants).Select(x => x.Id).ToList();
+
+        var productInventories = await inventoryDb.ProductInventories
+            .AsNoTracking()
+            .Where(x => productIds.Contains(x.ProductId))
+            .ToDictionaryAsync(x => x.ProductId, ct);
+
+        var variantInventories = await inventoryDb.VariantInventories
+            .AsNoTracking()
+            .Include(x => x.Tracking)
+            .Where(x => variantIds.Contains(x.VariantId))
+            .ToDictionaryAsync(x => x.VariantId, ct);
+
+        var items = products.Select(p =>
+        {
+            productInventories.TryGetValue(p.Id, out var productInventory);
+            var productVariantInventories = p.Variants
+                .Where(x => variantInventories.ContainsKey(x.Id))
+                .ToDictionary(x => x.Id, x => variantInventories[x.Id]);
+            return ProductMapper.ToResponse(p, fileManager, productInventory, productVariantInventories);
+        }).ToList();
         return new PaginatedList<ProductResponse>(items, totalCount, request.PageNumber, request.PageSize);
     }
 

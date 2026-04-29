@@ -6,8 +6,8 @@ import AppRoutes from './routes';
 import QueryClient from './components/containers/query-client';
 import { TooltipProvider } from './components/ui/tooltip';
 import { Toaster } from './components/ui/sonner';
-import AppErrorBoundary from './components/containers/app-error-boundary';
 import { ThemeProvider } from './components/containers/theme-provider';
+
 const router = createBrowserRouter(createRoutesFromElements(AppRoutes));
 
 function App() {
@@ -15,9 +15,7 @@ function App() {
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <TooltipProvider>
         <QueryClientProvider client={QueryClient}>
-          <AppErrorBoundary>
-            <RouterProvider router={router} />
-          </AppErrorBoundary>
+          <RouterProvider router={router} />
           <Toaster />
         </QueryClientProvider>
       </TooltipProvider>

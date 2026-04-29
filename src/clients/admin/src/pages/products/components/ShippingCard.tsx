@@ -12,10 +12,20 @@ type Props = {
   control: Control<FormValues>;
   selectedVariant: Variant | null;
   onUpdateVariant: (localId: string, update: Partial<VariantOverride>) => void;
+  isCreating?: boolean;
+  watchIsPhysical: boolean;
 };
 
-export function ShippingCard({ register, control, selectedVariant, onUpdateVariant }: Props) {
-  const disabled = !!selectedVariant?.useProductShipping;
+export function ShippingCard({
+  register,
+  control,
+  selectedVariant,
+  onUpdateVariant,
+  isCreating,
+  watchIsPhysical,
+}: Props) {
+  const useVariantShipping = selectedVariant !== null && !selectedVariant.useProductShipping;
+  const productDimensionsDisabled = !!selectedVariant?.useProductShipping;
 
   return (
     <Card>
@@ -30,6 +40,7 @@ export function ShippingCard({ register, control, selectedVariant, onUpdateVaria
               </div>
               <Switch
                 checked={selectedVariant.useProductShipping}
+                disabled={isCreating}
                 onCheckedChange={(v) => onUpdateVariant(selectedVariant.localId, { useProductShipping: v })}
               />
             </div>
@@ -46,33 +57,59 @@ export function ShippingCard({ register, control, selectedVariant, onUpdateVaria
             />
           </Field>
 
-          <div className="grid grid-cols-3 gap-2">
-            {(["width", "height", "length"] as const).map((dim) => (
-              <Field key={dim}>
-                <FieldLabel>{dim.charAt(0).toUpperCase()} (cm)</FieldLabel>
-                <Input
-                  type="number"
-                  min="0"
-                  step="0.1"
-                  {...register(dim)}
-                  placeholder="0"
-                  disabled={disabled}
-                />
-              </Field>
-            ))}
-          </div>
+          {watchIsPhysical && (
+            <>
+              <div className="grid grid-cols-3 gap-2">
+                {(["width", "height", "length"] as const).map((dim) => (
+                  <Field key={dim}>
+                    <FieldLabel>{dim.charAt(0).toUpperCase()} (cm)</FieldLabel>
+                    {useVariantShipping ? (
+                      <Input
+                        type="number"
+                        min="0"
+                        step="0.1"
+                        value={selectedVariant[dim]}
+                        onChange={(e) => onUpdateVariant(selectedVariant.localId, { [dim]: e.target.value })}
+                        placeholder="0"
+                      />
+                    ) : (
+                      <Input
+                        type="number"
+                        min="0"
+                        step="0.1"
+                        {...register(dim)}
+                        disabled={productDimensionsDisabled}
+                        placeholder="0"
+                      />
+                    )}
+                  </Field>
+                ))}
+              </div>
 
-          <Field>
-            <FieldLabel>Weight (kg)</FieldLabel>
-            <Input
-              type="number"
-              min="0"
-              step="0.01"
-              {...register("weight")}
-              placeholder="0"
-              disabled={disabled}
-            />
-          </Field>
+              <Field>
+                <FieldLabel>Weight (kg)</FieldLabel>
+                {useVariantShipping ? (
+                  <Input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={selectedVariant.weight}
+                    onChange={(e) => onUpdateVariant(selectedVariant.localId, { weight: e.target.value })}
+                    placeholder="0"
+                  />
+                ) : (
+                  <Input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    {...register("weight")}
+                    disabled={productDimensionsDisabled}
+                    placeholder="0"
+                  />
+                )}
+              </Field>
+            </>
+          )}
         </FieldGroup>
       </CardContent>
     </Card>

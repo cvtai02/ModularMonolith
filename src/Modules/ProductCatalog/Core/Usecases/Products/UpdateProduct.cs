@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using Inventory;
+using Inventory.Core.Entities;
 using ProductCatalog.Core.DTOs.Products;
 using ProductCatalog.Core.Entities;
 using SharedKernel.Abstractions.Services;
@@ -7,11 +9,13 @@ using SharedKernel.Extensions;
 
 namespace ProductCatalog.Core.Usecases.Products;
 
-public class UpdateProduct(ProductCatalogDbContext db, IFileManager fileManager)
+public class UpdateProduct(ProductCatalogDbContext db, InventoryDbContext inventoryDb, IFileManager fileManager)
 {
     public async Task<ProductResponse?> ExecuteAsync(int id, CreateProductRequest request, CancellationToken ct)
     {
-        var product = await db.Products.FirstOrDefaultAsync(x => x.Id == id, ct);
+        var product = await db.Products
+            .Include(x => x.ShippingInfo)
+            .FirstOrDefaultAsync(x => x.Id == id, ct);
         if (product is null) return null;
 
         var name = request.Name.Trim();
@@ -35,6 +39,17 @@ public class UpdateProduct(ProductCatalogDbContext db, IFileManager fileManager)
         product.TrackInventory = request.TrackInventory;
         product.AllowBackorder = request.AllowBackorder;
         product.Status = request.Status;
+        if (product.ShippingInfo is null)
+        {
+            product.ShippingInfo = new ProductShipping { ProductId = product.Id };
+            db.ProductShippings.Add(product.ShippingInfo);
+        }
+
+        product.ShippingInfo.Physical = request.PhysicalProduct;
+        product.ShippingInfo.Weight = request.Weight;
+        product.ShippingInfo.Width = request.Width;
+        product.ShippingInfo.Height = request.Height;
+        product.ShippingInfo.Length = request.Length;
 
         await using var transaction = await db.Database.BeginTransactionAsync(ct);
 
@@ -91,9 +106,12 @@ public class UpdateProduct(ProductCatalogDbContext db, IFileManager fileManager)
         await db.SaveChangesAsync(ct);
         await transaction.CommitAsync(ct);
 
+        await ReplaceInventory(product.Id, request, variantIds, newVariants, ct);
+
         var updated = await db.Products
             .AsNoTracking()
             .Include(x => x.Category)
+            .Include(x => x.ShippingInfo)
             .Include(x => x.Medias)
             .Include(x => x.Options).ThenInclude(x => x.OptionValues)
             .Include(x => x.Variants).ThenInclude(x => x.OptionValues)
@@ -101,7 +119,12 @@ public class UpdateProduct(ProductCatalogDbContext db, IFileManager fileManager)
             .Include(x => x.Metric)
             .FirstAsync(x => x.Id == id, ct);
 
-        return ProductMapper.ToResponse(updated, fileManager);
+        var productInventory = await inventoryDb.ProductInventories
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.ProductId == id, ct);
+        var variantInventory = await GetVariantInventoryLookup(updated.Variants.Select(x => x.Id), ct);
+
+        return ProductMapper.ToResponse(updated, fileManager, productInventory, variantInventory);
     }
 
     private async Task ValidateRequest(CreateProductRequest request, int productId, string slug, CancellationToken ct)
@@ -196,6 +219,79 @@ public class UpdateProduct(ProductCatalogDbContext db, IFileManager fileManager)
                 };
             }).ToList()
         }).ToList();
+    }
+
+    private async Task ReplaceInventory(
+        int productId,
+        CreateProductRequest request,
+        IReadOnlyCollection<int> oldVariantIds,
+        IReadOnlyCollection<Variant> newVariants,
+        CancellationToken ct)
+    {
+        if (oldVariantIds.Count > 0)
+        {
+            await inventoryDb.VariantTrackings
+                .Where(x => oldVariantIds.Contains(x.VariantId))
+                .ExecuteDeleteAsync(ct);
+            await inventoryDb.VariantInventories
+                .Where(x => oldVariantIds.Contains(x.VariantId))
+                .ExecuteDeleteAsync(ct);
+        }
+
+        var productInventory = await inventoryDb.ProductInventories
+            .FirstOrDefaultAsync(x => x.ProductId == productId, ct);
+
+        if (productInventory is null)
+        {
+            productInventory = new ProductInventory { ProductId = productId };
+            inventoryDb.ProductInventories.Add(productInventory);
+        }
+
+        productInventory.TrackInventory = request.TrackInventory;
+        productInventory.AllowBackorder = request.AllowBackorder;
+        productInventory.LowStockThreshold = request.LowStockThreshold;
+
+        foreach (var variant in newVariants)
+        {
+            var variantInput = request.Variants.FirstOrDefault(x => MatchesVariant(x, variant));
+            var useProductInventory = variantInput?.UseProductInventory ?? true;
+            var quantity = variantInput?.Quantity ?? request.Stock;
+
+            inventoryDb.VariantInventories.Add(new VariantInventory
+            {
+                VariantId = variant.Id,
+                UseProductInventory = useProductInventory,
+                TrackInventory = useProductInventory
+                    ? request.TrackInventory
+                    : variantInput?.TrackInventory ?? request.TrackInventory,
+                AllowBackorder = useProductInventory
+                    ? request.AllowBackorder
+                    : variantInput?.AllowBackorder ?? request.AllowBackorder,
+                LowStockThreshold = useProductInventory
+                    ? request.LowStockThreshold
+                    : variantInput?.LowStockThreshold ?? request.LowStockThreshold,
+                Tracking = new VariantTracking
+                {
+                    VariantId = variant.Id,
+                    OnHand = quantity,
+                    Reserved = 0
+                }
+            });
+        }
+
+        await inventoryDb.SaveChangesAsync(ct);
+    }
+
+    private async Task<Dictionary<int, VariantInventory>> GetVariantInventoryLookup(
+        IEnumerable<int> variantIds,
+        CancellationToken ct)
+    {
+        var ids = variantIds.ToList();
+        return await inventoryDb.VariantInventories
+            .AsNoTracking()
+            .Include(x => x.Tracking)
+            .Where(x => ids.Contains(x.VariantId))
+            .ToDictionaryAsync(x => x.VariantId, ct);
     }
 
     private static bool MatchesVariant(CreateVariantRequest request, Variant variant)

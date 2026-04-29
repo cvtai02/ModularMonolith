@@ -3,9 +3,4 @@
 
 ## API Endpoints
 
-### Order
-- [GetAll](OrderController.cs#L18)
-- [GetById](OrderController.cs#L45)
-- [Create](OrderController.cs#L55)
-- [UpdateStatus](OrderController.cs#L80)
-- [Delete](OrderController.cs#L105)
+No public Order APIs are currently exposed.

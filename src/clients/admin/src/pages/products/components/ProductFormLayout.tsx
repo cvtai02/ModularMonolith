@@ -21,6 +21,7 @@ type Props = {
   title: string;
   categories: CategoryResponse[];
   isPending: boolean;
+  isCreating?: boolean;
   defaultValues?: Partial<FormValues>;
   initialOptions?: OptionEntry[];
   initialVariantOverrides?: Record<string, VariantOverride>;
@@ -32,6 +33,7 @@ export function ProductFormLayout({
   title,
   categories,
   isPending,
+  isCreating,
   defaultValues,
   initialOptions,
   initialVariantOverrides,
@@ -52,6 +54,7 @@ export function ProductFormLayout({
   const watchPrice = watch("price");
   const watchCostPrice = watch("costPrice");
   const watchTrackInventory = watch("trackInventory");
+  const watchIsPhysical = watch("isPhysical");
 
   const [options, setOptions] = useState<OptionEntry[]>(initialOptions ?? []);
   const [variantOverrides, setVariantOverrides] = useState<Record<string, VariantOverride>>(initialVariantOverrides ?? {});
@@ -204,6 +207,7 @@ export function ProductFormLayout({
             watchCostPrice={watchCostPrice}
             selectedVariant={selectedVariant}
             onUpdateVariant={updateVariant}
+            isCreating={isCreating}
           />
           {showInventory && (
             <InventoryCard
@@ -212,6 +216,7 @@ export function ProductFormLayout({
               watchTrackInventory={watchTrackInventory}
               selectedVariant={selectedVariant}
               onUpdateVariant={updateVariant}
+              isCreating={isCreating}
             />
           )}
           <ShippingCard
@@ -219,6 +224,8 @@ export function ProductFormLayout({
             control={control}
             selectedVariant={selectedVariant}
             onUpdateVariant={updateVariant}
+            isCreating={isCreating}
+            watchIsPhysical={watchIsPhysical}
           />
         </div>
       </div>

@@ -55,7 +55,6 @@ interface CreateProductFormState {
     name: string;
     categoryId: number;
     description: string;
-    brand: string;
     status: ProductStatus;
     medias: MediaFile[];
   };
@@ -101,7 +100,7 @@ interface Option {
 
 interface VariantFormData {
   id?: number;
-  optionValueIds: number[]; // combination that identifies variant
+  optionValues: VariantOptionValue[]; // combination that identifies variant
   useProductPricing: boolean;
   imageKey?: string;
   pricing:{
@@ -124,6 +123,12 @@ interface VariantFormData {
     height: float;
     length: float;
   };
+}
+
+interface VariantOptionValue {
+  optionId?: number | null; // null is valid during creation before options are persisted
+  optionName: string;
+  value: string;
 }
 ```
 
@@ -285,6 +290,30 @@ onOptionValueChange(optionIndex, valueIndex, newValue) {
 
 ## API Integration
 
+### Existing API Check
+
+Current AppHost OpenAPI paths expose these relevant endpoints:
+
+- `GET /api/ProductCatalog/categories`
+- `GET /api/ProductCatalog/categories/{name}`
+- `POST /api/ProductCatalog/products`
+- `GET /api/ProductCatalog/products`
+- `GET /api/ProductCatalog/products/{id}`
+- `PUT /api/ProductCatalog/products/{id}`
+- `POST /api/Inventory/products/{productId}/initialize`
+- `POST /api/Content/file-objects/presigned-upload`
+- `POST /api/Content/file-objects`
+
+Important contract notes from the current backend:
+
+- ProductCatalog and Content route casing is currently `ProductCatalog` and `Content` in OpenAPI, not lowercase `productcatalog` / `content`.
+- `POST /api/ProductCatalog/products` currently owns product creation and persists product, options, variants, media, pricing, inventory flags, and variant shipping.
+- `POST /api/Inventory/products/{productId}/initialize` initializes product and variant inventory records.
+- Product media payload supports `MediaKeys: string[]` for storage keys from content upload.
+- Variant option payload uses `OptionValues: [{ OptionId, OptionName, Value }]`; `OptionId` can be `null` during creation.
+- `CreateProductRequest` includes `Stock`, `TrackInventory`, `LowStockThreshold`, and `AllowBackorder`, but only `TrackInventory` and `AllowBackorder` are persisted on ProductCatalog entities today. Response `LowStockThreshold`, variant `Stock`, and variant `Reserved` currently map to `0`.
+- Product-level shipping is accepted in the request as `PhysicalProduct`, `Weight`, `Width`, `Height`, and `Length`.
+
 ### Endpoints Used
 
 **ProductCatalog Module:**
@@ -337,7 +366,7 @@ CreateProductRequest {
 }
 
 CreateVariantRequest {
-  OptionValueIds: int[];
+  OptionValues: VariantOptionValueDto[];
   Price: decimal;
   CompareAtPrice: decimal;
   CostPrice: decimal;
@@ -353,6 +382,12 @@ CreateVariantRequest {
   Width: float;
   Height: float;
   Length: float;
+}
+
+VariantOptionValueDto {
+  OptionId: int?; // null during creation is allowed
+  OptionName: string;
+  Value: string;
 }
 
 // Inventory initialization payload (sent to /api/inventory/products/{productId}/initialize)

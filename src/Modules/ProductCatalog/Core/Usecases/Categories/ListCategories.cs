@@ -1,10 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using ProductCatalog.Core.DTOs.Categories;
+using SharedKernel.Abstractions.Services;
 using SharedKernel.DTOs;
 
 namespace ProductCatalog.Core.Usecases.Categories;
 
-public class ListCategories(ProductCatalogDbContext db)
+public class ListCategories(ProductCatalogDbContext db, IFileManager fm)
 {
     public async Task<PaginatedList<CategoryResponse>> ExecuteAsync(
         int pageNumber, int pageSize, string? search, CancellationToken ct)
@@ -26,7 +27,7 @@ public class ListCategories(ProductCatalogDbContext db)
             {
                 Name = x.Name,
                 Description = x.Description,
-                ImageUrl = x.ImageUrl,
+                ImageUrl = fm.BuildPublicUrl(x.ImageKey),
                 Status = x.Status,
                 ParentName = x.Parent != null ? x.Parent.Name : null,
                 Slug = x.Slug,

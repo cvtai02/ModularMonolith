@@ -11,7 +11,7 @@ public class CreateCategoryRequest {
     [MaxLength(2000)]
     public string Description { get; set; } = string.Empty;
     [MaxLength(200)]
-    public string ImageUrl { get; set; } = string.Empty;
+    public string? ImageKey { get; set; } 
     public CategoryStatus Status { get; set; } = CategoryStatus.Active;
     public string? ParentName { get; set; }
     public string? Slug { 

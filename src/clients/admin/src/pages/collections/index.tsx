@@ -123,7 +123,8 @@ export default function CollectionsPage() {
           params: { path: { id: editing.id! } },
           body: {
             description: values.description,
-            slug: values.slug || undefined,
+            slug: values.slug,
+            imageKey: null,
           },
         });
         toast.success("Collection updated");

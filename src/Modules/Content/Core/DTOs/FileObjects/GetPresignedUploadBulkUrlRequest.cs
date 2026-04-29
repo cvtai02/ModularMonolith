@@ -5,24 +5,25 @@ namespace Content.Core.DTOs.FileObjects;
 public class GetPresignedUploadBulkUrlRequest
 {
     [Required]
-    public List<PresignedUploadFileRequest> Files { get; set; } = [];
+    public List<CreatePresignedUploadFileRequest> Files { get; set; } = [];
 
-    [Range(1, 1440)]
+    [Range(1, 60)]
     public int ExpiryMinutes { get; set; } = 15;
 }
 
-public class PresignedUploadFileRequest
+public class CreatePresignedUploadFileRequest
 {
-    [MaxLength(500)]
-    public string? Key { get; set; }
-
     [Required]
     [MaxLength(100)]
     public string Category { get; set; } = string.Empty;
 
     [Required]
-    [MaxLength(20)]
-    public string Ext { get; set; } = string.Empty;
+    [MaxLength(500)]
+    public string FileName { get; set; } = string.Empty;
 
+    [Required]
+    [MaxLength(200)]
     public string ContentType { get; set; } = string.Empty;
+
+    public long Size { get; set; }
 }

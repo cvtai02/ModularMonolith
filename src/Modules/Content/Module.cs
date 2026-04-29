@@ -1,6 +1,4 @@
 using Content.Core.Usecases.FileObjects;
-using Content.Core.Usecases.Menus;
-using Content.Core.Usecases.MetaObjects;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -23,20 +21,10 @@ public class ContentModule(IHostApplicationBuilder b) : Module(b)
 
     protected override void RegisterUsecases()
     {
+        Services.AddScoped<ListMediaFiles>();
         Services.AddScoped<GetPresignedUpload>();
         Services.AddScoped<ConfirmUpload>();
-
-        Services.AddScoped<GetAllMenus>();
-        Services.AddScoped<GetMenuByName>();
-        Services.AddScoped<CreateMenu>();
-        Services.AddScoped<UpdateMenu>();
-        Services.AddScoped<DeleteMenu>();
-
-        Services.AddScoped<GetAllMetaObjects>();
-        Services.AddScoped<GetMetaObjectByKey>();
-        Services.AddScoped<CreateMetaObject>();
-        Services.AddScoped<UpdateMetaObject>();
-        Services.AddScoped<DeleteMetaObject>();
+        Services.AddScoped<DeleteMediaFiles>();
     }
 }
 

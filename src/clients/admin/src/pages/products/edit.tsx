@@ -6,7 +6,7 @@ import { tanstackQueryClient } from "@/api/api-client";
 import { ROUTES } from "@/configs/routes";
 
 import type { FormValues, OptionEntry, Variant, VariantOverride } from "./components/types";
-import { getFilledValues, uid } from "./components/helpers";
+import { buildVariantsPayload, getFilledValues, uid } from "./components/helpers";
 import { ProductFormLayout } from "./components/ProductFormLayout";
 
 export default function EditProductPage() {
@@ -40,6 +40,7 @@ export default function EditProductPage() {
       description: product.description ?? "",
       status: String(product.status ?? 1),
       imageUrl: product.imageUrl ?? "",
+      currency: product.currency ?? 0,
       price: product.price ? String(product.price) : "",
       compareAtPrice: product.compareAtPrice ? String(product.compareAtPrice) : "",
       costPrice: product.costPrice ? String(product.costPrice) : "",
@@ -82,12 +83,19 @@ export default function EditProductPage() {
       overrides[localId] = {
         useProductPrice: variant.useProductPricing ?? true,
         price: !variant.useProductPricing && variant.price ? String(variant.price) : "",
+        compareAtPrice: !variant.useProductPricing && variant.compareAtPrice ? String(variant.compareAtPrice) : "",
+        costPrice: !variant.useProductPricing && variant.costPrice ? String(variant.costPrice) : "",
+        chargeTax: !variant.useProductPricing ? (variant.chargeTax ?? false) : false,
         useProductShipping: variant.useProductShipping ?? true,
+        weight: !variant.useProductShipping && variant.weight ? String(variant.weight) : "",
+        width: !variant.useProductShipping && variant.width ? String(variant.width) : "",
+        height: !variant.useProductShipping && variant.height ? String(variant.height) : "",
+        length: !variant.useProductShipping && variant.length ? String(variant.length) : "",
         useProductInventory: true,
-        stock: "0",
+        stock: variant.stock ? String(variant.stock) : "0",
         trackInventory: variant.trackInventory ?? true,
         allowBackorder: variant.allowBackorder ?? false,
-        lowStockThreshold: "",
+        lowStockThreshold: variant.lowStockThreshold ? String(variant.lowStockThreshold) : "",
       };
     }
     return overrides;
@@ -127,21 +135,7 @@ export default function EditProductPage() {
             displayOrder,
             values: getFilledValues(opt.inputValues),
           })),
-          variants: hasVariants
-            ? variants.map((variant) => ({
-                useProductPricing: variant.useProductPrice,
-                price: !variant.useProductPrice && variant.price ? parseFloat(variant.price) : undefined,
-                useProductShipping: variant.useProductShipping,
-                useProductInventory: variant.useProductInventory,
-                trackInventory: variant.useProductInventory ? undefined : variant.trackInventory,
-                allowBackorder: variant.useProductInventory ? undefined : variant.allowBackorder,
-                quantity: parseInt(variant.stock) || 0,
-                optionValues: variant.optionValues.map((ov) => ({
-                  optionName: ov.optionName,
-                  value: ov.value,
-                })),
-              }))
-            : [],
+          variants: buildVariantsPayload(variants, hasVariants),
         },
       });
 

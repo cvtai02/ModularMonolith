@@ -18,6 +18,7 @@ type Props = {
   watchTrackInventory: boolean;
   selectedVariant: Variant | null;
   onUpdateVariant: (localId: string, update: Partial<VariantOverride>) => void;
+  isCreating?: boolean;
 };
 
 export function InventoryCard({
@@ -26,6 +27,7 @@ export function InventoryCard({
   watchTrackInventory,
   selectedVariant,
   onUpdateVariant,
+  isCreating,
 }: Props) {
   return (
     <Card>
@@ -40,6 +42,7 @@ export function InventoryCard({
               </div>
               <Switch
                 checked={selectedVariant.useProductInventory}
+                disabled={isCreating}
                 onCheckedChange={(v) => onUpdateVariant(selectedVariant.localId, { useProductInventory: v })}
               />
             </div>
@@ -91,39 +94,6 @@ export function InventoryCard({
             </>
           )}
 
-          {selectedVariant && !selectedVariant.useProductInventory && (
-            <>
-              <Field orientation="horizontal">
-                <FieldLabel>Track inventory</FieldLabel>
-                <Switch
-                  checked={selectedVariant.trackInventory}
-                  onCheckedChange={(v) => onUpdateVariant(selectedVariant.localId, { trackInventory: v })}
-                />
-              </Field>
-              {selectedVariant.trackInventory && (
-                <>
-                  <Field>
-                    <FieldLabel>Quantity</FieldLabel>
-                    <Input
-                      type="number"
-                      min="0"
-                      value={selectedVariant.stock}
-                      onChange={(e) => onUpdateVariant(selectedVariant.localId, { stock: e.target.value })}
-                      placeholder="0"
-                    />
-                  </Field>
-                  <Field orientation="horizontal">
-                    <FieldLabel>Continue selling when out of stock</FieldLabel>
-                    <Switch
-                      checked={selectedVariant.allowBackorder}
-                      onCheckedChange={(v) => onUpdateVariant(selectedVariant.localId, { allowBackorder: v })}
-                    />
-                  </Field>
-                </>
-              )}
-            </>
-          )}
-
           {selectedVariant && selectedVariant.useProductInventory && (
             <Field>
               <FieldLabel>Quantity</FieldLabel>
@@ -135,6 +105,48 @@ export function InventoryCard({
                 placeholder="0"
               />
             </Field>
+          )}
+
+          {selectedVariant && !selectedVariant.useProductInventory && (
+            <>
+              <Field orientation="horizontal">
+                <FieldLabel>Track inventory</FieldLabel>
+                <Switch
+                  checked={selectedVariant.trackInventory}
+                  onCheckedChange={(v) => onUpdateVariant(selectedVariant.localId, { trackInventory: v })}
+                />
+              </Field>
+              {selectedVariant.trackInventory && (
+                <Field>
+                  <FieldLabel>Quantity</FieldLabel>
+                  <Input
+                    type="number"
+                    min="0"
+                    value={selectedVariant.stock}
+                    onChange={(e) => onUpdateVariant(selectedVariant.localId, { stock: e.target.value })}
+                    placeholder="0"
+                  />
+                </Field>
+              )}
+              <Field orientation="horizontal">
+                <FieldLabel>Continue selling when out of stock</FieldLabel>
+                <Switch
+                  checked={selectedVariant.allowBackorder}
+                  onCheckedChange={(v) => onUpdateVariant(selectedVariant.localId, { allowBackorder: v })}
+                />
+              </Field>
+              <Field>
+                <FieldLabel>Low stock threshold</FieldLabel>
+                <Input
+                  type="number"
+                  min="0"
+                  value={selectedVariant.lowStockThreshold}
+                  onChange={(e) => onUpdateVariant(selectedVariant.localId, { lowStockThreshold: e.target.value })}
+                  placeholder="e.g. 5"
+                />
+                <FieldDescription>Alert when stock falls below this number</FieldDescription>
+              </Field>
+            </>
           )}
         </FieldGroup>
       </CardContent>

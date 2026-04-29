@@ -1,6 +1,4 @@
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Order.Core.Usecases.Orders;
 
 namespace Order;
 
@@ -21,11 +19,6 @@ public class OrderModule(IHostApplicationBuilder b) : Module(b)
 
     protected override void RegisterUsecases()
     {
-        Services.AddScoped<ListOrders>();
-        Services.AddScoped<GetOrderById>();
-        Services.AddScoped<CreateOrder>();
-        Services.AddScoped<UpdateOrderStatus>();
-        Services.AddScoped<DeleteOrder>();
     }
 }
 

@@ -1,12 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using ProductCatalog.Core.DTOs.Categories;
 using ProductCatalog.Core.Entities;
+using SharedKernel.Abstractions.Services;
 using SharedKernel.Exceptions;
 using SharedKernel.Extensions;
 
 namespace ProductCatalog.Core.Usecases.Categories;
 
-public class CreateCategory(ProductCatalogDbContext db)
+public class CreateCategory(ProductCatalogDbContext db, IFileManager fm)
 {
     public async Task<CategoryResponse> ExecuteAsync(CreateCategoryRequest request, CancellationToken ct)
     {
@@ -37,7 +38,7 @@ public class CreateCategory(ProductCatalogDbContext db)
         {
             Name = name,
             Description = request.Description.Trim(),
-            ImageUrl = request.ImageUrl.Trim(),
+            ImageKey = request.ImageKey?.Trim(),
             Status = request.Status,
             ParentId = parentId,
             Slug = slug,
@@ -46,6 +47,6 @@ public class CreateCategory(ProductCatalogDbContext db)
         db.Categories.Add(category);
         await db.SaveChangesAsync(ct);
 
-        return CategoryMapper.ToResponse(category);
+        return CategoryMapper.ToResponse(category, fm);
     }
 }

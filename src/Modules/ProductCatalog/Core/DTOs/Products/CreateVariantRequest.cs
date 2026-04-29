@@ -24,7 +24,7 @@ public class CreateVariantRequest
 
 public class VariantOptionValueDto
 {
-    public int OptionId { get; set; }
+    public int? OptionId { get; set; }
     public string OptionName { get; set; } = string.Empty;
     public string Value { get; set; } = string.Empty;
 }
