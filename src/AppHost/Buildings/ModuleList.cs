@@ -1,3 +1,4 @@
+using Account;
 using Cart;
 using Content;
 using Identity;
@@ -14,6 +15,7 @@ public static class ModuleList
     {
         return [
             new IdentityModule(builder),
+            new AccountModule(builder),
             new ProductCatalogModule(builder),
             new ContentModule(builder),
             new InventoryModule(builder),

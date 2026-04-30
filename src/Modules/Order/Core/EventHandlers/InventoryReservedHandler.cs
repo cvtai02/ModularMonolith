@@ -23,12 +23,23 @@ public class InventoryReservedHandler(
         await db.SaveChangesAsync(ct);
 
         await realtimeNotifier.NotifyOrderPlacedAsync(order, @event.ReservationId, ct);
-
         await eventBus.Publish(new OrderPlaced
         {
             OrderId = order.Id,
             OrderCode = order.Code,
             ReservationId = @event.ReservationId
+        }, ct);
+
+        await eventBus.Publish(new AdminOrderPlaced
+        {
+            OrderId = order.Id,
+            OrderCode = order.Code,
+            CustomerId = order.CustomerId,
+            TotalAmount = order.TotalAmount,
+            CurrencyCode = order.CurrencyCode,
+            ReservationId = @event.ReservationId,
+            Status = order.Status.ToString(),
+            CreatedAt = DateTimeOffset.UtcNow
         }, ct);
     }
 }

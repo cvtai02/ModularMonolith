@@ -17,6 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\SharedKernel\SharedKernel.csproj" />
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+    <ProjectReference Include="..\Modules\Account\Account.csproj" />
     <ProjectReference Include="..\Modules\Cart\Cart.csproj" />
     <ProjectReference Include="..\Modules\Inventory\Inventory.csproj" />
     <ProjectReference Include="..\Modules\Order\Order.csproj" />

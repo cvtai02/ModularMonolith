@@ -3,7 +3,7 @@ using Order.Api.Hubs;
 
 namespace Order.Core.Notifications;
 
-public class OrderRealtimeNotifier(IHubContext<OrderHub> hubContext)
+public class OrderRealtimeNotifier(IHubContext<OrderHub> orderHubContext)
 {
     public Task NotifyOrderPlacedAsync(Entities.Order order, int reservationId, CancellationToken ct)
     {
@@ -15,7 +15,7 @@ public class OrderRealtimeNotifier(IHubContext<OrderHub> hubContext)
             Status = order.Status.ToString()
         };
 
-        return hubContext.Clients
+        return orderHubContext.Clients
             .Group(OrderRealtimeGroups.Order(order.Id))
             .SendAsync("OrderPlaced", message, ct);
     }
