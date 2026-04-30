@@ -108,7 +108,11 @@ export function GeneralSection({ register, control, errors, categories }: Props)
                   onValueChange={(v) => field.onChange(parseInt(v!))}
                 >
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select a category…" />
+                    <SelectValue placeholder="Select a category…">
+                      {field.value
+                        ? categories.find((c) => c.id === field.value)?.name
+                        : null}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     {categories.map((cat) => (

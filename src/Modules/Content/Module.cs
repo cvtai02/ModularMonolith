@@ -1,3 +1,4 @@
+using Content.Core.Usecases.BlogPosts;
 using Content.Core.Usecases.FileObjects;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -25,6 +26,16 @@ public class ContentModule(IHostApplicationBuilder b) : Module(b)
         Services.AddScoped<GetPresignedUpload>();
         Services.AddScoped<ConfirmUpload>();
         Services.AddScoped<DeleteMediaFiles>();
+        Services.AddScoped<BlogPostSlugGenerator>();
+        Services.AddScoped<ListPublishedBlogPosts>();
+        Services.AddScoped<GetPublishedBlogPostBySlug>();
+        Services.AddScoped<ListAdminBlogPosts>();
+        Services.AddScoped<GetAdminBlogPostById>();
+        Services.AddScoped<CreateBlogPost>();
+        Services.AddScoped<UpdateBlogPost>();
+        Services.AddScoped<PublishBlogPost>();
+        Services.AddScoped<ArchiveBlogPost>();
+        Services.AddScoped<DeleteBlogPost>();
     }
 }
 

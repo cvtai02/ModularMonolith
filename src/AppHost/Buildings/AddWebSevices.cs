@@ -89,6 +89,7 @@ public static partial class ServiceCollectionExtensions
             {
                 options.AddPolicies();
             });
+            services.AddSignalR();
 
             services.AddExceptionHandler<GlobalExceptionHandler>()
                 .AddProblemDetails()

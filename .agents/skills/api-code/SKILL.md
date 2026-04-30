@@ -16,7 +16,6 @@ description: Implement/Update API endpoints.
 - Update `<ModuleName>/Api/api.md` when you add/delete APIs
 - After finishing API implementation, update `src/clients/shared/api/<modulename>-types.ts` for the affected module.
 - Usecases is registered with ServicesProvider in `src/Modules/<ModuleName>/Module.cs`.
-- Ignore if changes to APIs do not define DTOs class for request/response. After adding/updating APIs, if there are changes in Response Class Name or Request Class Name, run skill #file:../api-types-integration/SKILL.md . 
 
 # Api strategies: 
 - Pagination, Filtering, Sorting, ... -> Use graphql

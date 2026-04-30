@@ -11,4 +11,14 @@ public class ContentDbContext: TenancyDbContext
     public DbSet<Menu> Menus => Set<Menu>();
     public DbSet<BlogPost> BlogPosts => Set<BlogPost>();
     public DbSet<MetaObject> MetaObjects => Set<MetaObject>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<BlogPost>()
+            .HasIndex(x => new { x.TenantId, x.Slug })
+            .IsUnique()
+            .HasFilter("\"IsDeleted\" = false");
+    }
 }

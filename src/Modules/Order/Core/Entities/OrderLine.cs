@@ -8,7 +8,7 @@ public class OrderLine : AuditableEntity
     public int VariantId { get; private set; }
     public string ProductName { get; private set; } = string.Empty;
     public string VariantName { get; private set; } = string.Empty;
-    public string ImageUrl { get; private set; } = string.Empty;
+    public string ImageUrl { get; private set; }
     public decimal UnitPrice { get; private set; }
     public int Quantity { get; private set; }
     public decimal Subtotal { get; private set; }

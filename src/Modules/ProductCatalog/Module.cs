@@ -5,6 +5,7 @@ using ProductCatalog.Core.Services;
 using ProductCatalog.Core.Usecases.Products;
 using ProductCatalog.Core.Usecases.Categories;
 using ProductCatalog.Core.Usecases.Collections;
+using Intermediary.Ordering;
 
 namespace ProductCatalog;
 

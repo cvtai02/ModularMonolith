@@ -18,7 +18,7 @@ Codex may read and edit `src/clients/shared/` only when backend contract work re
 
 ## Planning Requests
 
-- When the user asks for a plan, create or update a `plan.md` file before doing any implementation or other work.
+- When the user asks for a plan, create or update a descriptive plan file under `requirements/` before doing any implementation or other work.
 - The plan file should be committed as a reviewable artifact for the user before execution begins.
 
 ## .NET Build And Run Safety

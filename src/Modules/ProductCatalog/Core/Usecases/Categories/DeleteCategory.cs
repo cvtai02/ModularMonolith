@@ -25,6 +25,8 @@ public class DeleteCategory(ProductCatalogDbContext db)
 
         if (errors.Count > 0) throw new ValidationException("Validation failed", errors);
 
+        category.IsSoftDeleted = false;
+
         db.Categories.Remove(category);
         await db.SaveChangesAsync(ct);
         return true;

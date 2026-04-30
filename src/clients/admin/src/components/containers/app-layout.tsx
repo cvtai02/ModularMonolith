@@ -12,7 +12,7 @@ import {
   LogOutIcon,
   TagIcon,
 } from "lucide-react";
-import { type ComponentType } from "react";
+import { type ComponentType, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -58,6 +58,7 @@ const navItems: NavItem[] = [
     to: ROUTES.products,
     icon: BoxIcon,
     subItems: [
+      { label: "All Products",    to: ROUTES.products },
       { label: "Category",        to: ROUTES.productCategory },
       { label: "Collections",     to: ROUTES.productCollections },
       { label: "Inventory",       to: ROUTES.productInventory },
@@ -106,21 +107,24 @@ function NavItemRow({ item }: { item: NavItem }) {
       ? location.pathname.startsWith(item.to)
       : location.pathname === item.to;
 
+  const [open, setOpen] = useState(isActive);
+  useEffect(() => { if (isActive) setOpen(true); }, [isActive]);
+
   if (item.subItems) {
     return (
       <SidebarMenuItem>
-        <Collapsible open={isActive}>
+        <Collapsible open={open} onOpenChange={setOpen}>
           <SidebarMenuButton
             isActive={isActive}
             tooltip={item.label}
-            render={<NavLink to={item.to} />}
+            onClick={() => setOpen((o) => !o)}
           >
             <item.icon />
             <span>{item.label}</span>
             <ChevronDownIcon
               className={cn(
                 "ml-auto size-4 shrink-0 transition-transform",
-                isActive && "rotate-180"
+                open && "rotate-180"
               )}
             />
           </SidebarMenuButton>

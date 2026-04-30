@@ -7,3 +7,10 @@
 - [Create](OrderController.cs#L16)
 - [GetById](OrderController.cs#L25)
 - [GetAll](OrderController.cs#L32)
+
+### Realtime
+- Hub: `/hubs/orders`
+- Auth: required
+- Client method to invoke after order creation: `JoinOrder(orderId: number)`
+- Server event emitted when inventory is reserved and the order becomes placed: `OrderPlaced`
+- Plan and frontend handoff: [Order Realtime SignalR Plan](../../../../requirements/order-realtime-signalr-plan.md)

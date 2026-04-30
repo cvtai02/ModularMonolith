@@ -1,9 +1,11 @@
 using Intermediary.Events.Inventory;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Order.Api.Hubs;
 using Order.Core.EventHandlers;
+using Order.Core.Notifications;
 using Order.Core.Usecases.Orders;
-using SharedKernel.Abstractions.Contracts;
 
 namespace Order;
 
@@ -27,10 +29,16 @@ public class OrderModule(IHostApplicationBuilder b) : Module(b)
         Services.AddScoped<CreateOrder>();
         Services.AddScoped<GetOrderById>();
         Services.AddScoped<ListOrders>();
+        Services.AddScoped<OrderRealtimeNotifier>();
         Services.AddScoped<IEventHandler<InventoryReserved>, InventoryReservedHandler>();
         Services.AddScoped<IEventHandler<ReservationRejected>, ReservationRejectedHandler>();
         Services.AddScoped<IEventHandler<ReservationCommited>, ReservationCommitedHandler>();
         Services.AddScoped<IEventHandler<ReservationExpired>, ReservationExpiredHandler>();
+    }
+
+    public override void Run(WebApplication app)
+    {
+        app.MapHub<OrderHub>("/hubs/orders").RequireAuthorization();
     }
 }
 

@@ -13,6 +13,6 @@ public sealed record OrderProductVariantInfo(
     bool IsProductActive,
     int VariantId,
     string VariantName,
-    string ImageUrl,
+    string? ImageUrl,
     decimal UnitPrice,
     string CurrencyCode);
