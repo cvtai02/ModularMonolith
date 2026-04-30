@@ -51,6 +51,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { tanstackQueryClient } from "@/api/api-client";
 import { AdminErrorState } from "@/components/admin/admin-page";
+import { applyValidationErrors } from "@/lib/form-error";
 import type { CategoryResponse } from "@shared/api/api-types";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -99,6 +100,7 @@ export default function CategoriesPage() {
     handleSubmit,
     reset,
     setValue,
+    setError,
     formState: { errors },
   } = useForm<FormValues>({ defaultValues: { name: "", slug: "", description: "" } });
 
@@ -144,8 +146,8 @@ export default function CategoriesPage() {
       }
       setSheetOpen(false);
       refetch();
-    } catch {
-      toast.error("Something went wrong. Please try again.");
+    } catch (err) {
+      if (!applyValidationErrors(err, setError)) throw err;
     }
   });
 

@@ -24,48 +24,44 @@ export default function AddProductPage() {
   );
 
   const handleSubmit = async (values: FormValues, options: OptionEntry[], variants: Variant[], statusOverride?: string) => {
-    try {
-      const finalStatus = parseInt(statusOverride ?? values.status);
-      const hasVariants = variants.length > 0;
-      const activeOptions = options.filter(
-        (o) => o.name.trim() && getFilledValues(o.inputValues).length > 0
-      );
+    const finalStatus = parseInt(statusOverride ?? values.status);
+    const hasVariants = variants.length > 0;
+    const activeOptions = options.filter(
+      (o) => o.name.trim() && getFilledValues(o.inputValues).length > 0
+    );
 
-      await createProduct({
-        body: {
-          name: values.name,
-          categoryId: values.categoryId,
-          description: values.description || undefined,
-          imageUrl: values.imageUrl || undefined,
-          status: finalStatus,
-          currency: values.currency,
-          price: values.price ? parseFloat(values.price) : undefined,
-          compareAtPrice: values.compareAtPrice ? parseFloat(values.compareAtPrice) : undefined,
-          costPrice: values.costPrice ? parseFloat(values.costPrice) : undefined,
-          chargeTax: values.chargeTax,
-          stock: !hasVariants && values.stock ? parseInt(values.stock) : undefined,
-          trackInventory: values.trackInventory,
-          allowBackorder: values.allowBackorder,
-          lowStockThreshold: values.lowStockThreshold ? parseInt(values.lowStockThreshold) : undefined,
-          physicalProduct: values.isPhysical,
-          weight: values.weight ? parseFloat(values.weight) : undefined,
-          width: values.width ? parseFloat(values.width) : undefined,
-          height: values.height ? parseFloat(values.height) : undefined,
-          length: values.length ? parseFloat(values.length) : undefined,
-          options: activeOptions.map((opt, displayOrder) => ({
-            name: opt.name,
-            displayOrder,
-            values: getFilledValues(opt.inputValues),
-          })),
-          variants: buildVariantsPayload(variants, hasVariants),
-        },
-      });
+    await createProduct({
+      body: {
+        name: values.name,
+        categoryId: values.categoryId,
+        description: values.description || undefined,
+        imageUrl: values.imageUrl || undefined,
+        status: finalStatus,
+        currency: values.currency,
+        price: values.price ? parseFloat(values.price) : undefined,
+        compareAtPrice: values.compareAtPrice ? parseFloat(values.compareAtPrice) : undefined,
+        costPrice: values.costPrice ? parseFloat(values.costPrice) : undefined,
+        chargeTax: values.chargeTax,
+        stock: !hasVariants && values.stock ? parseInt(values.stock) : undefined,
+        trackInventory: values.trackInventory,
+        allowBackorder: values.allowBackorder,
+        lowStockThreshold: values.lowStockThreshold ? parseInt(values.lowStockThreshold) : undefined,
+        physicalProduct: values.isPhysical,
+        weight: values.weight ? parseFloat(values.weight) : undefined,
+        width: values.width ? parseFloat(values.width) : undefined,
+        height: values.height ? parseFloat(values.height) : undefined,
+        length: values.length ? parseFloat(values.length) : undefined,
+        options: activeOptions.map((opt, displayOrder) => ({
+          name: opt.name,
+          displayOrder,
+          values: getFilledValues(opt.inputValues),
+        })),
+        variants: buildVariantsPayload(variants, hasVariants),
+      },
+    });
 
-      toast.success("Product created!");
-      navigate(ROUTES.products);
-    } catch {
-      toast.error("Failed to create product. Please try again.");
-    }
+    toast.success("Product created!");
+    navigate(ROUTES.products);
   };
 
   return (

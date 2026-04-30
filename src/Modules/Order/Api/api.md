@@ -3,4 +3,7 @@
 
 ## API Endpoints
 
-No public Order APIs are currently exposed.
+### Order
+- [Create](OrderController.cs#L16)
+- [GetById](OrderController.cs#L25)
+- [GetAll](OrderController.cs#L32)

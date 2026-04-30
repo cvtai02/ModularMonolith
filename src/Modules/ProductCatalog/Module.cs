@@ -42,6 +42,7 @@ public class ProductCatalogModule(IHostApplicationBuilder b) : Module(b)
         Services.AddScoped<UpdateProduct>();
 
         Services.AddScoped<IMediaUsageChecker, ProductMediaUsageChecker>();
+        Services.AddScoped<IOrderProductLookup, OrderProductLookup>();
     }
 }
 

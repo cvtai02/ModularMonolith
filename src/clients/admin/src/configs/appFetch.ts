@@ -19,7 +19,7 @@ export const appFetch = async (input: RequestInfo | URL, init?: RequestInit): Pr
 };
 
 const createApiError = async (response: Response): Promise<ApiError> => {
-    if (response.status < 400) return new ApiError("", response.status, "");
+    if (response.status < 400) return new ApiError(`Throw on ${response.status}`, response.status, "");
 
     const body = await response.clone().json().catch(() => null);
     if (response.status == 400) {
@@ -29,5 +29,5 @@ const createApiError = async (response: Response): Promise<ApiError> => {
         return new ApiError(body.title, response.status, body.detail);
     }
 
-    return new ApiError("", response.status, "");
+    return new ApiError("Failed API call return no title, check devtools", response.status, "");
 }

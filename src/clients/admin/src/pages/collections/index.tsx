@@ -50,6 +50,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { tanstackQueryClient } from "@/api/api-client";
 import { AdminErrorState } from "@/components/admin/admin-page";
+import { applyValidationErrors } from "@/lib/form-error";
 import type { CollectionResponse } from "@shared/api/api-types";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -97,6 +98,7 @@ export default function CollectionsPage() {
     handleSubmit,
     reset,
     setValue,
+    setError,
     formState: { errors },
   } = useForm<FormValues>({ defaultValues: { title: "", slug: "", description: "" } });
 
@@ -140,8 +142,8 @@ export default function CollectionsPage() {
       }
       setSheetOpen(false);
       refetch();
-    } catch {
-      toast.error("Something went wrong. Please try again.");
+    } catch (err) {
+      if (!applyValidationErrors(err, setError)) throw err;
     }
   });
 

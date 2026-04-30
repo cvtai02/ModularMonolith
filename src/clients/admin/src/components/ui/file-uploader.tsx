@@ -3,6 +3,7 @@ import { UploadCloudIcon, XIcon } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { tanstackQueryClient } from "@/api/api-client";
+import { ApiError, ValidationError } from "@shared/api/api-types";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -11,6 +12,7 @@ export type FileCategory = "product" | "avatar" | "review" | "content";
 interface UploadState {
   name: string;
   status: "uploading" | "done" | "error";
+  errorMessage?: string;
 }
 
 export interface FileUploaderProps {
@@ -99,11 +101,21 @@ export function FileUploader({
 
         const publicUrls = confirmed.files.map((r) => r.publicUrl!);
         onChange?.(multiple ? [...value, ...publicUrls] : publicUrls);
-      } catch {
-        toast.error("Upload failed. Please try again.");
-        setUploadStates((prev) => prev.map((s) => ({ ...s, status: "error" })));
+      } catch (err) {
+        let errorMessage: string;
+        if (err instanceof ValidationError) {
+          errorMessage = Object.values(err.errors ?? {}).flat()[0] ?? err.message ?? "Upload failed.";
+        } else if (err instanceof ApiError) {
+          errorMessage = err.message ?? "Upload failed.";
+        } else {
+          errorMessage = err instanceof Error ? err.message : "Upload failed. Please try again.";
+        }
+        setUploadStates((prev) => prev.map((s) => ({ ...s, status: "error", errorMessage })));
       } finally {
-        setTimeout(() => setUploadStates([]), 1500);
+        // Only auto-clear on success; leave error states visible
+        setTimeout(() => {
+          setUploadStates((prev) => (prev.some((s) => s.status === "error") ? prev : []));
+        }, 1500);
       }
     },
     [category, multiple, maxFiles, value, onChange, getPresignedUrls, confirmUpload]
@@ -186,9 +198,7 @@ export function FileUploader({
           {uploadStates.map((state, i) => (
             <div key={i} className="rounded-md border bg-muted/30 px-3 py-2">
               <div className="flex items-center justify-between gap-2 text-xs">
-                <span className="max-w-50 truncate text-muted-foreground">
-                  {state.name}
-                </span>
+                <span className="truncate text-muted-foreground">{state.name}</span>
                 <span
                   className={cn(
                     "shrink-0 font-medium",
@@ -199,13 +209,12 @@ export function FileUploader({
                       : "text-muted-foreground"
                   )}
                 >
-                  {state.status === "error"
-                    ? "Failed"
-                    : state.status === "done"
-                    ? "Done"
-                    : "Uploading…"}
+                  {state.status === "done" ? "Done" : state.status === "uploading" ? "Uploading…" : "Failed"}
                 </span>
               </div>
+              {state.status === "error" && state.errorMessage && (
+                <p className="mt-1 text-xs text-destructive">{state.errorMessage}</p>
+              )}
             </div>
           ))}
         </div>

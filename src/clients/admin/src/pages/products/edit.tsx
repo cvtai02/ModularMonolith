@@ -102,48 +102,44 @@ export default function EditProductPage() {
   }, [product, initialOptions]);
 
   const handleSubmit = async (values: FormValues, options: OptionEntry[], variants: Variant[], statusOverride?: string) => {
-    try {
-      const finalStatus = parseInt(statusOverride ?? values.status);
-      const hasVariants = variants.length > 0;
-      const activeOptions = options.filter(
-        (o) => o.name.trim() && getFilledValues(o.inputValues).length > 0
-      );
+    const finalStatus = parseInt(statusOverride ?? values.status);
+    const hasVariants = variants.length > 0;
+    const activeOptions = options.filter(
+      (o) => o.name.trim() && getFilledValues(o.inputValues).length > 0
+    );
 
-      await updateProduct({
-        params: { path: { id: productId } },
-        body: {
-          name: values.name,
-          categoryId: values.categoryId,
-          description: values.description || undefined,
-          imageUrl: values.imageUrl || undefined,
-          status: finalStatus,
-          price: values.price ? parseFloat(values.price) : undefined,
-          compareAtPrice: values.compareAtPrice ? parseFloat(values.compareAtPrice) : undefined,
-          costPrice: values.costPrice ? parseFloat(values.costPrice) : undefined,
-          chargeTax: values.chargeTax,
-          stock: !hasVariants && values.stock ? parseInt(values.stock) : undefined,
-          trackInventory: values.trackInventory,
-          allowBackorder: values.allowBackorder,
-          lowStockThreshold: values.lowStockThreshold ? parseInt(values.lowStockThreshold) : undefined,
-          physicalProduct: values.isPhysical,
-          weight: values.weight ? parseFloat(values.weight) : undefined,
-          width: values.width ? parseFloat(values.width) : undefined,
-          height: values.height ? parseFloat(values.height) : undefined,
-          length: values.length ? parseFloat(values.length) : undefined,
-          options: activeOptions.map((opt, displayOrder) => ({
-            name: opt.name,
-            displayOrder,
-            values: getFilledValues(opt.inputValues),
-          })),
-          variants: buildVariantsPayload(variants, hasVariants),
-        },
-      });
+    await updateProduct({
+      params: { path: { id: productId } },
+      body: {
+        name: values.name,
+        categoryId: values.categoryId,
+        description: values.description || undefined,
+        imageUrl: values.imageUrl || undefined,
+        status: finalStatus,
+        price: values.price ? parseFloat(values.price) : undefined,
+        compareAtPrice: values.compareAtPrice ? parseFloat(values.compareAtPrice) : undefined,
+        costPrice: values.costPrice ? parseFloat(values.costPrice) : undefined,
+        chargeTax: values.chargeTax,
+        stock: !hasVariants && values.stock ? parseInt(values.stock) : undefined,
+        trackInventory: values.trackInventory,
+        allowBackorder: values.allowBackorder,
+        lowStockThreshold: values.lowStockThreshold ? parseInt(values.lowStockThreshold) : undefined,
+        physicalProduct: values.isPhysical,
+        weight: values.weight ? parseFloat(values.weight) : undefined,
+        width: values.width ? parseFloat(values.width) : undefined,
+        height: values.height ? parseFloat(values.height) : undefined,
+        length: values.length ? parseFloat(values.length) : undefined,
+        options: activeOptions.map((opt, displayOrder) => ({
+          name: opt.name,
+          displayOrder,
+          values: getFilledValues(opt.inputValues),
+        })),
+        variants: buildVariantsPayload(variants, hasVariants),
+      },
+    });
 
-      toast.success("Product updated!");
-      navigate(ROUTES.products);
-    } catch {
-      toast.error("Failed to update product. Please try again.");
-    }
+    toast.success("Product updated!");
+    navigate(ROUTES.products);
   };
 
   if (loadingProduct || !product || !initialOptions || !defaultValues) {

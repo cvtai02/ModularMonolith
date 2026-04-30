@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import type { CategoryResponse } from "@shared/api/api-types";
+import { applyValidationErrors } from "@/lib/form-error";
 
 import { DEFAULT_FORM_VALUES, DEFAULT_VARIANT_OVERRIDE } from "./types";
 import type { FormValues, OptionEntry, Variant, VariantOverride } from "./types";
@@ -29,6 +30,10 @@ type Props = {
   onSubmit: (values: FormValues, options: OptionEntry[], variants: Variant[], statusOverride?: string) => Promise<void>;
 };
 
+const FIELD_MAP: Partial<Record<string, keyof FormValues>> = {
+  PhysicalProduct: "isPhysical",
+};
+
 export function ProductFormLayout({
   title,
   categories,
@@ -47,7 +52,7 @@ export function ProductFormLayout({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const { register, control, handleSubmit, watch, formState: { errors } } = useForm<FormValues>({
+  const { register, control, handleSubmit, watch, setError, formState: { errors } } = useForm<FormValues>({
     defaultValues: { ...DEFAULT_FORM_VALUES, ...defaultValues },
   });
 
@@ -148,7 +153,11 @@ export function ProductFormLayout({
 
   // ── Submit ──
   const doSubmit = async (values: FormValues, statusOverride?: string) => {
-    await onSubmit(values, options, variants, statusOverride);
+    try {
+      await onSubmit(values, options, variants, statusOverride);
+    } catch (err) {
+      if (!applyValidationErrors(err, setError, FIELD_MAP)) throw err;
+    }
   };
 
   const handleSave = handleSubmit((v) => doSubmit(v));

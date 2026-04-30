@@ -4,8 +4,11 @@ public class OrderLine : AuditableEntity
 {
     public int Id { get; set; }
     public int OrderId { get; set; }
+    public int ProductId { get; private set; }
     public int VariantId { get; private set; }
     public string ProductName { get; private set; } = string.Empty;
+    public string VariantName { get; private set; } = string.Empty;
+    public string ImageUrl { get; private set; } = string.Empty;
     public decimal UnitPrice { get; private set; }
     public int Quantity { get; private set; }
     public decimal Subtotal { get; private set; }
@@ -15,21 +18,36 @@ public class OrderLine : AuditableEntity
     {
     }
 
-    public OrderLine(int variantId, string productName, decimal unitPrice, int quantity)
+    public OrderLine(
+        int productId,
+        int variantId,
+        string productName,
+        string variantName,
+        string imageUrl,
+        decimal unitPrice,
+        int quantity)
     {
-        SetVariant(variantId, productName);
+        SetSnapshot(productId, variantId, productName, variantName, imageUrl);
         UpdatePricing(unitPrice, quantity);
     }
 
-    public void SetVariant(int variantId, string productName)
+    public void SetSnapshot(int productId, int variantId, string productName, string variantName, string imageUrl)
     {
+        if (productId <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(productId), "ProductId must be greater than zero.");
+        }
+
         if (variantId <= 0)
         {
             throw new ArgumentOutOfRangeException(nameof(variantId), "VariantId must be greater than zero.");
         }
 
+        ProductId = productId;
         VariantId = variantId;
         ProductName = RequireText(productName, nameof(productName), 256);
+        VariantName = RequireText(variantName, nameof(variantName), 256);
+        ImageUrl = imageUrl.Trim();
     }
 
     public void UpdatePricing(decimal unitPrice, int quantity)

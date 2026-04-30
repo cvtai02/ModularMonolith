@@ -132,11 +132,6 @@ public class GetPresignedUpload(IFileManager fileManager, ICacheService cache)
                 [$"Unsupported content type '{file.ContentType}'."];
         }
 
-        if (file.Size <= 0)
-        {
-            errors[$"{nameof(GetPresignedUploadBulkUrlRequest.Files)}[{index}].{nameof(file.Size)}"] =
-                ["File size must be greater than 0."];
-        }
         else if (MaxSizeByCategory.TryGetValue(category, out var maxSize) && file.Size > maxSize)
         {
             errors[$"{nameof(GetPresignedUploadBulkUrlRequest.Files)}[{index}].{nameof(file.Size)}"] =

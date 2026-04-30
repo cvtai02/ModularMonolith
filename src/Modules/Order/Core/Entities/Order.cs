@@ -10,6 +10,8 @@ public class Order : AuditableEntity
     public OrderStatus Status { get; private set; } = OrderStatus.Draft;
     public string CurrencyCode { get; private set; } = "USD";
     public decimal TotalAmount { get; private set; }
+    public int? InventoryReservationId { get; private set; }
+    public string? RejectionReason { get; private set; }
     public Address? ShippingAddress { get; private set; }
     public ICollection<OrderLine> Lines { get; private set; } = [];
 
@@ -38,9 +40,11 @@ public class Order : AuditableEntity
 
         List<OrderStatus> allowed = Status switch
         {
-            OrderStatus.Draft => [OrderStatus.Placed, OrderStatus.Cancelled],
+            OrderStatus.Draft => [OrderStatus.PendingInventory, OrderStatus.Cancelled],
+            OrderStatus.PendingInventory => [OrderStatus.Placed, OrderStatus.Rejected, OrderStatus.Cancelled],
             OrderStatus.Placed => [OrderStatus.Paid, OrderStatus.Cancelled],
             OrderStatus.Paid => [OrderStatus.Shipped, OrderStatus.Cancelled],
+            OrderStatus.Rejected => [],
             OrderStatus.Shipped => [],
             OrderStatus.Cancelled => [],
             _ => []
@@ -54,9 +58,32 @@ public class Order : AuditableEntity
         Status = status;
     }
 
-    public OrderLine AddLine(int variantId, string productName, decimal unitPrice, int quantity)
+    public void SetInventoryReservation(int reservationId)
     {
-        var line = new OrderLine(variantId, productName, unitPrice, quantity);
+        if (reservationId <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(reservationId), "ReservationId must be greater than zero.");
+        }
+
+        InventoryReservationId = reservationId;
+        RejectionReason = null;
+    }
+
+    public void SetRejectionReason(string reason)
+    {
+        RejectionReason = string.IsNullOrWhiteSpace(reason) ? null : reason.Trim();
+    }
+
+    public OrderLine AddLine(
+        int productId,
+        int variantId,
+        string productName,
+        string variantName,
+        string imageUrl,
+        decimal unitPrice,
+        int quantity)
+    {
+        var line = new OrderLine(productId, variantId, productName, variantName, imageUrl, unitPrice, quantity);
         Lines.Add(line);
         RecalculateTotalAmount();
         return line;
@@ -94,8 +121,10 @@ public class Order : AuditableEntity
 public enum OrderStatus
 {
     Draft,
+    PendingInventory,
     Placed,
     Paid,
+    Rejected,
     Cancelled,
     Shipped
 }

@@ -22,6 +22,7 @@ public class OrderDbContext : TenancyDbContext
         {
             builder.Property(order => order.Code).HasMaxLength(64);
             builder.Property(order => order.CurrencyCode).HasMaxLength(3);
+            builder.Property(order => order.RejectionReason).HasMaxLength(2000);
             builder.Property(order => order.TotalAmount).HasPrecision(18, 2);
             builder.HasIndex(order => order.Code).IsUnique();
             builder.OwnsOne(order => order.ShippingAddress, sa =>
@@ -41,6 +42,8 @@ public class OrderDbContext : TenancyDbContext
         modelBuilder.Entity<OrderLine>(builder =>
         {
             builder.Property(line => line.ProductName).HasMaxLength(256);
+            builder.Property(line => line.VariantName).HasMaxLength(256);
+            builder.Property(line => line.ImageUrl).HasMaxLength(1000);
             builder.Property(line => line.UnitPrice).HasPrecision(18, 2);
             builder.Property(line => line.Subtotal).HasPrecision(18, 2);
         });
