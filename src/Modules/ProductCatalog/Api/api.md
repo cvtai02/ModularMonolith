@@ -4,7 +4,21 @@
 ## API Endpoints
 
 ### Product
-- [GetAll](ProductController.cs#L14)
-- [GetById](ProductController.cs#L19)
-- [Create](ProductController.cs#L26)
-- [Update](ProductController.cs#L34)
+- [GetAll](ProductController.cs#L17)
+- [GetById](ProductController.cs#L22)
+- [Create](ProductController.cs#L29)
+- [Update](ProductController.cs#L37)
+
+### Category
+- [GetAll](CategoryController.cs#L19)
+- [GetByName](CategoryController.cs#L29)
+- [Create](CategoryController.cs#L36)
+- [Update](CategoryController.cs#L44)
+- [Delete](CategoryController.cs#L52)
+
+### Collection
+- [GetAll](CollectionController.cs#L19)
+- [GetById](CollectionController.cs#L29)
+- [Create](CollectionController.cs#L36)
+- [Update](CollectionController.cs#L44)
+- [Delete](CollectionController.cs#L52)

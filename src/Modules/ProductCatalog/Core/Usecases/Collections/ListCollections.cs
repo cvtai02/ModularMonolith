@@ -29,7 +29,7 @@ public class ListCollections(ProductCatalogDbContext db, IFileManager fm)
                 Title = x.Title,
                 Description = x.Description,
                 Slug = x.Slug,
-                ImageUrl = fm.BuildPublicUrl(x.ImageKey),
+                ImageUrl = string.IsNullOrWhiteSpace(x.ImageKey) ? null : fm.BuildPublicUrl(x.ImageKey),
             })
             .ToListAsync(ct);
 

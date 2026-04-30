@@ -12,6 +12,6 @@ internal static class CollectionMapper
         Title = c.Title,
         Description = c.Description,
         Slug = c.Slug,
-        ImageUrl = fm.BuildPublicUrl(c.ImageKey),
+        ImageUrl = string.IsNullOrWhiteSpace(c.ImageKey) ? null : fm.BuildPublicUrl(c.ImageKey),
     };
 }

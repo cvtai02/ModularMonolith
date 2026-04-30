@@ -1,5 +1,1 @@
-import type { GetAllQuery, GetAllResponse } from "./content-types";
-
-export type MediaFileListParams = GetAllQuery;
-export type MediaFilePaginatedList = GetAllResponse;
-export type MediaFileResponse = GetAllResponse["items"][number];
+// types in this file is temporary, once those types defined in <module>-types.ts, remove them.

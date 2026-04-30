@@ -11,7 +11,7 @@ internal static class CategoryMapper
         Id = c.Id,
         Name = c.Name,
         Description = c.Description,
-        ImageUrl = f.BuildPublicUrl(c.ImageKey),
+        ImageUrl = string.IsNullOrWhiteSpace(c.ImageKey) ? null : f.BuildPublicUrl(c.ImageKey),
         Status = c.Status,
         ParentName = c.Parent?.Name,
         Slug = c.Slug,

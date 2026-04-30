@@ -25,9 +25,10 @@ public class ListCategories(ProductCatalogDbContext db, IFileManager fm)
             .Take(pageSize)
             .Select(x => new CategoryResponse
             {
+                Id = x.Id,
                 Name = x.Name,
                 Description = x.Description,
-                ImageUrl = fm.BuildPublicUrl(x.ImageKey),
+                ImageUrl = string.IsNullOrWhiteSpace(x.ImageKey) ? null : fm.BuildPublicUrl(x.ImageKey),
                 Status = x.Status,
                 ParentName = x.Parent != null ? x.Parent.Name : null,
                 Slug = x.Slug,

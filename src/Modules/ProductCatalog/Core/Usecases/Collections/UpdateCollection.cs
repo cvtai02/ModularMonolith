@@ -22,7 +22,7 @@ public class UpdateCollection(ProductCatalogDbContext db, IFileManager fm)
 
         collection.Description = request.Description.Trim();
         if (!string.IsNullOrWhiteSpace(slug)) collection.Slug = slug;
-        collection.ImageKey = request.ImageKey;
+        collection.ImageKey = request.ImageKey?.Trim();
 
         await db.SaveChangesAsync(ct);
         return CollectionMapper.ToResponse(collection, fm);

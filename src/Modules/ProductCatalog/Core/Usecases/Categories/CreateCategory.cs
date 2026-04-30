@@ -13,8 +13,12 @@ public class CreateCategory(ProductCatalogDbContext db, IFileManager fm)
     {
         var name = request.Name.Trim();
         var slug = string.IsNullOrWhiteSpace(request.Slug) ? name.ToSlug() : request.Slug.Trim();
+        var parentName = string.IsNullOrWhiteSpace(request.ParentName) ? null : request.ParentName.Trim();
 
         var errors = new Dictionary<string, string[]>();
+
+        if (string.IsNullOrWhiteSpace(name))
+            errors[nameof(request.Name)] = ["Category name is required."];
 
         if (await db.Categories.AnyAsync(x => x.Name == name, ct))
             errors[nameof(request.Name)] = ["A category with this name already exists."];
@@ -22,15 +26,15 @@ public class CreateCategory(ProductCatalogDbContext db, IFileManager fm)
         if (await db.Categories.AnyAsync(x => x.Slug == slug, ct))
             errors[nameof(request.Slug)] = ["Slug already exists."];
 
-        if (request.ParentName is not null && !await db.Categories.AnyAsync(x => x.Name == request.ParentName, ct))
+        if (parentName is not null && !await db.Categories.AnyAsync(x => x.Name == parentName, ct))
             errors[nameof(request.ParentName)] = ["Parent category does not exist."];
 
         if (errors.Count > 0) throw new ValidationException("Validation failed", errors);
 
         int? parentId = null;
-        if (request.ParentName is not null)
+        if (parentName is not null)
         {
-            var parent = await db.Categories.FirstAsync(x => x.Name == request.ParentName.Trim(), ct);
+            var parent = await db.Categories.FirstAsync(x => x.Name == parentName, ct);
             parentId = parent.Id;
         }
 

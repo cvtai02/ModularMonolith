@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 using ProductCatalog.Core.DTOs.Collections;
 using ProductCatalog.Core.Usecases.Collections;
@@ -16,7 +17,9 @@ public class CollectionController(
 {
     [HttpGet]
     public async Task<ActionResult<PaginatedList<CollectionResponse>>> GetAll(
+        [Range(1, int.MaxValue)]
         [FromQuery] int pageNumber = 1,
+        [Range(1, 200)]
         [FromQuery] int pageSize = 20,
         [FromQuery] string? search = null,
         CancellationToken cancellationToken = default)

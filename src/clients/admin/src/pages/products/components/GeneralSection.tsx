@@ -1,8 +1,9 @@
+import { useState } from "react";
 import { Controller } from "react-hook-form";
 import type { Control, FieldErrors, UseFormRegister } from "react-hook-form";
+import { PlusIcon, XIcon } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileUploader } from "@/components/ui/file-uploader";
 import {
   Field,
   FieldError,
@@ -21,6 +22,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import type { CategoryResponse } from "@shared/api/api-types";
 import type { FormValues } from "./types";
+import { MediaPickerModal } from "./MediaPickerModal";
 
 type Props = {
   register: UseFormRegister<FormValues>;
@@ -34,6 +36,50 @@ const STATUS_OPTIONS = [
   { value: "2", label: "Draft" },
   { value: "0", label: "Archived" },
 ] as const;
+
+function ImagePickerField({ value, onChange }: { value: string; onChange: (url: string) => void }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      <div className="flex flex-wrap gap-2">
+        {value && (
+          <div className="group relative size-40 shrink-0 overflow-hidden rounded-xl border bg-muted">
+            <img
+              src={value}
+              alt="Product"
+              className="size-full cursor-pointer object-cover"
+              onClick={() => setOpen(true)}
+              onError={(e) => { (e.target as HTMLImageElement).style.opacity = "0.3"; }}
+            />
+            <button
+              type="button"
+              aria-label="Remove image"
+              onClick={() => onChange("")}
+              className="absolute right-1.5 top-1.5 flex size-5 items-center justify-center rounded-full bg-background/90 opacity-0 shadow-sm transition-opacity group-hover:opacity-100 hover:bg-destructive hover:text-destructive-foreground"
+            >
+              <XIcon className="size-3" />
+            </button>
+          </div>
+        )}
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className="flex size-40 shrink-0 flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-muted-foreground/25 text-muted-foreground transition-colors hover:border-muted-foreground/40 hover:bg-muted/20"
+        >
+          <PlusIcon className="size-9 opacity-50" />
+          <span className="text-xs">Add image</span>
+        </button>
+      </div>
+      <MediaPickerModal
+        open={open}
+        onOpenChange={setOpen}
+        selectedUrl={value}
+        onSelect={onChange}
+      />
+    </>
+  );
+}
 
 export function GeneralSection({ register, control, errors, categories }: Props) {
   return (
@@ -88,12 +134,7 @@ export function GeneralSection({ register, control, errors, categories }: Props)
               control={control}
               name="imageUrl"
               render={({ field }) => (
-                <FileUploader
-                  category="product"
-                  accept="image/*"
-                  value={field.value ? [field.value] : []}
-                  onChange={(urls) => field.onChange(urls[0] ?? "")}
-                />
+                <ImagePickerField value={field.value} onChange={field.onChange} />
               )}
             />
           </Field>
