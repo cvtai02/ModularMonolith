@@ -39,8 +39,11 @@ If backend work needs a frontend change, Codex should document the required chan
 - Backend API or contract changes must describe the affected endpoints, request/response shapes, validation behavior, and any shared types changed under `src/clients/shared/`.
 - Keep shared contract files stable and reviewable. Do not mix backend refactors with frontend-facing contract changes unless needed.
 - Do not override work from the other assistant. If a file appears outside the allowed scope, leave it untouched and note the handoff needed.
+- Files under `requirements/` are primarily Claude-facing frontend implementation documents. Write them so Claude can implement the frontend from the requirement/handoff plus `src/clients/shared/api/api-types.ts`, without needing to read backend code.
+- Do not centralize frontend contract property shapes in one generic requirement file. Put the full request/response properties directly in the specific Claude-facing requirement or handoff document for that feature.
 
 ## API Documentation Style
 
 - Keep `src/Modules/*/Api/api.md` concise. Do not write detailed implementation notes, long examples, validation rules, or frontend handoff detail in `api.md`.
 - Put detailed API plans, behavior notes, request/response explanations, and Claude handoff content in descriptive files under `requirements/`.
+- Requirement and handoff files that describe backend APIs must include the frontend-facing request, query, path, and response type aliases from `src/clients/shared/api/api-types.ts` when those aliases exist.

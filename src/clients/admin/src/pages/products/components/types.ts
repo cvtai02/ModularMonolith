@@ -11,6 +11,7 @@ export type VariantOverride = {
   costPrice: string;
   chargeTax: boolean;
   useProductShipping: boolean;
+  physicalProduct: boolean;
   weight: string;
   width: string;
   height: string;
@@ -79,6 +80,7 @@ export const DEFAULT_VARIANT_OVERRIDE: VariantOverride = {
   costPrice: "",
   chargeTax: false,
   useProductShipping: true,
+  physicalProduct: true,
   weight: "",
   width: "",
   height: "",

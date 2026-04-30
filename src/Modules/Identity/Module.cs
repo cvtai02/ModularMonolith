@@ -1,5 +1,6 @@
 using Identity.Api;
 using Identity.Core.Entities;
+using Microsoft.AspNetCore.Authentication.BearerToken;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
@@ -24,6 +25,18 @@ public class IdentityModule(IHostApplicationBuilder b) : Module(b)
             .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<IdentityDbContext>()
             .AddDefaultTokenProviders();
+
+        Services.Configure<BearerTokenOptions>(IdentityConstants.BearerScheme, options =>
+        {
+            options.BearerTokenExpiration = TimeSpan.FromDays(365);
+            options.RefreshTokenExpiration = TimeSpan.FromDays(365);
+        });
+
+        Services.ConfigureApplicationCookie(options =>
+        {
+            options.ExpireTimeSpan = TimeSpan.FromDays(365);
+            options.SlidingExpiration = true;
+        });
 
         Services.Configure<IdentityOptions>(options =>
         {

@@ -12,7 +12,6 @@ type Props = {
   control: Control<FormValues>;
   selectedVariant: Variant | null;
   onUpdateVariant: (localId: string, update: Partial<VariantOverride>) => void;
-  isCreating?: boolean;
   watchIsPhysical: boolean;
 };
 
@@ -21,11 +20,14 @@ export function ShippingCard({
   control,
   selectedVariant,
   onUpdateVariant,
-  isCreating,
   watchIsPhysical,
 }: Props) {
-  const useVariantShipping = selectedVariant !== null && !selectedVariant.useProductShipping;
-  const productDimensionsDisabled = !!selectedVariant?.useProductShipping;
+  const inherited = selectedVariant?.useProductShipping ?? false;
+
+  // Effective "physical product" value driving whether dimensions show.
+  const effectivePhysical = selectedVariant
+    ? (inherited ? watchIsPhysical : selectedVariant.physicalProduct)
+    : watchIsPhysical;
 
   return (
     <Card>
@@ -39,8 +41,7 @@ export function ShippingCard({
                 <span className="text-xs text-muted-foreground">{selectedVariant.label}</span>
               </div>
               <Switch
-                checked={selectedVariant.useProductShipping}
-                disabled={isCreating}
+                checked={inherited}
                 onCheckedChange={(v) => onUpdateVariant(selectedVariant.localId, { useProductShipping: v })}
               />
             </div>
@@ -48,29 +49,38 @@ export function ShippingCard({
 
           <Field orientation="horizontal">
             <FieldLabel>Physical product</FieldLabel>
-            <Controller
-              control={control}
-              name="isPhysical"
-              render={({ field }) => (
-                <Switch checked={field.value} onCheckedChange={field.onChange} />
-              )}
-            />
+            {selectedVariant ? (
+              <Switch
+                checked={effectivePhysical}
+                disabled={inherited}
+                onCheckedChange={(v) => onUpdateVariant(selectedVariant.localId, { physicalProduct: v })}
+              />
+            ) : (
+              <Controller
+                control={control}
+                name="isPhysical"
+                render={({ field }) => (
+                  <Switch checked={field.value} onCheckedChange={field.onChange} />
+                )}
+              />
+            )}
           </Field>
 
-          {watchIsPhysical && (
+          {effectivePhysical && (
             <>
               <div className="grid grid-cols-3 gap-2">
                 {(["width", "height", "length"] as const).map((dim) => (
                   <Field key={dim}>
                     <FieldLabel>{dim.charAt(0).toUpperCase()} (cm)</FieldLabel>
-                    {useVariantShipping ? (
+                    {selectedVariant ? (
                       <Input
                         type="number"
                         min="0"
                         step="0.1"
-                        value={selectedVariant[dim]}
+                        value={inherited ? "" : selectedVariant[dim]}
+                        disabled={inherited}
                         onChange={(e) => onUpdateVariant(selectedVariant.localId, { [dim]: e.target.value })}
-                        placeholder="0"
+                        placeholder={inherited ? "—" : "0"}
                       />
                     ) : (
                       <Input
@@ -78,7 +88,6 @@ export function ShippingCard({
                         min="0"
                         step="0.1"
                         {...register(dim)}
-                        disabled={productDimensionsDisabled}
                         placeholder="0"
                       />
                     )}
@@ -87,23 +96,23 @@ export function ShippingCard({
               </div>
 
               <Field>
-                <FieldLabel>Weight (kg)</FieldLabel>
-                {useVariantShipping ? (
+                <FieldLabel>Weight (g)</FieldLabel>
+                {selectedVariant ? (
                   <Input
                     type="number"
                     min="0"
-                    step="0.01"
-                    value={selectedVariant.weight}
+                    step="1"
+                    value={inherited ? "" : selectedVariant.weight}
+                    disabled={inherited}
                     onChange={(e) => onUpdateVariant(selectedVariant.localId, { weight: e.target.value })}
-                    placeholder="0"
+                    placeholder={inherited ? "—" : "0"}
                   />
                 ) : (
                   <Input
                     type="number"
                     min="0"
-                    step="0.01"
+                    step="1"
                     {...register("weight")}
-                    disabled={productDimensionsDisabled}
                     placeholder="0"
                   />
                 )}

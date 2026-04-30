@@ -22,26 +22,46 @@ type VariantRowProps = {
   indent?: boolean;
 };
 
+function fmtPrice(raw: string, productPrice: string) {
+  const n = Number(raw || productPrice);
+  if (!n) return "—";
+  return `${n.toLocaleString("vi-VN")} ₫`;
+}
+
 function VariantRow({ variant, isSelected, onSelect, productPrice, indent }: VariantRowProps) {
-  const displayPrice = variant.useProductPrice
-    ? productPrice
-      ? `${Number(productPrice).toLocaleString("vi-VN")} ₫`
-      : "—"
-    : variant.price
-    ? `${Number(variant.price).toLocaleString("vi-VN")} ₫`
-    : "—";
+  const priceInherited = variant.useProductPrice;
+  const price = fmtPrice(priceInherited ? productPrice : variant.price, productPrice);
+
+  const stock = variant.stock ? Number(variant.stock).toLocaleString() : "0";
+
+  let shipping: string;
+  if (variant.useProductShipping) {
+    shipping = "ship: prod";
+  } else if (!variant.physicalProduct) {
+    shipping = "digital";
+  } else if (variant.weight) {
+    shipping = `${variant.weight} g`;
+  } else {
+    shipping = "physical";
+  }
 
   return (
     <div
       className={cn(
-        "flex cursor-pointer items-center gap-3 rounded-md px-2 py-2 transition-colors",
+        "flex cursor-pointer flex-col gap-0.5 rounded-md px-2 py-2 transition-colors",
         indent && "ml-6",
         isSelected ? "bg-accent" : "hover:bg-muted/50"
       )}
       onClick={(e) => onSelect(e.ctrlKey || e.metaKey)}
     >
-      <span className="flex-1 text-sm">{variant.label}</span>
-      <span className="font-mono text-xs text-muted-foreground">{displayPrice}</span>
+      <span className="text-sm">{variant.label}</span>
+      <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
+        <span className={cn("font-mono", !priceInherited && "text-foreground font-medium")}>{price}</span>
+        <span>·</span>
+        <span>qty {stock}</span>
+        <span>·</span>
+        <span>{shipping}</span>
+      </div>
     </div>
   );
 }

@@ -11,6 +11,24 @@ Add a backend SignalR path that notifies authenticated users when their newly cr
 - The backend only lets an authenticated user join an order group when `Orders.CustomerId` matches the current user id.
 - Guest orders currently have no SignalR subscription path.
 
+## Request And Response Types
+- Order creation uses `CreateOrderRequest` and `CreateOrderResponse` from `src/clients/shared/api/api-types.ts`.
+- Order polling uses `GetOrderParams` and `OrderResponse`.
+- SignalR `JoinOrder` has no generated HTTP type alias; its argument is `orderId: number`.
+- SignalR `OrderPlaced` has no generated HTTP response alias; use the payload shape below.
+
+## Type Properties
+- `CreateOrderRequest`: see `requirements/order-products-handoff.md`.
+- `CreateOrderResponse`: see `requirements/order-products-handoff.md`.
+- `GetOrderParams`: `{ id: number }`.
+- `OrderResponse`: see `requirements/order-products-handoff.md`.
+- `JoinOrder(orderId: number)`: client invokes with the created order id.
+- `OrderPlaced` SignalR payload:
+  - `orderId: number`
+  - `orderCode: string`
+  - `reservationId: number`
+  - `status: "Placed"`
+
 ## OrderPlaced Payload
 ```json
 {

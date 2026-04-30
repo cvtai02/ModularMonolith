@@ -15,6 +15,7 @@ const NotFound = LazyPage(() => import("@/pages/common/404"));
 const Products = LazyPage(() => import("@/pages/products"));
 const AddProduct = LazyPage(() => import("@/pages/products/add"));
 const EditProduct = LazyPage(() => import("@/pages/products/edit"));
+const ViewProduct = LazyPage(() => import("@/pages/products/view"));
 const Categories = LazyPage(() => import("@/pages/categories"));
 const ContentFilesPage = LazyPage(() => import("@/pages/content/files"));
 const Collections = LazyPage(() => import("@/pages/collections"));
@@ -33,6 +34,7 @@ const AppRoutes: ReactNode =
         {/* <Route path={ROUTES.dashboard} element={<Dashboard />} /> */}
         <Route path={ROUTES.products} element={<Products />} errorElement={<ErrorPage />} />
         <Route path={ROUTES.productNew} element={<AddProduct />} errorElement={<ErrorPage />} />
+        <Route path="/products/:id" element={<ViewProduct />} errorElement={<ErrorPage />} />
         <Route path="/products/:id/edit" element={<EditProduct />} errorElement={<ErrorPage />} />
         {/* <Route path={ROUTES.productInventory} element={<Inventory />} /> */}
         <Route path={ROUTES.productCategory} element={<Categories />} errorElement={<ErrorPage />} />

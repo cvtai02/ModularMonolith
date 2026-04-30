@@ -71,7 +71,7 @@ export function ProductFormLayout({
   const selectedVariant = selectedIds.size === 1
     ? variants.find((v) => v.localId === [...selectedIds][0]) ?? null
     : null;
-  const showInventory = !hasVariants || selectedIds.size === 1;
+  const showInventory = selectedIds.size <= 1;
 
   const activeOptionCount = options.filter(
     (o) => o.name.trim() && getFilledValues(o.inputValues).length > 0
@@ -208,7 +208,7 @@ export function ProductFormLayout({
           />
         </div>
 
-        <div className="flex flex-col gap-4 lg:sticky lg:top-14 lg:self-start">
+        <div className="flex flex-col gap-4 lg:sticky lg:top-14 lg:self-start lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto *:shrink-0">
           <PricingCard
             register={register}
             control={control}
@@ -216,7 +216,6 @@ export function ProductFormLayout({
             watchCostPrice={watchCostPrice}
             selectedVariant={selectedVariant}
             onUpdateVariant={updateVariant}
-            isCreating={isCreating}
           />
           {showInventory && (
             <InventoryCard
@@ -225,7 +224,6 @@ export function ProductFormLayout({
               watchTrackInventory={watchTrackInventory}
               selectedVariant={selectedVariant}
               onUpdateVariant={updateVariant}
-              isCreating={isCreating}
             />
           )}
           <ShippingCard
@@ -233,7 +231,6 @@ export function ProductFormLayout({
             control={control}
             selectedVariant={selectedVariant}
             onUpdateVariant={updateVariant}
-            isCreating={isCreating}
             watchIsPhysical={watchIsPhysical}
           />
         </div>

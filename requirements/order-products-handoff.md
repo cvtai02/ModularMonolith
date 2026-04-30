@@ -4,6 +4,106 @@
 
 Order checkout is direct item checkout. The client sends selected variants and quantities to `POST /api/Order/orders`; the backend validates the variants through ProductCatalog, snapshots price/product data, creates a `PendingInventory` order, and publishes `OrderSubmitted`. Inventory reserves stock from that event and publishes either `InventoryReserved` or `ReservationRejected`.
 
+## Request And Response Types
+
+- Import aliases from `src/clients/shared/api/api-types.ts`.
+- `POST /api/Order/orders`
+  - Request: `CreateOrderRequest`.
+  - Response: `CreateOrderResponse`.
+- `GET /api/Order/orders/{id}`
+  - Path params: `GetOrderParams`.
+  - Response: `OrderResponse`.
+- `GET /api/Order/orders`
+  - Query: `ListOrdersQuery`.
+  - Response: `ListOrdersResponse`.
+
+## Type Properties
+
+`CurrencyCode` values currently used by checkout:
+- `VND`
+- `USD`
+
+`OrderStatus` values:
+- `Draft`
+- `PendingInventory`
+- `Placed`
+- `Paid`
+- `Rejected`
+- `Cancelled`
+- `Shipped`
+
+`Address`:
+- `ownerName: string`
+- `type: string`
+- `phoneNumber: string`
+- `email: string`
+- `country: string`
+- `state?: string | null`
+- `city?: string | null`
+- `postalCode?: string | null`
+- `line1: string`
+- `line2?: string | null`
+
+`CreateOrderRequest`:
+- `currencyCode?: string | null`
+- `shippingAddress: Address`
+- `items: CreateOrderItemRequest[]`
+
+`CreateOrderItemRequest`:
+- `variantId: number`
+- `quantity: number`
+
+`CreateOrderResponse` and `OrderResponse`:
+- `id: number`
+- `code: string`
+- `customerId?: string | null`
+- `status: OrderStatus`
+- `currencyCode: string`
+- `totalAmount: number`
+- `inventoryReservationId?: number | null`
+- `rejectionReason?: string | null`
+- `shippingAddress?: Address | null`
+- `lines: OrderLineResponse[]`
+
+`OrderLineResponse`:
+- `id: number`
+- `productId: number`
+- `variantId: number`
+- `productName: string`
+- `variantName: string`
+- `imageUrl: string`
+- `unitPrice: number`
+- `quantity: number`
+- `subtotal: number`
+
+`GetOrderParams`:
+- `id: number`
+
+`ListOrdersQuery`:
+- `pageNumber?: number`
+- `pageSize?: number`
+- `status?: OrderStatus | null`
+- `search?: string | null`
+
+`ListOrdersResponse`:
+- `items: OrderSummaryResponse[]`
+- `pageNumber: number`
+- `totalPages: number`
+- `totalCount: number`
+- `hasPreviousPage: boolean`
+- `hasNextPage: boolean`
+
+`OrderSummaryResponse`:
+- `id: number`
+- `code: string`
+- `customerId?: string | null`
+- `status: OrderStatus`
+- `currencyCode: string`
+- `totalAmount: number`
+- `rejectionReason?: string | null`
+- `lineCount: number`
+- `createdAt: string`
+
 ### Endpoints
 
 - `POST /api/Order/orders`

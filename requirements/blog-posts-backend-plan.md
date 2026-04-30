@@ -14,6 +14,102 @@ Build blog post APIs in the existing `Content` module using the existing `BlogPo
 - `GET /api/Content/blog-posts`: public paginated summaries for `Published` posts only. Supports `search`, `pageNumber`, `pageSize`, `sortBy`, `sortDirection`.
 - `GET /api/Content/blog-posts/{slug}`: public full post by slug only when `Status == Published` and not deleted.
 
+## Request And Response Types
+- Import aliases from `src/clients/shared/api/api-types.ts`.
+- `GET /api/Content/blog-posts`
+  - Query: `ListPublishedBlogPostsQuery`.
+  - Response: `ListPublishedBlogPostsResponse`.
+- `GET /api/Content/blog-posts/{slug}`
+  - Path params: `GetPublishedBlogPostBySlugParams`.
+  - Response: `BlogPostResponse`.
+- `GET /api/Content/blog-posts/admin`
+  - Query: `ListAdminBlogPostsQuery`.
+  - Response: `ListAdminBlogPostsResponse`.
+- `GET /api/Content/blog-posts/admin/{id}`
+  - Path params: `GetAdminBlogPostByIdParams`.
+  - Response: `GetAdminBlogPostByIdResponse`.
+- `POST /api/Content/blog-posts`
+  - Request: `CreateBlogPostRequest`.
+  - Response: `CreateBlogPostResponse`.
+- `PUT /api/Content/blog-posts/{id}`
+  - Path params: `UpdateBlogPostParams`.
+  - Request: `UpdateBlogPostRequest`.
+  - Response: `UpdateBlogPostResponse`.
+- `POST /api/Content/blog-posts/{id}/publish`
+  - Path params: `PublishBlogPostParams`.
+  - Response: `PublishBlogPostResponse`.
+- `POST /api/Content/blog-posts/{id}/archive`
+  - Path params: `ArchiveBlogPostParams`.
+  - Response: `ArchiveBlogPostResponse`.
+- `DELETE /api/Content/blog-posts/{id}`
+  - Path params: `DeleteBlogPostParams`.
+  - Response: `DeleteBlogPostResponse`.
+
+## Type Properties
+
+`BlogPostStatus` values:
+- `Draft`
+- `Published`
+- `Archived`
+
+`ListPublishedBlogPostsQuery`:
+- `pageNumber?: number`
+- `pageSize?: number`
+- `search?: string | null`
+- `sortBy?: string | null`
+- `sortDirection?: string | null`
+
+`ListAdminBlogPostsQuery`:
+- `pageNumber?: number`
+- `pageSize?: number`
+- `search?: string | null`
+- `sortBy?: string | null`
+- `sortDirection?: string | null`
+- `status?: BlogPostStatus | null`
+
+`BlogPostSummaryResponse`:
+- `id: number`
+- `title: string`
+- `slug: string`
+- `summary: string`
+- `imageUrl: string`
+- `status: BlogPostStatus`
+- `publishedAt?: string | null`
+- `created: string`
+- `lastModified: string`
+
+`ListPublishedBlogPostsResponse` and `ListAdminBlogPostsResponse`:
+- `items: BlogPostSummaryResponse[]`
+- `pageNumber: number`
+- `totalPages: number`
+- `totalCount: number`
+- `hasPreviousPage: boolean`
+- `hasNextPage: boolean`
+
+`GetPublishedBlogPostBySlugParams`:
+- `slug: string`
+
+`GetAdminBlogPostByIdParams`, `UpdateBlogPostParams`, `PublishBlogPostParams`, `ArchiveBlogPostParams`, and `DeleteBlogPostParams`:
+- `id: number`
+
+`BlogPostResponse`, `GetAdminBlogPostByIdResponse`, `CreateBlogPostResponse`, `UpdateBlogPostResponse`, `PublishBlogPostResponse`, and `ArchiveBlogPostResponse`:
+- `id: number`
+- `title: string`
+- `slug: string`
+- `content: string`
+- `summary: string`
+- `imageUrl: string`
+- `status: BlogPostStatus`
+- `publishedAt?: string | null`
+- `created: string`
+- `lastModified: string`
+
+`CreateBlogPostRequest` and `UpdateBlogPostRequest`:
+- `title: string`
+- `content: string`
+- `summary?: string | null`
+- `imageUrl?: string | null`
+
 ## Admin APIs
 - Tenant-admin protected endpoints: admin list/detail, create draft, update, publish, archive, and soft delete.
 - `POST /api/Content/blog-posts` creates draft posts with backend-generated slugs.

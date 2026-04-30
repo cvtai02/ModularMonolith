@@ -290,6 +290,213 @@ onOptionValueChange(optionIndex, valueIndex, newValue) {
 
 ## API Integration
 
+### Shared API Types
+
+Import aliases from `src/clients/shared/api/api-types.ts`.
+
+**ProductCatalog:**
+- `GET /api/ProductCatalog/categories`
+  - Query: `ListCategoriesQuery`.
+  - Response: `ListCategoriesResponse`.
+- `POST /api/ProductCatalog/products`
+  - Request: `CreateProductRequest`.
+  - Response: `CreateProductResponse`.
+- `GET /api/ProductCatalog/products`
+  - Query: `ListProductsQuery`.
+  - Response: `ListProductsResponse`.
+- `GET /api/ProductCatalog/products/{id}`
+  - Path params: `GetProductParams`.
+  - Response: `ProductResponse`.
+- `PUT /api/ProductCatalog/products/{id}`
+  - Path params: `UpdateProductParams`.
+  - Request: `UpdateProductRequest`.
+  - Response: `UpdateProductResponse`.
+
+**Content uploads:**
+- `POST /api/Content/file-objects/presigned-upload`
+  - Request: `GetPresignedUploadBulkUrlRequest`.
+  - Response: `PresignedUploadBulkUrlResponse`.
+- `POST /api/Content/file-objects/confirm-upload`
+  - Request: `ConfirmUploadRequest`.
+  - Response: `ConfirmUploadResponse`.
+
+**Inventory:**
+- `POST /api/Inventory/products/{productId}/initialize`
+  - Path params: `InitializeProductInventoryParams`.
+  - Request: `InitializeProductInventoryRequest`.
+  - Response: `InitializeProductInventoryResponse`.
+
+### Shared Type Properties
+
+`ProductStatus` values:
+- `Active`
+- `Draft`
+- `Unlisted`
+
+`Currency` values:
+- `VND`
+- `USD`
+
+`CreateProductRequest` and `UpdateProductRequest`:
+- `name: string`
+- `description: string`
+- `categoryId: number`
+- `imageUrl: string`
+- `status: ProductStatus`
+- `price: number`
+- `compareAtPrice: number`
+- `costPrice: number`
+- `chargeTax: boolean`
+- `currency: Currency`
+- `stock: number`
+- `trackInventory: boolean`
+- `lowStockThreshold: number`
+- `allowBackorder: boolean`
+- `physicalProduct: boolean`
+- `weight: number`
+- `width: number`
+- `height: number`
+- `length: number`
+- `mediaKeys: string[]`
+- `medias: CreateProductMediaRequest[]`
+- `options: CreateProductOptionRequest[]`
+- `variants: CreateVariantRequest[]`
+
+`CreateProductMediaRequest`:
+- `url: string`
+- `type: string`
+- `displayOrder: number`
+
+`CreateProductOptionRequest`:
+- `name: string`
+- `displayOrder: number`
+- `values: string[]`
+
+`CreateVariantRequest`:
+- `useProductPricing: boolean`
+- `price?: number | null`
+- `compareAtPrice?: number | null`
+- `costPrice?: number | null`
+- `chargeTax?: boolean | null`
+- `imageKey?: string | null`
+- `useProductInventory: boolean`
+- `quantity: number`
+- `trackInventory?: boolean | null`
+- `lowStockThreshold?: number | null`
+- `allowBackorder?: boolean | null`
+- `useProductShipping: boolean`
+- `physicalProduct?: boolean | null`
+- `weight?: number | null`
+- `width?: number | null`
+- `height?: number | null`
+- `length?: number | null`
+- `optionValues: VariantOptionValueDto[]`
+
+`VariantOptionValueDto`:
+- `optionId?: number | null`
+- `optionName: string`
+- `value: string`
+
+`CreateProductResponse`, `UpdateProductResponse`, and `ProductResponse`:
+- `id: number`
+- `name: string`
+- `description: string`
+- `categoryId: number`
+- `categoryName: string`
+- `slug: string`
+- `imageUrl: string`
+- `status: ProductStatus`
+- `price: number`
+- `currency: Currency`
+- `compareAtPrice: number`
+- `costPrice: number`
+- `chargeTax: boolean`
+- `stock: number`
+- `trackInventory: boolean`
+- `lowStockThreshold: number`
+- `allowBackorder: boolean`
+- `sold: number`
+- `reserved: number`
+- `physicalProduct: boolean`
+- `weight: number`
+- `width: number`
+- `height: number`
+- `length: number`
+- `medias: ProductMediaResponse[]`
+- `options: OptionResponse[]`
+- `variants: VariantResponse[]`
+
+`ProductMediaResponse`:
+- `id: number`
+- `url: string`
+- `type: string`
+- `displayOrder: number`
+
+`OptionResponse`:
+- `id: number`
+- `name: string`
+- `displayOrder: number`
+- `values: string[]`
+
+`VariantResponse`:
+- `id: number`
+- `useProductPricing: boolean`
+- `useProductShipping: boolean`
+- `price: number`
+- `compareAtPrice: number`
+- `costPrice: number`
+- `chargeTax: boolean`
+- `imageUrl: string`
+- `stock: number`
+- `sold: number`
+- `reserved: number`
+- `trackInventory: boolean`
+- `lowStockThreshold: number`
+- `allowBackorder: boolean`
+- `physicalProduct: boolean`
+- `weight: number`
+- `width: number`
+- `height: number`
+- `length: number`
+- `optionValues: VariantOptionValueDto[]`
+
+`InitializeProductInventoryParams`:
+- `productId: number`
+
+`InitializeProductInventoryRequest`:
+- `trackInventory: boolean`
+- `allowBackorder: boolean`
+- `lowStockThreshold: number`
+- `variants: VariantInventoryConfig[]`
+
+`VariantInventoryConfig`:
+- `variantId: number`
+- `useProductInventory: boolean`
+- `trackInventory: boolean`
+- `allowBackorder: boolean`
+- `lowStockThreshold: number`
+- `quantity: number`
+
+`InitializeProductInventoryResponse`:
+- `productId: number`
+- `trackInventory: boolean`
+- `allowBackorder: boolean`
+- `lowStockThreshold: number`
+- `variants: VariantInventoryResponse[]`
+
+`VariantInventoryResponse`:
+- `variantId: number`
+- `useProductInventory: boolean`
+- `trackInventory: boolean`
+- `allowBackorder: boolean`
+- `lowStockThreshold: number`
+- `quantity: number`
+- `reserved: number`
+- `available: number`
+
+`GetPresignedUploadBulkUrlRequest`, `PresignedUploadBulkUrlResponse`, `ConfirmUploadRequest`, and `ConfirmUploadResponse`:
+- See `requirements/file-upload-media-plan.md` for all upload property shapes.
+
 ### Existing API Check
 
 Current AppHost OpenAPI paths expose these relevant endpoints:

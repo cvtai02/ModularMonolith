@@ -10,6 +10,129 @@ Claude should use the `Account` module for domain profiles, addresses, tenant-ad
   - `accountTypes`: `Customer`, `TenantAdmin`, `TenantStaff`
   - `accountStatuses`: `Active`, `Suspended`, `Archived`
 
+## Request And Response Types
+- `GET /api/Account/profile`
+  - Response: `AccountProfileResponse`.
+- `PUT /api/Account/profile`
+  - Request: `UpdateAccountProfileRequest`.
+  - Response: `UpdateAccountProfileResponse`.
+- `GET /api/Account/addresses`
+  - Response: `ListAccountAddressesResponse`.
+- `POST /api/Account/addresses`
+  - Request: `SaveAccountAddressRequest`.
+  - Response: `CreateAccountAddressResponse`.
+- `PUT /api/Account/addresses/{id}`
+  - Path params: `UpdateAccountAddressParams`.
+  - Request: `UpdateAccountAddressRequest`.
+  - Response: `UpdateAccountAddressResponse`.
+- `DELETE /api/Account/addresses/{id}`
+  - Path params: `DeleteAccountAddressParams`.
+  - Response: `DeleteAccountAddressResponse`.
+- `GET /api/Account/admin/profiles`
+  - Query: `ListAdminAccountProfilesQuery`.
+  - Response: `ListAdminAccountProfilesResponse`.
+- `GET /api/Account/admin/profiles/{id}`
+  - Path params: `GetAdminAccountProfileByIdParams`.
+  - Response: `GetAdminAccountProfileByIdResponse`.
+- `PUT /api/Account/admin/profiles/{id}`
+  - Path params: `UpdateAdminAccountProfileParams`.
+  - Request: `AdminUpdateAccountProfileRequest`.
+  - Response: `UpdateAdminAccountProfileResponse`.
+- Hub `/hubs/notifications`
+  - Server event: `NotificationReceived`.
+  - Payload: no shared alias yet; use the `AdminOrderPlacedNotification` shape below.
+
+## Type Properties
+
+`AccountType` values:
+- `Customer`
+- `TenantAdmin`
+- `TenantStaff`
+
+`AccountStatus` values:
+- `Active`
+- `Suspended`
+- `Archived`
+
+`UpdateAccountProfileRequest`:
+- `displayName?: string | null`
+- `email?: string | null`
+- `phoneNumber?: string | null`
+- `avatarUrl?: string | null`
+
+`AdminUpdateAccountProfileRequest`:
+- `displayName?: string | null`
+- `email?: string | null`
+- `phoneNumber?: string | null`
+- `avatarUrl?: string | null`
+- `type?: AccountType | null`
+- `status?: AccountStatus | null`
+
+`AccountProfileResponse`:
+- `id: number`
+- `identityUserId: string`
+- `type: AccountType`
+- `displayName: string`
+- `email: string`
+- `phoneNumber: string`
+- `avatarUrl: string`
+- `status: AccountStatus`
+- `created: string`
+- `lastModified: string`
+- `addresses: AccountAddressResponse[]`
+
+`SaveAccountAddressRequest`, `CreateAccountAddressResponse`, and `UpdateAccountAddressResponse` address fields:
+- `ownerName: string`
+- `type: string`
+- `phoneNumber: string`
+- `email: string`
+- `country: string`
+- `state: string`
+- `city: string`
+- `postalCode: string`
+- `line1: string`
+- `line2: string`
+- `isDefaultShipping: boolean`
+- `isDefaultBilling: boolean`
+
+`AccountAddressResponse` extra fields:
+- `id: number`
+- `accountProfileId: number`
+
+`UpdateAccountAddressParams` and `DeleteAccountAddressParams`:
+- `id: number`
+
+`ListAdminAccountProfilesQuery`:
+- `pageNumber?: number`
+- `pageSize?: number`
+- `search?: string | null`
+- `type?: AccountType | null`
+- `status?: AccountStatus | null`
+- `sortBy?: string | null`
+- `sortDirection?: string | null`
+
+`ListAdminAccountProfilesResponse`:
+- `items: AccountProfileResponse[]`
+- `pageNumber: number`
+- `totalPages: number`
+- `totalCount: number`
+- `hasPreviousPage: boolean`
+- `hasNextPage: boolean`
+
+`GetAdminAccountProfileByIdParams` and `UpdateAdminAccountProfileParams`:
+- `id: number`
+
+`NotificationReceived` placed-order payload:
+- `type: "OrderPlaced"`
+- `orderId: number`
+- `orderCode: string`
+- `customerId?: string | null`
+- `totalAmount: number`
+- `currencyCode: string`
+- `reservationId: number`
+- `status: string`
+- `createdAt: string`
+
 ## Current User Profile
 - `GET /api/Account/profile`
   - Auth required.

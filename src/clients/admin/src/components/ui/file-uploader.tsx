@@ -68,7 +68,7 @@ export function FileUploader({
       try {
         const presignedUrls = await getPresignedUrls({
           body: {
-            files: fileArray.map((f) => ({ category, fileName: f.name, contentType: f.type })),
+            files: fileArray.map((f) => ({ category, fileName: f.name, contentType: f.type, size: f.size })),
           },
         });
 

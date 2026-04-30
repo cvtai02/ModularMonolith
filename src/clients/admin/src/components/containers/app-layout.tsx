@@ -242,7 +242,7 @@ export default function AppLayout() {
         </header>
 
         {/* Page content */}
-        <main className="flex flex-1 flex-col overflow-auto">
+        <main className="flex flex-1 flex-col">
           <Outlet />
         </main>
       </SidebarInset>

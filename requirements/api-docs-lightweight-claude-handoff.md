@@ -8,6 +8,7 @@ Backend module `Api/api.md` files are no longer the source for detailed API beha
 
 - Use files under `requirements/` for detailed endpoint behavior, validation notes, request/response explanations, and frontend integration guidance.
 - Use `src/clients/shared/api/*.ts` for stable frontend-facing type aliases exported by Codex.
+- Requirement and handoff files should include the exact request, query, path, and response type aliases to import from `src/clients/shared/api/api-types.ts`.
 - Do not treat a short `Api/api.md` entry as incomplete by itself; details may intentionally live in `requirements/`.
 
 ## Expected `api.md` Shape

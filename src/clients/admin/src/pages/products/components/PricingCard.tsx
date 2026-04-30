@@ -30,7 +30,6 @@ type Props = {
   watchCostPrice: string;
   selectedVariant: Variant | null;
   onUpdateVariant: (localId: string, update: Partial<VariantOverride>) => void;
-  isCreating?: boolean;
 };
 
 export function PricingCard({
@@ -40,7 +39,6 @@ export function PricingCard({
   watchCostPrice,
   selectedVariant,
   onUpdateVariant,
-  isCreating,
 }: Props) {
   const useVariantPricing = selectedVariant !== null && !selectedVariant.useProductPrice;
 
@@ -66,7 +64,6 @@ export function PricingCard({
               </div>
               <Switch
                 checked={selectedVariant.useProductPrice}
-                disabled={isCreating}
                 onCheckedChange={(v) => onUpdateVariant(selectedVariant.localId, { useProductPrice: v })}
               />
             </div>
@@ -188,6 +185,7 @@ export function PricingCard({
                 min="0"
                 step="1000"
                 {...register("costPrice")}
+                disabled={!!selectedVariant?.useProductPrice}
                 placeholder="0"
               />
             )}

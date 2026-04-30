@@ -18,7 +18,6 @@ type Props = {
   watchTrackInventory: boolean;
   selectedVariant: Variant | null;
   onUpdateVariant: (localId: string, update: Partial<VariantOverride>) => void;
-  isCreating?: boolean;
 };
 
 export function InventoryCard({
@@ -27,8 +26,12 @@ export function InventoryCard({
   watchTrackInventory,
   selectedVariant,
   onUpdateVariant,
-  isCreating,
 }: Props) {
+  const inherited = selectedVariant?.useProductInventory ?? false;
+
+  // When a variant is selected, read from variant state; otherwise from product form.
+  const trackInventory = selectedVariant ? selectedVariant.trackInventory : watchTrackInventory;
+
   return (
     <Card>
       <CardHeader><CardTitle>Inventory</CardTitle></CardHeader>
@@ -41,84 +44,36 @@ export function InventoryCard({
                 <span className="text-xs text-muted-foreground">{selectedVariant.label}</span>
               </div>
               <Switch
-                checked={selectedVariant.useProductInventory}
-                disabled={isCreating}
+                checked={inherited}
                 onCheckedChange={(v) => onUpdateVariant(selectedVariant.localId, { useProductInventory: v })}
               />
             </div>
           )}
 
-          {!selectedVariant && (
-            <>
-              <Field orientation="horizontal">
-                <FieldLabel>Track inventory</FieldLabel>
-                <Controller
-                  control={control}
-                  name="trackInventory"
-                  render={({ field }) => (
-                    <Switch checked={field.value} onCheckedChange={field.onChange} />
-                  )}
-                />
-              </Field>
-
-              {watchTrackInventory && (
-                <>
-                  <Field>
-                    <FieldLabel>Quantity</FieldLabel>
-                    <Input type="number" min="0" {...register("stock")} placeholder="0" />
-                  </Field>
-
-                  <Field orientation="horizontal">
-                    <FieldLabel>Continue selling when out of stock</FieldLabel>
-                    <Controller
-                      control={control}
-                      name="allowBackorder"
-                      render={({ field }) => (
-                        <Switch checked={field.value} onCheckedChange={field.onChange} />
-                      )}
-                    />
-                  </Field>
-
-                  <Field>
-                    <FieldLabel>Low stock threshold</FieldLabel>
-                    <Input
-                      type="number"
-                      min="0"
-                      {...register("lowStockThreshold")}
-                      placeholder="e.g. 5"
-                    />
-                    <FieldDescription>Alert when stock falls below this number</FieldDescription>
-                  </Field>
-                </>
-              )}
-            </>
-          )}
-
-          {selectedVariant && selectedVariant.useProductInventory && (
-            <Field>
-              <FieldLabel>Quantity</FieldLabel>
-              <Input
-                type="number"
-                min="0"
-                value={selectedVariant.stock}
-                onChange={(e) => onUpdateVariant(selectedVariant.localId, { stock: e.target.value })}
-                placeholder="0"
+          <Field orientation="horizontal">
+            <FieldLabel>Track inventory</FieldLabel>
+            {selectedVariant ? (
+              <Switch
+                checked={selectedVariant.trackInventory}
+                disabled={inherited}
+                onCheckedChange={(v) => onUpdateVariant(selectedVariant.localId, { trackInventory: v })}
               />
-            </Field>
-          )}
+            ) : (
+              <Controller
+                control={control}
+                name="trackInventory"
+                render={({ field }) => (
+                  <Switch checked={field.value} onCheckedChange={field.onChange} />
+                )}
+              />
+            )}
+          </Field>
 
-          {selectedVariant && !selectedVariant.useProductInventory && (
+          {trackInventory && (
             <>
-              <Field orientation="horizontal">
-                <FieldLabel>Track inventory</FieldLabel>
-                <Switch
-                  checked={selectedVariant.trackInventory}
-                  onCheckedChange={(v) => onUpdateVariant(selectedVariant.localId, { trackInventory: v })}
-                />
-              </Field>
-              {selectedVariant.trackInventory && (
-                <Field>
-                  <FieldLabel>Quantity</FieldLabel>
+              <Field>
+                <FieldLabel>Quantity</FieldLabel>
+                {selectedVariant ? (
                   <Input
                     type="number"
                     min="0"
@@ -126,24 +81,49 @@ export function InventoryCard({
                     onChange={(e) => onUpdateVariant(selectedVariant.localId, { stock: e.target.value })}
                     placeholder="0"
                   />
-                </Field>
-              )}
+                ) : (
+                  <Input type="number" min="0" {...register("stock")} placeholder="0" />
+                )}
+              </Field>
+
               <Field orientation="horizontal">
                 <FieldLabel>Continue selling when out of stock</FieldLabel>
-                <Switch
-                  checked={selectedVariant.allowBackorder}
-                  onCheckedChange={(v) => onUpdateVariant(selectedVariant.localId, { allowBackorder: v })}
-                />
+                {selectedVariant ? (
+                  <Switch
+                    checked={selectedVariant.allowBackorder}
+                    disabled={inherited}
+                    onCheckedChange={(v) => onUpdateVariant(selectedVariant.localId, { allowBackorder: v })}
+                  />
+                ) : (
+                  <Controller
+                    control={control}
+                    name="allowBackorder"
+                    render={({ field }) => (
+                      <Switch checked={field.value} onCheckedChange={field.onChange} />
+                    )}
+                  />
+                )}
               </Field>
+
               <Field>
                 <FieldLabel>Low stock threshold</FieldLabel>
-                <Input
-                  type="number"
-                  min="0"
-                  value={selectedVariant.lowStockThreshold}
-                  onChange={(e) => onUpdateVariant(selectedVariant.localId, { lowStockThreshold: e.target.value })}
-                  placeholder="e.g. 5"
-                />
+                {selectedVariant ? (
+                  <Input
+                    type="number"
+                    min="0"
+                    value={selectedVariant.lowStockThreshold}
+                    disabled={inherited}
+                    onChange={(e) => onUpdateVariant(selectedVariant.localId, { lowStockThreshold: e.target.value })}
+                    placeholder="e.g. 5"
+                  />
+                ) : (
+                  <Input
+                    type="number"
+                    min="0"
+                    {...register("lowStockThreshold")}
+                    placeholder="e.g. 5"
+                  />
+                )}
                 <FieldDescription>Alert when stock falls below this number</FieldDescription>
               </Field>
             </>
