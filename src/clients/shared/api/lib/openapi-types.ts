@@ -505,6 +505,645 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/Account/addresses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["System.Collections.Generic.List`1[[Account.Core.DTOs.AccountAddresses.AccountAddressResponse, Account, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+                        "application/json": components["schemas"]["System.Collections.Generic.List`1[[Account.Core.DTOs.AccountAddresses.AccountAddressResponse, Account, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+                        "text/json": components["schemas"]["System.Collections.Generic.List`1[[Account.Core.DTOs.AccountAddresses.AccountAddressResponse, Account, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["Account.Core.DTOs.AccountAddresses.SaveAccountAddressRequest"];
+                    "text/json": components["schemas"]["Account.Core.DTOs.AccountAddresses.SaveAccountAddressRequest"];
+                    "application/*+json": components["schemas"]["Account.Core.DTOs.AccountAddresses.SaveAccountAddressRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["Account.Core.DTOs.AccountAddresses.AccountAddressResponse"];
+                        "application/json": components["schemas"]["Account.Core.DTOs.AccountAddresses.AccountAddressResponse"];
+                        "text/json": components["schemas"]["Account.Core.DTOs.AccountAddresses.AccountAddressResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Account/addresses/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: components["schemas"]["System.Int32"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["Account.Core.DTOs.AccountAddresses.SaveAccountAddressRequest"];
+                    "text/json": components["schemas"]["Account.Core.DTOs.AccountAddresses.SaveAccountAddressRequest"];
+                    "application/*+json": components["schemas"]["Account.Core.DTOs.AccountAddresses.SaveAccountAddressRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["Account.Core.DTOs.AccountAddresses.AccountAddressResponse"];
+                        "application/json": components["schemas"]["Account.Core.DTOs.AccountAddresses.AccountAddressResponse"];
+                        "text/json": components["schemas"]["Account.Core.DTOs.AccountAddresses.AccountAddressResponse"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: components["schemas"]["System.Int32"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Account/profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["Account.Core.DTOs.AccountProfiles.AccountProfileResponse"];
+                        "application/json": components["schemas"]["Account.Core.DTOs.AccountProfiles.AccountProfileResponse"];
+                        "text/json": components["schemas"]["Account.Core.DTOs.AccountProfiles.AccountProfileResponse"];
+                    };
+                };
+            };
+        };
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["Account.Core.DTOs.AccountProfiles.UpdateAccountProfileRequest"];
+                    "text/json": components["schemas"]["Account.Core.DTOs.AccountProfiles.UpdateAccountProfileRequest"];
+                    "application/*+json": components["schemas"]["Account.Core.DTOs.AccountProfiles.UpdateAccountProfileRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["Account.Core.DTOs.AccountProfiles.AccountProfileResponse"];
+                        "application/json": components["schemas"]["Account.Core.DTOs.AccountProfiles.AccountProfileResponse"];
+                        "text/json": components["schemas"]["Account.Core.DTOs.AccountProfiles.AccountProfileResponse"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Account/admin/profiles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    PageNumber?: components["schemas"]["System.Int32"];
+                    PageSize?: components["schemas"]["System.Int32"];
+                    Search?: components["schemas"]["System.String"];
+                    Type?: components["schemas"]["System.Nullable`1[[Account.Core.Entities.AccountType, Account, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+                    Status?: components["schemas"]["System.Nullable`1[[Account.Core.Entities.AccountStatus, Account, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+                    SortBy?: components["schemas"]["System.String"];
+                    SortDirection?: components["schemas"]["System.String"];
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["SharedKernel.DTOs.PaginatedList`1[[Account.Core.DTOs.AccountProfiles.AccountProfileResponse, Account, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+                        "application/json": components["schemas"]["SharedKernel.DTOs.PaginatedList`1[[Account.Core.DTOs.AccountProfiles.AccountProfileResponse, Account, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+                        "text/json": components["schemas"]["SharedKernel.DTOs.PaginatedList`1[[Account.Core.DTOs.AccountProfiles.AccountProfileResponse, Account, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Account/admin/profiles/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: components["schemas"]["System.Int32"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["Account.Core.DTOs.AccountProfiles.AccountProfileResponse"];
+                        "application/json": components["schemas"]["Account.Core.DTOs.AccountProfiles.AccountProfileResponse"];
+                        "text/json": components["schemas"]["Account.Core.DTOs.AccountProfiles.AccountProfileResponse"];
+                    };
+                };
+            };
+        };
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: components["schemas"]["System.Int32"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["Account.Core.DTOs.AccountProfiles.AdminUpdateAccountProfileRequest"];
+                    "text/json": components["schemas"]["Account.Core.DTOs.AccountProfiles.AdminUpdateAccountProfileRequest"];
+                    "application/*+json": components["schemas"]["Account.Core.DTOs.AccountProfiles.AdminUpdateAccountProfileRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["Account.Core.DTOs.AccountProfiles.AccountProfileResponse"];
+                        "application/json": components["schemas"]["Account.Core.DTOs.AccountProfiles.AccountProfileResponse"];
+                        "text/json": components["schemas"]["Account.Core.DTOs.AccountProfiles.AccountProfileResponse"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Content/blog-posts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    PageNumber?: components["schemas"]["System.Int32"];
+                    PageSize?: components["schemas"]["System.Int32"];
+                    Search?: components["schemas"]["System.String"];
+                    SortBy?: components["schemas"]["System.String"];
+                    SortDirection?: components["schemas"]["System.String"];
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["SharedKernel.DTOs.PaginatedList`1[[Content.Core.DTOs.BlogPosts.BlogPostSummaryResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+                        "application/json": components["schemas"]["SharedKernel.DTOs.PaginatedList`1[[Content.Core.DTOs.BlogPosts.BlogPostSummaryResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+                        "text/json": components["schemas"]["SharedKernel.DTOs.PaginatedList`1[[Content.Core.DTOs.BlogPosts.BlogPostSummaryResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["Content.Core.DTOs.BlogPosts.CreateBlogPostRequest"];
+                    "text/json": components["schemas"]["Content.Core.DTOs.BlogPosts.CreateBlogPostRequest"];
+                    "application/*+json": components["schemas"]["Content.Core.DTOs.BlogPosts.CreateBlogPostRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["Content.Core.DTOs.BlogPosts.BlogPostResponse"];
+                        "application/json": components["schemas"]["Content.Core.DTOs.BlogPosts.BlogPostResponse"];
+                        "text/json": components["schemas"]["Content.Core.DTOs.BlogPosts.BlogPostResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Content/blog-posts/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    slug: components["schemas"]["System.String"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["Content.Core.DTOs.BlogPosts.BlogPostResponse"];
+                        "application/json": components["schemas"]["Content.Core.DTOs.BlogPosts.BlogPostResponse"];
+                        "text/json": components["schemas"]["Content.Core.DTOs.BlogPosts.BlogPostResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Content/blog-posts/admin": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    Status?: components["schemas"]["System.Nullable`1[[Content.Core.Entities.BlogPostStatus, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+                    PageNumber?: components["schemas"]["System.Int32"];
+                    PageSize?: components["schemas"]["System.Int32"];
+                    Search?: components["schemas"]["System.String"];
+                    SortBy?: components["schemas"]["System.String"];
+                    SortDirection?: components["schemas"]["System.String"];
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["SharedKernel.DTOs.PaginatedList`1[[Content.Core.DTOs.BlogPosts.BlogPostSummaryResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+                        "application/json": components["schemas"]["SharedKernel.DTOs.PaginatedList`1[[Content.Core.DTOs.BlogPosts.BlogPostSummaryResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+                        "text/json": components["schemas"]["SharedKernel.DTOs.PaginatedList`1[[Content.Core.DTOs.BlogPosts.BlogPostSummaryResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Content/blog-posts/admin/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: components["schemas"]["System.Int32"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["Content.Core.DTOs.BlogPosts.BlogPostResponse"];
+                        "application/json": components["schemas"]["Content.Core.DTOs.BlogPosts.BlogPostResponse"];
+                        "text/json": components["schemas"]["Content.Core.DTOs.BlogPosts.BlogPostResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Content/blog-posts/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: components["schemas"]["System.Int32"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["Content.Core.DTOs.BlogPosts.UpdateBlogPostRequest"];
+                    "text/json": components["schemas"]["Content.Core.DTOs.BlogPosts.UpdateBlogPostRequest"];
+                    "application/*+json": components["schemas"]["Content.Core.DTOs.BlogPosts.UpdateBlogPostRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["Content.Core.DTOs.BlogPosts.BlogPostResponse"];
+                        "application/json": components["schemas"]["Content.Core.DTOs.BlogPosts.BlogPostResponse"];
+                        "text/json": components["schemas"]["Content.Core.DTOs.BlogPosts.BlogPostResponse"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: components["schemas"]["System.Int32"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Content/blog-posts/{id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: components["schemas"]["System.Int32"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["Content.Core.DTOs.BlogPosts.BlogPostResponse"];
+                        "application/json": components["schemas"]["Content.Core.DTOs.BlogPosts.BlogPostResponse"];
+                        "text/json": components["schemas"]["Content.Core.DTOs.BlogPosts.BlogPostResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Content/blog-posts/{id}/archive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: components["schemas"]["System.Int32"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["Content.Core.DTOs.BlogPosts.BlogPostResponse"];
+                        "application/json": components["schemas"]["Content.Core.DTOs.BlogPosts.BlogPostResponse"];
+                        "text/json": components["schemas"]["Content.Core.DTOs.BlogPosts.BlogPostResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Content/file-objects": {
         parameters: {
             query?: never;
@@ -1342,6 +1981,102 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        "Account.Core.DTOs.AccountAddresses.AccountAddressResponse": {
+            id: components["schemas"]["System.Int32"];
+            accountProfileId: components["schemas"]["System.Int32"];
+            ownerName: components["schemas"]["System.String"];
+            type: components["schemas"]["System.String"];
+            phoneNumber: components["schemas"]["System.String"];
+            email: components["schemas"]["System.String"];
+            country: components["schemas"]["System.String"];
+            state: components["schemas"]["System.String"];
+            city: components["schemas"]["System.String"];
+            postalCode: components["schemas"]["System.String"];
+            line1: components["schemas"]["System.String"];
+            line2: components["schemas"]["System.String"];
+            isDefaultShipping: components["schemas"]["System.Boolean"];
+            isDefaultBilling: components["schemas"]["System.Boolean"];
+        };
+        "Account.Core.DTOs.AccountAddresses.SaveAccountAddressRequest": {
+            ownerName: components["schemas"]["System.String"];
+            type: components["schemas"]["System.String"];
+            phoneNumber: components["schemas"]["System.String"];
+            email: components["schemas"]["System.String"];
+            country: components["schemas"]["System.String"];
+            state: components["schemas"]["System.String"];
+            city: components["schemas"]["System.String"];
+            postalCode: components["schemas"]["System.String"];
+            line1: components["schemas"]["System.String"];
+            line2: components["schemas"]["System.String"];
+            isDefaultShipping: components["schemas"]["System.Boolean"];
+            isDefaultBilling: components["schemas"]["System.Boolean"];
+        };
+        "Account.Core.DTOs.AccountProfiles.AccountProfileResponse": {
+            id: components["schemas"]["System.Int32"];
+            identityUserId: components["schemas"]["System.String"];
+            type: components["schemas"]["Account.Core.Entities.AccountType"];
+            displayName: components["schemas"]["System.String"];
+            email: components["schemas"]["System.String"];
+            phoneNumber: components["schemas"]["System.String"];
+            avatarUrl: components["schemas"]["System.String"];
+            status: components["schemas"]["Account.Core.Entities.AccountStatus"];
+            created: components["schemas"]["System.DateTimeOffset"];
+            lastModified: components["schemas"]["System.DateTimeOffset"];
+            addresses: components["schemas"]["System.Collections.Generic.List`1[[Account.Core.DTOs.AccountAddresses.AccountAddressResponse, Account, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+        };
+        "Account.Core.DTOs.AccountProfiles.AdminUpdateAccountProfileRequest": {
+            type: null | components["schemas"]["System.Nullable`1[[Account.Core.Entities.AccountType, Account, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+            status: null | components["schemas"]["System.Nullable`1[[Account.Core.Entities.AccountStatus, Account, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+            displayName: null | components["schemas"]["System.String"];
+            email: null | components["schemas"]["System.String"];
+            phoneNumber: null | components["schemas"]["System.String"];
+            avatarUrl: null | components["schemas"]["System.String"];
+        };
+        "Account.Core.DTOs.AccountProfiles.UpdateAccountProfileRequest": {
+            displayName: null | components["schemas"]["System.String"];
+            email: null | components["schemas"]["System.String"];
+            phoneNumber: null | components["schemas"]["System.String"];
+            avatarUrl: null | components["schemas"]["System.String"];
+        };
+        /** @enum {unknown} */
+        "Account.Core.Entities.AccountStatus": "Active" | "Suspended" | "Archived";
+        /** @enum {unknown} */
+        "Account.Core.Entities.AccountType": "Customer" | "TenantAdmin" | "TenantStaff";
+        "Content.Core.DTOs.BlogPosts.BlogPostResponse": {
+            id: components["schemas"]["System.Int32"];
+            title: components["schemas"]["System.String"];
+            slug: components["schemas"]["System.String"];
+            content: components["schemas"]["System.String"];
+            summary: components["schemas"]["System.String"];
+            imageUrl: components["schemas"]["System.String"];
+            status: components["schemas"]["Content.Core.Entities.BlogPostStatus"];
+            publishedAt: null | components["schemas"]["System.Nullable`1[[System.DateTimeOffset, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
+            created: components["schemas"]["System.DateTimeOffset"];
+            lastModified: components["schemas"]["System.DateTimeOffset"];
+        };
+        "Content.Core.DTOs.BlogPosts.BlogPostSummaryResponse": {
+            id: components["schemas"]["System.Int32"];
+            title: components["schemas"]["System.String"];
+            slug: components["schemas"]["System.String"];
+            summary: components["schemas"]["System.String"];
+            imageUrl: components["schemas"]["System.String"];
+            status: components["schemas"]["Content.Core.Entities.BlogPostStatus"];
+            publishedAt: null | components["schemas"]["System.Nullable`1[[System.DateTimeOffset, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
+            created: components["schemas"]["System.DateTimeOffset"];
+            lastModified: components["schemas"]["System.DateTimeOffset"];
+        };
+        "Content.Core.DTOs.BlogPosts.CreateBlogPostRequest": {
+            title: components["schemas"]["System.String"];
+            content: components["schemas"]["System.String"];
+            summary: null | components["schemas"]["System.String"];
+            imageUrl: null | components["schemas"]["System.String"];
+        };
+        "Content.Core.DTOs.BlogPosts.UpdateBlogPostRequest": {
+            title: components["schemas"]["System.String"];
+            content: components["schemas"]["System.String"];
+            summary: null | components["schemas"]["System.String"];
+            imageUrl: null | components["schemas"]["System.String"];
+        };
         "Content.Core.DTOs.FileObjects.ConfirmUploadFileRequest": {
             uploadId: components["schemas"]["System.String"];
             key: components["schemas"]["System.String"];
@@ -1396,6 +2131,8 @@ export interface components {
             size: components["schemas"]["System.Int64"];
             publicUrl: components["schemas"]["System.String"];
         };
+        /** @enum {unknown} */
+        "Content.Core.Entities.BlogPostStatus": "Draft" | "Published" | "Archived";
         "Identity.Api.AdminAccountInput": {
             email: components["schemas"]["System.String"];
             password: components["schemas"]["System.String"];
@@ -1540,7 +2277,8 @@ export interface components {
             lineCount: components["schemas"]["System.Int32"];
             createdAt: components["schemas"]["System.DateTimeOffset"];
         };
-        "Order.Core.Entities.OrderStatus": number;
+        /** @enum {unknown} */
+        "Order.Core.Entities.OrderStatus": "Draft" | "PendingInventory" | "Placed" | "Paid" | "Rejected" | "Cancelled" | "Shipped";
         "ProductCatalog.Core.DTOs.Categories.CategoryResponse": {
             id: components["schemas"]["System.Int32"];
             name: components["schemas"]["System.String"];
@@ -1706,8 +2444,10 @@ export interface components {
             length: components["schemas"]["System.Single"];
             optionValues: components["schemas"]["System.Collections.Generic.List`1[[ProductCatalog.Core.DTOs.Products.VariantOptionValueDto, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
         };
-        "ProductCatalog.Core.Entities.CategoryStatus": number;
-        "ProductCatalog.Core.Entities.ProductStatus": number;
+        /** @enum {unknown} */
+        "ProductCatalog.Core.Entities.CategoryStatus": "Active" | "Inactive";
+        /** @enum {unknown} */
+        "ProductCatalog.Core.Entities.ProductStatus": "Active" | "Draft" | "Unlisted";
         "SharedKernel.DTOs.Address": {
             ownerName: components["schemas"]["System.String"];
             type: components["schemas"]["System.String"];
@@ -1719,6 +2459,22 @@ export interface components {
             postalCode: null | components["schemas"]["System.String"];
             line1: components["schemas"]["System.String"];
             line2: null | components["schemas"]["System.String"];
+        };
+        "SharedKernel.DTOs.PaginatedList`1[[Account.Core.DTOs.AccountProfiles.AccountProfileResponse, Account, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": {
+            items: components["schemas"]["System.Collections.Generic.List`1[[Account.Core.DTOs.AccountProfiles.AccountProfileResponse, Account, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+            pageNumber: components["schemas"]["System.Int32"];
+            totalPages: components["schemas"]["System.Int32"];
+            totalCount: components["schemas"]["System.Int32"];
+            hasPreviousPage: components["schemas"]["System.Boolean"];
+            hasNextPage: components["schemas"]["System.Boolean"];
+        };
+        "SharedKernel.DTOs.PaginatedList`1[[Content.Core.DTOs.BlogPosts.BlogPostSummaryResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": {
+            items: components["schemas"]["System.Collections.Generic.List`1[[Content.Core.DTOs.BlogPosts.BlogPostSummaryResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+            pageNumber: components["schemas"]["System.Int32"];
+            totalPages: components["schemas"]["System.Int32"];
+            totalCount: components["schemas"]["System.Int32"];
+            hasPreviousPage: components["schemas"]["System.Boolean"];
+            hasNextPage: components["schemas"]["System.Boolean"];
         };
         "SharedKernel.DTOs.PaginatedList`1[[Content.Core.DTOs.FileObjects.MediaFileResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": {
             items: components["schemas"]["System.Collections.Generic.List`1[[Content.Core.DTOs.FileObjects.MediaFileResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
@@ -1760,7 +2516,8 @@ export interface components {
             hasPreviousPage: components["schemas"]["System.Boolean"];
             hasNextPage: components["schemas"]["System.Boolean"];
         };
-        "SharedKernel.Enums.Currency": number;
+        /** @enum {unknown} */
+        "SharedKernel.Enums.Currency": "VND" | "USD";
         "System.Boolean": boolean;
         "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]": {
             [key: string]: components["schemas"]["System.String"];
@@ -1768,6 +2525,9 @@ export interface components {
         "System.Collections.Generic.IDictionary`2[[System.String, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String[], System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]": {
             [key: string]: components["schemas"]["System.String[]"];
         };
+        "System.Collections.Generic.List`1[[Account.Core.DTOs.AccountAddresses.AccountAddressResponse, Account, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["Account.Core.DTOs.AccountAddresses.AccountAddressResponse"][];
+        "System.Collections.Generic.List`1[[Account.Core.DTOs.AccountProfiles.AccountProfileResponse, Account, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["Account.Core.DTOs.AccountProfiles.AccountProfileResponse"][];
+        "System.Collections.Generic.List`1[[Content.Core.DTOs.BlogPosts.BlogPostSummaryResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["Content.Core.DTOs.BlogPosts.BlogPostSummaryResponse"][];
         "System.Collections.Generic.List`1[[Content.Core.DTOs.FileObjects.ConfirmUploadFileRequest, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["Content.Core.DTOs.FileObjects.ConfirmUploadFileRequest"][];
         "System.Collections.Generic.List`1[[Content.Core.DTOs.FileObjects.CreatePresignedUploadFileRequest, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["Content.Core.DTOs.FileObjects.CreatePresignedUploadFileRequest"][];
         "System.Collections.Generic.List`1[[Content.Core.DTOs.FileObjects.MediaFileResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["Content.Core.DTOs.FileObjects.MediaFileResponse"][];
@@ -1798,8 +2558,16 @@ export interface components {
         "System.Int32": number;
         /** Format: int64 */
         "System.Int64": number;
-        "System.Nullable`1[[Order.Core.Entities.OrderStatus, Order, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": number;
-        "System.Nullable`1[[ProductCatalog.Core.Entities.ProductStatus, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": number;
+        /** @enum {unknown} */
+        "System.Nullable`1[[Account.Core.Entities.AccountStatus, Account, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": "Active" | "Suspended" | "Archived" | null;
+        /** @enum {unknown} */
+        "System.Nullable`1[[Account.Core.Entities.AccountType, Account, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": "Customer" | "TenantAdmin" | "TenantStaff" | null;
+        /** @enum {unknown} */
+        "System.Nullable`1[[Content.Core.Entities.BlogPostStatus, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": "Draft" | "Published" | "Archived" | null;
+        /** @enum {unknown} */
+        "System.Nullable`1[[Order.Core.Entities.OrderStatus, Order, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": "Draft" | "PendingInventory" | "Placed" | "Paid" | "Rejected" | "Cancelled" | "Shipped" | null;
+        /** @enum {unknown} */
+        "System.Nullable`1[[ProductCatalog.Core.Entities.ProductStatus, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": "Active" | "Draft" | "Unlisted" | null;
         "System.Nullable`1[[System.Boolean, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]": boolean;
         /** Format: date-time */
         "System.Nullable`1[[System.DateTimeOffset, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]": string;

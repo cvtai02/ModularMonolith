@@ -21,7 +21,7 @@ import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import type { FormValues, Variant, VariantOverride } from "./types";
 
-const CURRENCY_OPTIONS = [{ value: 0, label: "VND" }] as const;
+import { currencies } from "@shared/api/common-types";
 
 type Props = {
   register: UseFormRegister<FormValues>;
@@ -99,24 +99,27 @@ export function PricingCard({
               <Controller
                 control={control}
                 name="currency"
-                render={({ field }) => (
-                  <Select
-                    value={String(field.value)}
-                    onValueChange={(v) => field.onChange(parseInt(v ?? "0"))}
-                    disabled={!!selectedVariant}
-                  >
-                    <SelectTrigger className="w-20">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {CURRENCY_OPTIONS.map((c) => (
-                        <SelectItem key={c.value} value={String(c.value)}>
-                          {c.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
+                render={({ field }) => {
+                  const code = currencies[field.value] ?? currencies[0];
+                  return (
+                    <Select
+                      value={code}
+                      onValueChange={(v) => field.onChange(currencies.indexOf(v as typeof currencies[number]))}
+                      disabled={!!selectedVariant}
+                    >
+                      <SelectTrigger className="w-20">
+                        <SelectValue>{code}</SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        {currencies.map((c) => (
+                          <SelectItem key={c} value={c}>
+                            {c}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  );
+                }}
               />
             </div>
           </Field>

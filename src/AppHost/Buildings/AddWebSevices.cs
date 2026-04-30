@@ -106,6 +106,7 @@ public static partial class ServiceCollectionExtensions
             {
                 // Tell OpenApi generator to report number fields as integers/floats only, not strings
                 options.SerializerOptions.NumberHandling = JsonNumberHandling.Strict;
+                options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
 
             return services;

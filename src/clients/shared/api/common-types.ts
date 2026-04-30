@@ -8,7 +8,7 @@ export type ValidationResponse = ApiTypes['Microsoft.AspNetCore.Http.HttpValidat
 
 // SharedKernel.Enums.Currency
 export const currencies = ["VND", "USD"] as const;
-export type Currency = typeof currencies[number];
+export type CurrencyCode = typeof currencies[number];
 
 // SharedKernel.DTOs.Address
 export type Address = {

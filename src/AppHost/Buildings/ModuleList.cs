@@ -4,6 +4,7 @@ using Content;
 using Identity;
 using Inventory;
 using Order;
+using Payment;
 using ProductCatalog;
 using SharedKernel.Abstractions.Contracts;
 
@@ -20,6 +21,7 @@ public static class ModuleList
             new ContentModule(builder),
             new InventoryModule(builder),
             new CartModule(builder),
+            new PaymentModule(builder),
             new OrderModule(builder)
         ];
     }

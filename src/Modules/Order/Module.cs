@@ -1,4 +1,5 @@
 using Intermediary.Events.Inventory;
+using Intermediary.Events.Payment;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,6 +35,7 @@ public class OrderModule(IHostApplicationBuilder b) : Module(b)
         Services.AddScoped<IEventHandler<ReservationRejected>, ReservationRejectedHandler>();
         Services.AddScoped<IEventHandler<ReservationCommited>, ReservationCommitedHandler>();
         Services.AddScoped<IEventHandler<ReservationExpired>, ReservationExpiredHandler>();
+        Services.AddScoped<IEventHandler<PaymentSucceeded>, PaymentSucceededHandler>();
     }
 
     public override void Run(WebApplication app)
