@@ -1,5 +1,5 @@
 
-import type { components } from "./lib/openapi-types";
+import type { components } from "../lib/openapi-types";
 
 type ApiTypes = components['schemas'] // donot export this
 // SharedKernel - Pagination

@@ -4,6 +4,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { createBrowserRouter } from 'react-router-dom';
 import AppRoutes from './routes';
 import QueryClient from './components/containers/query-client';
+import { ApiClientProvider } from './components/containers/api-client-provider';
 import { TooltipProvider } from './components/ui/tooltip';
 import { Toaster } from './components/ui/sonner';
 import { ThemeProvider } from './components/containers/theme-provider';
@@ -15,8 +16,10 @@ function App() {
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <TooltipProvider>
         <QueryClientProvider client={QueryClient}>
-          <RouterProvider router={router} />
-          <Toaster />
+          <ApiClientProvider>
+            <RouterProvider router={router} />
+            <Toaster />
+          </ApiClientProvider>
         </QueryClientProvider>
       </TooltipProvider>
     </ThemeProvider>

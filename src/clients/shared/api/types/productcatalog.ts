@@ -1,5 +1,5 @@
 import type { paths } from "../lib/openapi-types";
-import type { JsonRequestBody, JsonResponse, PathParams, QueryParams } from "../path-type-helpers";
+import type { JsonRequestBody, JsonResponse, PathParams, QueryParams } from "./path-type-helpers";
 
 // -- API Types --
 type ProductCatalogPaths = paths; // do not export this

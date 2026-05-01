@@ -4,6 +4,8 @@ import type {
 } from "../types/inventory";
 
 export interface IInventoryClient {
+  // Request: src/Modules/Inventory/DTOs/Inventory/InitializeProductInventoryRequest.cs
+  // Response: src/Modules/Inventory/DTOs/Inventory/InitializeProductInventoryResponse.cs
   initializeProductInventory(
     productId: number,
     input: InitializeProductInventoryRequest,
