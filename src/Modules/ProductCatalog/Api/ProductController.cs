@@ -35,7 +35,7 @@ public class ProductController(
 
     [HttpPut("{id:int}")]
     public async Task<ActionResult<ProductResponse>> Update(
-        int id, [FromBody] CreateProductRequest request, CancellationToken cancellationToken)
+        int id, [FromBody] UpdateProductRequest request, CancellationToken cancellationToken)
     {
         var result = await updateProduct.ExecuteAsync(id, request, cancellationToken);
         return result is null ? NotFound() : Ok(result);

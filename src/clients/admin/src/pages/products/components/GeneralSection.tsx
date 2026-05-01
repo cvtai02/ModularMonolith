@@ -32,36 +32,62 @@ type Props = {
 };
 
 const STATUS_OPTIONS = [
-  { value: "1", label: "Active" },
-  { value: "2", label: "Draft" },
-  { value: "0", label: "Archived" },
+  { value: "Active", label: "Active" },
+  { value: "Draft", label: "Draft" },
+  { value: "Unlisted", label: "Unlisted" },
 ] as const;
 
-function ImagePickerField({ value, onChange }: { value: string; onChange: (url: string) => void }) {
+function ImagePickerField({
+  value,
+  onChange,
+}: {
+  value: string[];
+  onChange: (urls: string[]) => void;
+}) {
   const [open, setOpen] = useState(false);
+
+  const removeImage = (url: string) => {
+    onChange(value.filter((x) => x !== url));
+  };
+
+  const addImage = (url: string) => {
+    if (!url) return;
+
+    // avoid duplicate
+    if (value.includes(url)) return;
+
+    onChange([...value, url]);
+  };
 
   return (
     <>
       <div className="flex flex-wrap gap-2">
-        {value && (
-          <div className="group relative size-40 shrink-0 overflow-hidden rounded-xl border bg-muted">
+        {value.map((url) => (
+          <div
+            key={url}
+            className="group relative size-40 shrink-0 overflow-hidden rounded-xl border bg-muted"
+          >
             <img
-              src={value}
+              src={url}
               alt="Product"
               className="size-full cursor-pointer object-cover"
               onClick={() => setOpen(true)}
-              onError={(e) => { (e.target as HTMLImageElement).style.opacity = "0.3"; }}
+              onError={(e) => {
+                (e.target as HTMLImageElement).style.opacity = "0.3";
+              }}
             />
+
             <button
               type="button"
               aria-label="Remove image"
-              onClick={() => onChange("")}
+              onClick={() => removeImage(url)}
               className="absolute right-1.5 top-1.5 flex size-5 items-center justify-center rounded-full bg-background/90 opacity-0 shadow-sm transition-opacity group-hover:opacity-100 hover:bg-destructive hover:text-destructive-foreground"
             >
               <XIcon className="size-3" />
             </button>
           </div>
-        )}
+        ))}
+
         <button
           type="button"
           onClick={() => setOpen(true)}
@@ -71,11 +97,12 @@ function ImagePickerField({ value, onChange }: { value: string; onChange: (url: 
           <span className="text-xs">Add image</span>
         </button>
       </div>
+
       <MediaPickerModal
         open={open}
         onOpenChange={setOpen}
-        selectedUrl={value}
-        onSelect={onChange}
+        selectedUrl={value[0] ?? ""}
+        onSelect={addImage}
       />
     </>
   );
@@ -136,7 +163,7 @@ export function GeneralSection({ register, control, errors, categories }: Props)
             <FieldLabel>Product Image</FieldLabel>
             <Controller
               control={control}
-              name="imageUrl"
+              name="mediaUrls"
               render={({ field }) => (
                 <ImagePickerField value={field.value} onChange={field.onChange} />
               )}

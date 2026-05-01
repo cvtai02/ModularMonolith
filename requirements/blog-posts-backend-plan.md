@@ -67,16 +67,7 @@ Build blog post APIs in the existing `Content` module using the existing `BlogPo
 - `sortDirection?: string | null`
 - `status?: BlogPostStatus | null`
 
-`BlogPostSummaryResponse`:
-- `id: number`
-- `title: string`
-- `slug: string`
-- `summary: string`
-- `imageUrl: string`
-- `status: BlogPostStatus`
-- `publishedAt?: string | null`
-- `created: string`
-- `lastModified: string`
+`BlogPostSummaryResponse`: [BlogPostSummaryResponse.cs](../src/Modules/Content/DTOs/BlogPosts/BlogPostSummaryResponse.cs)
 
 `ListPublishedBlogPostsResponse` and `ListAdminBlogPostsResponse`:
 - `items: BlogPostSummaryResponse[]`
@@ -92,23 +83,10 @@ Build blog post APIs in the existing `Content` module using the existing `BlogPo
 `GetAdminBlogPostByIdParams`, `UpdateBlogPostParams`, `PublishBlogPostParams`, `ArchiveBlogPostParams`, and `DeleteBlogPostParams`:
 - `id: number`
 
-`BlogPostResponse`, `GetAdminBlogPostByIdResponse`, `CreateBlogPostResponse`, `UpdateBlogPostResponse`, `PublishBlogPostResponse`, and `ArchiveBlogPostResponse`:
-- `id: number`
-- `title: string`
-- `slug: string`
-- `content: string`
-- `summary: string`
-- `imageUrl: string`
-- `status: BlogPostStatus`
-- `publishedAt?: string | null`
-- `created: string`
-- `lastModified: string`
-
-`CreateBlogPostRequest` and `UpdateBlogPostRequest`:
-- `title: string`
-- `content: string`
-- `summary?: string | null`
-- `imageUrl?: string | null`
+DTO-backed blog types:
+- `BlogPostResponse`, `GetAdminBlogPostByIdResponse`, `CreateBlogPostResponse`, `UpdateBlogPostResponse`, `PublishBlogPostResponse`, and `ArchiveBlogPostResponse`: [BlogPostResponse.cs](../src/Modules/Content/DTOs/BlogPosts/BlogPostResponse.cs)
+- `CreateBlogPostRequest`: [CreateBlogPostRequest.cs](../src/Modules/Content/DTOs/BlogPosts/CreateBlogPostRequest.cs)
+- `UpdateBlogPostRequest`: [UpdateBlogPostRequest.cs](../src/Modules/Content/DTOs/BlogPosts/UpdateBlogPostRequest.cs)
 
 ## Admin APIs
 - Tenant-admin protected endpoints: admin list/detail, create draft, update, publish, archive, and soft delete.
@@ -123,3 +101,6 @@ Build blog post APIs in the existing `Content` module using the existing `BlogPo
 - Archive hides post from public endpoints.
 - Delete hides post from normal queries.
 - Unauthorized write attempts are rejected.
+## Claude Completion Note
+
+After implementing this requirement, move this file to `requirements/done/`.

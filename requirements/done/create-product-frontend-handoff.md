@@ -1,48 +1,7 @@
-# Create Product Feature - Implementation Plan
+# Create Product Frontend Handoff
 
-## Overview
-Complete product creation workflow with support for multi-variant products, options, inventory tracking, pricing, and shipping configuration. Integrates ProductCatalog and Inventory modules.
-
----
-
-## Entity Relationships & Data Model
-
-### Primary Entities
-
-**ProductCatalog Module:**
-- `Product` - Root entity with general info, pricing defaults, inventory defaults
-- `Option` - Product options (e.g., Color, Size) - max 2 per product
-- `OptionValue` - Values for each option (e.g., "Red", "Blue" for Color)
-- `Variant` - Product variant combining option values (generated automatically)
-- `VariantOptionValue` - Mapping between variant and option values
-- `ProductMedia` - Attached media files
-- `ProductMetric` - Analytics (Stock, Sold, Rating)
-- `ProductShipping` - Product-level shipping template
-
-**Inventory Module:**
-- `ProductInventory` - Product-level inventory settings (TrackInventory, AllowBackorder, LowStockThreshold)
-- `VariantInventory` - Variant-level inventory settings (overrides product defaults if UseProductInventory=false)
-- `VariantTracking` - Real-time stock quantities
-
-### Data Flow on Creation
-
-```
-Product (general info, pricing, inventory defaults)
-  ├─ ProductShipping (template for variants)
-  ├─ ProductMedia (uploaded files)
-  ├─ Option[1..2] (product attributes)
-  │   └─ OptionValue[n] (attribute values)
-  ├─ Variant[n] (auto-generated or manual)
-  │   ├─ VariantShipping (copy of ProductShipping initially)
-  │   ├─ VariantMetric
-  │   └─ VariantOptionValue[n]
-  └─ ProductInventory
-      ├─ TrackInventory
-      ├─ AllowBackorder
-      └─ LowStockThreshold
-```
-
----
+## Summary
+Claude should implement the admin create/edit product experience using the ProductCatalog, Content upload, and generated shared API aliases described here. Backend update is a full-replace operation, not a partial patch.
 
 ## Frontend State Management
 
@@ -311,6 +270,7 @@ Import aliases from `src/clients/shared/api/api-types.ts`.
   - Path params: `UpdateProductParams`.
   - Request: `UpdateProductRequest`.
   - Response: `UpdateProductResponse`.
+  - Behavior: full-replace update. Send the same complete product shape as create.
 
 **Content uploads:**
 - `POST /api/Content/file-objects/presigned-upload`
@@ -337,289 +297,55 @@ Import aliases from `src/clients/shared/api/api-types.ts`.
 - `VND`
 - `USD`
 
-`CreateProductRequest` and `UpdateProductRequest`:
-- `name: string`
-- `description: string`
-- `categoryId: number`
-- `imageUrl: string`
-- `status: ProductStatus`
-- `price: number`
-- `compareAtPrice: number`
-- `costPrice: number`
-- `chargeTax: boolean`
-- `currency: Currency`
-- `stock: number`
-- `trackInventory: boolean`
-- `lowStockThreshold: number`
-- `allowBackorder: boolean`
-- `physicalProduct: boolean`
-- `weight: number`
-- `width: number`
-- `height: number`
-- `length: number`
-- `mediaKeys: string[]`
-- `medias: CreateProductMediaRequest[]`
-- `options: CreateProductOptionRequest[]`
-- `variants: CreateVariantRequest[]`
-
-`CreateProductMediaRequest`:
-- `url: string`
-- `type: string`
-- `displayOrder: number`
-
-`CreateProductOptionRequest`:
-- `name: string`
-- `displayOrder: number`
-- `values: string[]`
-
-`CreateVariantRequest`:
-- `useProductPricing: boolean`
-- `price?: number | null`
-- `compareAtPrice?: number | null`
-- `costPrice?: number | null`
-- `chargeTax?: boolean | null`
-- `imageKey?: string | null`
-- `useProductInventory: boolean`
-- `quantity: number`
-- `trackInventory?: boolean | null`
-- `lowStockThreshold?: number | null`
-- `allowBackorder?: boolean | null`
-- `useProductShipping: boolean`
-- `physicalProduct?: boolean | null`
-- `weight?: number | null`
-- `width?: number | null`
-- `height?: number | null`
-- `length?: number | null`
-- `optionValues: VariantOptionValueDto[]`
-
-`VariantOptionValueDto`:
-- `optionId?: number | null`
-- `optionName: string`
-- `value: string`
-
-`CreateProductResponse`, `UpdateProductResponse`, and `ProductResponse`:
-- `id: number`
-- `name: string`
-- `description: string`
-- `categoryId: number`
-- `categoryName: string`
-- `slug: string`
-- `imageUrl: string`
-- `status: ProductStatus`
-- `price: number`
-- `currency: Currency`
-- `compareAtPrice: number`
-- `costPrice: number`
-- `chargeTax: boolean`
-- `stock: number`
-- `trackInventory: boolean`
-- `lowStockThreshold: number`
-- `allowBackorder: boolean`
-- `sold: number`
-- `reserved: number`
-- `physicalProduct: boolean`
-- `weight: number`
-- `width: number`
-- `height: number`
-- `length: number`
-- `medias: ProductMediaResponse[]`
-- `options: OptionResponse[]`
-- `variants: VariantResponse[]`
-
-`ProductMediaResponse`:
-- `id: number`
-- `url: string`
-- `type: string`
-- `displayOrder: number`
-
-`OptionResponse`:
-- `id: number`
-- `name: string`
-- `displayOrder: number`
-- `values: string[]`
-
-`VariantResponse`:
-- `id: number`
-- `useProductPricing: boolean`
-- `useProductShipping: boolean`
-- `price: number`
-- `compareAtPrice: number`
-- `costPrice: number`
-- `chargeTax: boolean`
-- `imageUrl: string`
-- `stock: number`
-- `sold: number`
-- `reserved: number`
-- `trackInventory: boolean`
-- `lowStockThreshold: number`
-- `allowBackorder: boolean`
-- `physicalProduct: boolean`
-- `weight: number`
-- `width: number`
-- `height: number`
-- `length: number`
-- `optionValues: VariantOptionValueDto[]`
+DTO-backed ProductCatalog types:
+- `CreateProductRequest`, `CreateProductMediaRequest`, and `CreateProductOptionRequest`: [CreateProductRequest.cs](../../src/Modules/ProductCatalog/DTOs/Products/CreateProductRequest.cs)
+- `UpdateProductRequest`: [UpdateProductRequest.cs](../../src/Modules/ProductCatalog/DTOs/Products/UpdateProductRequest.cs). This currently inherits the full create shape; use it as a complete replacement payload, not a partial patch.
+- `CreateVariantRequest`: [CreateVariantRequest.cs](../../src/Modules/ProductCatalog/DTOs/Products/CreateVariantRequest.cs)
+- `CreateProductResponse`, `UpdateProductResponse`, `ProductResponse`, and `ProductMediaResponse`: [ProductResponse.cs](../../src/Modules/ProductCatalog/DTOs/Products/ProductResponse.cs)
+- `OptionResponse`: [OptionResponse.cs](../../src/Modules/ProductCatalog/DTOs/Products/OptionResponse.cs)
+- `VariantResponse` and `VariantOptionValueDto`: [VariantResponse.cs](../../src/Modules/ProductCatalog/DTOs/Products/VariantResponse.cs)
 
 `InitializeProductInventoryParams`:
 - `productId: number`
 
-`InitializeProductInventoryRequest`:
-- `trackInventory: boolean`
-- `allowBackorder: boolean`
-- `lowStockThreshold: number`
-- `variants: VariantInventoryConfig[]`
+DTO-backed Inventory types:
+- `InitializeProductInventoryRequest` and `VariantInventoryConfig`: [InitializeProductInventoryRequest.cs](../../src/Modules/Inventory/DTOs/Inventory/InitializeProductInventoryRequest.cs)
+- `InitializeProductInventoryResponse` and `VariantInventoryResponse`: [InitializeProductInventoryResponse.cs](../../src/Modules/Inventory/DTOs/Inventory/InitializeProductInventoryResponse.cs)
 
-`VariantInventoryConfig`:
-- `variantId: number`
-- `useProductInventory: boolean`
-- `trackInventory: boolean`
-- `allowBackorder: boolean`
-- `lowStockThreshold: number`
-- `quantity: number`
-
-`InitializeProductInventoryResponse`:
-- `productId: number`
-- `trackInventory: boolean`
-- `allowBackorder: boolean`
-- `lowStockThreshold: number`
-- `variants: VariantInventoryResponse[]`
-
-`VariantInventoryResponse`:
-- `variantId: number`
-- `useProductInventory: boolean`
-- `trackInventory: boolean`
-- `allowBackorder: boolean`
-- `lowStockThreshold: number`
-- `quantity: number`
-- `reserved: number`
-- `available: number`
-
-`GetPresignedUploadBulkUrlRequest`, `PresignedUploadBulkUrlResponse`, `ConfirmUploadRequest`, and `ConfirmUploadResponse`:
-- See `requirements/file-upload-media-plan.md` for all upload property shapes.
-
-### Existing API Check
-
-Current AppHost OpenAPI paths expose these relevant endpoints:
-
-- `GET /api/ProductCatalog/categories`
-- `GET /api/ProductCatalog/categories/{name}`
-- `POST /api/ProductCatalog/products`
-- `GET /api/ProductCatalog/products`
-- `GET /api/ProductCatalog/products/{id}`
-- `PUT /api/ProductCatalog/products/{id}`
-- `POST /api/Inventory/products/{productId}/initialize`
-- `POST /api/Content/file-objects/presigned-upload`
-- `POST /api/Content/file-objects`
-
-Important contract notes from the current backend:
-
-- ProductCatalog and Content route casing is currently `ProductCatalog` and `Content` in OpenAPI, not lowercase `productcatalog` / `content`.
-- `POST /api/ProductCatalog/products` currently owns product creation and persists product, options, variants, media, pricing, inventory flags, and variant shipping.
-- `POST /api/Inventory/products/{productId}/initialize` initializes product and variant inventory records.
-- Product media payload supports `MediaKeys: string[]` for storage keys from content upload.
-- Variant option payload uses `OptionValues: [{ OptionId, OptionName, Value }]`; `OptionId` can be `null` during creation.
-- `CreateProductRequest` includes `Stock`, `TrackInventory`, `LowStockThreshold`, and `AllowBackorder`, but only `TrackInventory` and `AllowBackorder` are persisted on ProductCatalog entities today. Response `LowStockThreshold`, variant `Stock`, and variant `Reserved` currently map to `0`.
-- Product-level shipping is accepted in the request as `PhysicalProduct`, `Weight`, `Width`, `Height`, and `Length`.
+DTO-backed Content upload types:
+- `GetPresignedUploadBulkUrlRequest`, `PresignedUploadBulkUrlResponse`, `ConfirmUploadRequest`, and `ConfirmUploadResponse`: see [file-upload-media-plan.md](file-upload-media-plan.md).
 
 ### Endpoints Used
 
 **ProductCatalog Module:**
-1. `GET /api/productcatalog/categories` - fetch categories for dropdown
-2. `POST /api/productcatalog/products` - create product with all nested data
+1. `GET /api/ProductCatalog/categories` - fetch categories for dropdown
+2. `POST /api/ProductCatalog/products` - create product with all nested data
    - Payload includes: general info, options, variants, pricing, shipping
    - Backend handles ProductInventory & VariantInventory creation via Inventory API
+3. `PUT /api/ProductCatalog/products/{id}` - update product with a complete replacement payload
+   - Payload uses `UpdateProductRequest`; include general info, options, variants, pricing, shipping, media, and inventory fields.
+   - Media is full-replace too. Send the complete desired `MediaKeys`/`Medias` set on update, not only newly added images.
 
 **Content Module:**
-1. `POST /api/content/file-objects/presigned-upload` - get upload URLs
-2. `POST /api/content/file-objects` - confirm file upload
+1. `POST /api/Content/file-objects/presigned-upload` - get upload URLs
+2. `POST /api/Content/file-objects/confirm-upload` - confirm file upload
 
 **Inventory Module (Direct API call from Backend):**
 - Backend calls single Inventory API after creating Product:
-  - `POST /api/inventory/products/{productId}/initialize` - Create ProductInventory + all VariantInventory records in one call
+  - `POST /api/Inventory/products/{productId}/initialize` - Create ProductInventory + all VariantInventory records in one call
 - Frontend does NOT call Inventory API directly (handled by ProductCatalog backend)
 
 ### Create Product Request Structure
 
-```csharp
-CreateProductRequest {
-  // General
-  Name: string;
-  CategoryId: int;
-  Description: string;
-  Status: ProductStatus;
-  MediaKeys: string[]; // storage keys from content upload
-  
-  // Pricing
-  Price: decimal;
-  Currency: Currency;
-  CompareAtPrice: decimal;
-  CostPrice: decimal;
-  ChargeTax: bool;
-  
-  // Shipping
-  Physical: bool;
-  Weight: float;
-  Width: float;
-  Height: float;
-  Length: float;
-  
-  // Inventory
-  TrackInventory: bool;
-  AllowBackorder: bool;
-  
-  // Options & Variants
-  Options: Option[];
-  Variants: CreateVariantRequest[];
-}
-
-CreateVariantRequest {
-  OptionValues: VariantOptionValueDto[];
-  Price: decimal;
-  CompareAtPrice: decimal;
-  CostPrice: decimal;
-  ChargeTax: bool;
-  UseProductPricing: bool;
-  UseProductShipping: bool;
-  UseProductInventory: bool; // NEW: inherit inventory from product
-  ImageUrl?: string;
-  TrackInventory: bool;
-  AllowBackorder: bool;
-  Quantity: int; // Initial quantity for VariantTracking
-  Weight: float;
-  Width: float;
-  Height: float;
-  Length: float;
-}
-
-VariantOptionValueDto {
-  OptionId: int?; // null during creation is allowed
-  OptionName: string;
-  Value: string;
-}
-
-// Inventory initialization payload (sent to /api/inventory/products/{productId}/initialize)
-InitializeProductInventoryRequest {
-  // Product-level inventory
-  TrackInventory: bool;
-  AllowBackorder: bool;
-  LowStockThreshold: int;
-  
-  // All variants' inventory configs
-  Variants: VariantInventoryConfig[];
-}
-
-VariantInventoryConfig {
-  VariantId: int;
-  UseProductInventory: bool;
-  // Variant-specific settings (only if UseProductInventory = false)
-  TrackInventory: bool;
-  AllowBackorder: bool;
-  LowStockThreshold: int;
-  Quantity: int; // Initial quantity
-}
-```
+DTO-backed request structures:
+- `CreateProductRequest`: [CreateProductRequest.cs](../../src/Modules/ProductCatalog/DTOs/Products/CreateProductRequest.cs)
+- `UpdateProductRequest`: [UpdateProductRequest.cs](../../src/Modules/ProductCatalog/DTOs/Products/UpdateProductRequest.cs)
+- `CreateVariantRequest` and `VariantOptionValueDto`: [CreateVariantRequest.cs](../../src/Modules/ProductCatalog/DTOs/Products/CreateVariantRequest.cs)
+- `InitializeProductInventoryRequest` and `VariantInventoryConfig`: [InitializeProductInventoryRequest.cs](../../src/Modules/Inventory/DTOs/Inventory/InitializeProductInventoryRequest.cs)
 
 ---
+
+## Frontend Validation And Behavior
 
 ## Validation Rules
 
@@ -651,18 +377,6 @@ VariantInventoryConfig {
    - All dimensions: non-negative floats
    - Weight: non-negative float
 
-### Server-Side Validation
-
-- Category exists
-- Slug uniqueness
-- Option values valid for variant combinations
-- Currency enum validation
-- Status enum validation
-- All required nested data present
-- Media keys correspond to valid uploads
-
----
-
 ## Business Logic
 
 ### Variant Generation
@@ -684,21 +398,6 @@ if (options.length === 0) {
 - Product shipping if useProductShipping = true
 - Product inventory defaults if useProductInventory = true
 ```
-
-### Inventory Sync
-
-**Backend Flow (ProductCatalog → Inventory Module):**
-1. POST /api/productcatalog/products is received
-2. ProductCatalog backend creates Product & Variants
-3. ProductCatalog backend calls Inventory API (single endpoint):
-   - `POST /api/inventory/products/{productId}/initialize` with:
-     - ProductInventory settings (TrackInventory, AllowBackorder, LowStockThreshold)
-     - Array of VariantInventory configs for each variant (VariantId, UseProductInventory, and variant-specific settings)
-4. Inventory API:
-   - Creates ProductInventory record
-   - Creates VariantInventory record for each variant
-   - Initializes VariantTracking.Quantity = 0 for each variant
-5. Response includes all created records
 
 ### Media Handling
 
@@ -779,5 +478,10 @@ Example:
 - [ ] Add client-side validation
 - [ ] Add form dirty state detection
 - [ ] Test variant generation with different option counts
-- [ ] Test bulk edit operations
-- [ ] Test form submission and error handling
+## Claude Completion Note
+
+After implementing this requirement, move this file to `requirements/done/`.
+
+
+## Update 1/5/2026
+USe MediaPickerModal for select images.

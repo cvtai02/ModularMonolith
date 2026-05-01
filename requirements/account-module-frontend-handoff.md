@@ -54,50 +54,12 @@ Claude should use the `Account` module for domain profiles, addresses, tenant-ad
 - `Suspended`
 - `Archived`
 
-`UpdateAccountProfileRequest`:
-- `displayName?: string | null`
-- `email?: string | null`
-- `phoneNumber?: string | null`
-- `avatarUrl?: string | null`
-
-`AdminUpdateAccountProfileRequest`:
-- `displayName?: string | null`
-- `email?: string | null`
-- `phoneNumber?: string | null`
-- `avatarUrl?: string | null`
-- `type?: AccountType | null`
-- `status?: AccountStatus | null`
-
-`AccountProfileResponse`:
-- `id: number`
-- `identityUserId: string`
-- `type: AccountType`
-- `displayName: string`
-- `email: string`
-- `phoneNumber: string`
-- `avatarUrl: string`
-- `status: AccountStatus`
-- `created: string`
-- `lastModified: string`
-- `addresses: AccountAddressResponse[]`
-
-`SaveAccountAddressRequest`, `CreateAccountAddressResponse`, and `UpdateAccountAddressResponse` address fields:
-- `ownerName: string`
-- `type: string`
-- `phoneNumber: string`
-- `email: string`
-- `country: string`
-- `state: string`
-- `city: string`
-- `postalCode: string`
-- `line1: string`
-- `line2: string`
-- `isDefaultShipping: boolean`
-- `isDefaultBilling: boolean`
-
-`AccountAddressResponse` extra fields:
-- `id: number`
-- `accountProfileId: number`
+DTO-backed types:
+- `UpdateAccountProfileRequest`: [UpdateAccountProfileRequest.cs](../src/Modules/Account/DTOs/AccountProfiles/UpdateAccountProfileRequest.cs)
+- `AdminUpdateAccountProfileRequest`: [AdminUpdateAccountProfileRequest.cs](../src/Modules/Account/DTOs/AccountProfiles/AdminUpdateAccountProfileRequest.cs)
+- `AccountProfileResponse`: [AccountProfileResponse.cs](../src/Modules/Account/DTOs/AccountProfiles/AccountProfileResponse.cs)
+- `SaveAccountAddressRequest`: [SaveAccountAddressRequest.cs](../src/Modules/Account/DTOs/AccountAddresses/SaveAccountAddressRequest.cs)
+- `AccountAddressResponse`, `CreateAccountAddressResponse`, and `UpdateAccountAddressResponse`: [AccountAddressResponse.cs](../src/Modules/Account/DTOs/AccountAddresses/AccountAddressResponse.cs)
 
 `UpdateAccountAddressParams` and `DeleteAccountAddressParams`:
 - `id: number`
@@ -199,3 +161,6 @@ Claude should use the `Account` module for domain profiles, addresses, tenant-ad
 ## Backend Caveats
 - The OpenAPI generated file may need regeneration before all Account operation aliases resolve to concrete response types.
 - Do not read or edit `src/clients/admin` from Codex; Claude owns frontend implementation.
+## Claude Completion Note
+
+After implementing this requirement, move this file to `requirements/done/`.

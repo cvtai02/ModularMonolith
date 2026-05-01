@@ -11,7 +11,7 @@ namespace ProductCatalog.Core.Usecases.Products;
 
 public class UpdateProduct(ProductCatalogDbContext db, InventoryDbContext inventoryDb, IFileManager fileManager)
 {
-    public async Task<ProductResponse?> ExecuteAsync(int id, CreateProductRequest request, CancellationToken ct)
+    public async Task<ProductResponse?> ExecuteAsync(int id, UpdateProductRequest request, CancellationToken ct)
     {
         var product = await db.Products
             .Include(x => x.ShippingInfo)
@@ -30,7 +30,9 @@ public class UpdateProduct(ProductCatalogDbContext db, InventoryDbContext invent
         product.Description = request.Description.Trim();
         product.CategoryId = category.Id;
         product.Category = category;
-        product.ImageUrl = request.ImageUrl.Trim();
+        var medias = BuildMedias(request);
+        product.ImageUrl = medias.OrderBy(x => x.DisplayOrder).Select(x => fileManager.BuildPublicUrl(x.Key)).FirstOrDefault()
+            ?? request.ImageUrl.Trim();
         product.ApplyPricing(request.Price, request.Currency, request.CompareAtPrice, request.CostPrice, request.ChargeTax);
         product.SetInventoryPolicy(request.TrackInventory, request.AllowBackorder);
         product.Status = request.Status;
@@ -47,6 +49,8 @@ public class UpdateProduct(ProductCatalogDbContext db, InventoryDbContext invent
         var variantIds = await db.Variants.Where(v => v.ProductId == id).Select(v => v.Id).ToListAsync(ct);
         var optionIds = await db.Options.Where(o => o.ProductId == id).Select(o => o.Id).ToListAsync(ct);
 
+        await db.ProductMedias.Where(x => x.ProductId == id).ExecuteDeleteAsync(ct);
+
         if (variantIds.Count > 0)
         {
             await db.VariantShippings.Where(x => variantIds.Contains(x.VariantId)).ExecuteDeleteAsync(ct);
@@ -62,6 +66,10 @@ public class UpdateProduct(ProductCatalogDbContext db, InventoryDbContext invent
         }
 
         await db.SaveChangesAsync(ct);
+
+        foreach (var media in medias)
+            media.ProductId = product.Id;
+        db.ProductMedias.AddRange(medias);
 
         var newOptions = BuildOptions(request, product.Id);
         db.Options.AddRange(newOptions);
@@ -119,7 +127,7 @@ public class UpdateProduct(ProductCatalogDbContext db, InventoryDbContext invent
         return ProductMapper.ToResponse(updated, fileManager, productInventory, variantInventory);
     }
 
-    private async Task ValidateRequest(CreateProductRequest request, int productId, string slug, CancellationToken ct)
+    private async Task ValidateRequest(UpdateProductRequest request, int productId, string slug, CancellationToken ct)
     {
         var errors = new Dictionary<string, string[]>();
 
@@ -153,7 +161,7 @@ public class UpdateProduct(ProductCatalogDbContext db, InventoryDbContext invent
             throw new ValidationException("Validation failed", errors);
     }
 
-    private static List<Option> BuildOptions(CreateProductRequest request, int productId) =>
+    private static List<Option> BuildOptions(UpdateProductRequest request, int productId) =>
         request.Options.Select(option => new Option
         {
             ProductId = productId,
@@ -168,7 +176,7 @@ public class UpdateProduct(ProductCatalogDbContext db, InventoryDbContext invent
         }).ToList();
 
     private static List<Variant> BuildVariants(
-        CreateProductRequest request,
+        UpdateProductRequest request,
         Product product,
         IReadOnlyDictionary<string, Option> optionLookup)
     {
@@ -226,7 +234,7 @@ public class UpdateProduct(ProductCatalogDbContext db, InventoryDbContext invent
 
     private async Task ReplaceInventory(
         int productId,
-        CreateProductRequest request,
+        UpdateProductRequest request,
         IReadOnlyCollection<int> oldVariantIds,
         IReadOnlyCollection<Variant> newVariants,
         CancellationToken ct)
@@ -311,5 +319,23 @@ public class UpdateProduct(ProductCatalogDbContext db, InventoryDbContext invent
         if (Uri.TryCreate(trimmed, UriKind.Absolute, out var uri))
             return uri.AbsolutePath.TrimStart('/');
         return trimmed.TrimStart('/');
+    }
+
+    private static List<ProductMedia> BuildMedias(UpdateProductRequest request)
+    {
+        var mediaKeys = request.MediaKeys
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Select((key, index) => new ProductMedia { Key = NormalizeMediaKey(key), DisplayOrder = index });
+
+        var medias = mediaKeys.Concat(request.Medias
+            .Where(x => !string.IsNullOrWhiteSpace(x.Url))
+            .Select(x => new ProductMedia { Key = NormalizeMediaKey(x.Url), DisplayOrder = x.DisplayOrder }))
+            .OrderBy(x => x.DisplayOrder)
+            .ToList();
+
+        if (medias.Count == 0 && !string.IsNullOrWhiteSpace(request.ImageUrl))
+            medias.Add(new ProductMedia { Key = NormalizeMediaKey(request.ImageUrl), DisplayOrder = 0 });
+
+        return medias;
     }
 }

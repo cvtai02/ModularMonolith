@@ -18,10 +18,10 @@ Add a backend SignalR path that notifies authenticated users when their newly cr
 - SignalR `OrderPlaced` has no generated HTTP response alias; use the payload shape below.
 
 ## Type Properties
-- `CreateOrderRequest`: see `requirements/order-products-handoff.md`.
-- `CreateOrderResponse`: see `requirements/order-products-handoff.md`.
+- `CreateOrderRequest`: [CreateOrderRequest.cs](../src/Modules/Order/DTOs/Orders/CreateOrderRequest.cs)
+- `CreateOrderResponse`: [OrderResponse.cs](../src/Modules/Order/DTOs/Orders/OrderResponse.cs)
 - `GetOrderParams`: `{ id: number }`.
-- `OrderResponse`: see `requirements/order-products-handoff.md`.
+- `OrderResponse`: [OrderResponse.cs](../src/Modules/Order/DTOs/Orders/OrderResponse.cs)
 - `JoinOrder(orderId: number)`: client invokes with the created order id.
 - `OrderPlaced` SignalR payload:
   - `orderId: number`
@@ -41,3 +41,6 @@ Add a backend SignalR path that notifies authenticated users when their newly cr
 
 ## Claude Frontend Handoff
 When `POST api/Order/orders` returns, connect to `/hubs/orders` with the current user's auth token, invoke `JoinOrder` with the returned order id, and listen for `OrderPlaced`.
+## Claude Completion Note
+
+After implementing this requirement, move this file to `requirements/done/`.

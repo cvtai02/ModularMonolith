@@ -11,7 +11,6 @@ public class VariantTracking : Entity
     public int Reserved { get; set; }
     [NotMapped]
     public int Available => OnHand - Reserved;
-    [Timestamp]
-    public byte[] Version { get; set; } = null!;
+    public byte[] Version { get; set; } = Guid.NewGuid().ToByteArray();
     public VariantInventory Variant { get; set; } = null!;
 }

@@ -19,6 +19,7 @@
       "Read(src/Modules/*/Infrastructure/**)",
       "Read(src/Modules/*/Core/**)",
       "Read(src/Modules/*/*.cs)",
+      "Write(src/Modules/*/DTOs/**)",
       "Read(src/Modules/*/*.csproj)",
       "Read(src/SharedKernel/**)",
       "Read(**/*.log)",

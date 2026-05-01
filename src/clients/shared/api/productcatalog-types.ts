@@ -69,6 +69,8 @@ export type GetProductParams = PathParams<GetProductOperation>;
 // 200 OK
 export type ProductResponse = JsonResponse<GetProductOperation>;
 export type UpdateProductParams = PathParams<UpdateProductOperation>;
-export type UpdateProductRequest = JsonRequestBody<UpdateProductOperation>;
+// PUT uses the backend UpdateProductRequest DTO. It currently has the same
+// full-replace shape as CreateProductRequest.
+export type UpdateProductRequest = CreateProductRequest;
 // 200 OK
 export type UpdateProductResponse = JsonResponse<UpdateProductOperation>;

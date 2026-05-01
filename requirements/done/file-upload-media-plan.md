@@ -24,29 +24,9 @@ Types:
 - Request: `GetPresignedUploadBulkUrlRequest`.
 - Response: `PresignedUploadBulkUrlResponse`.
 
-Properties:
-
-`GetPresignedUploadBulkUrlRequest`:
-- `files: CreatePresignedUploadFileRequest[]`
-- `expiryMinutes: number`
-
-`CreatePresignedUploadFileRequest`:
-- `category: string`
-- `fileName: string`
-- `contentType: string`
-- `size: number`
-
-`PresignedUploadBulkUrlResponse`:
-- `files: PresignedUploadUrlResponse[]`
-
-`PresignedUploadUrlResponse`:
-- `uploadId: string`
-- `key: string`
-- `uploadUrl: string`
-- `publicUrl: string`
-- `method: string`
-- `headers: Record<string, string>`
-- `expiresAt: string`
+DTO-backed types:
+- `GetPresignedUploadBulkUrlRequest` and `CreatePresignedUploadFileRequest`: [GetPresignedUploadBulkUrlRequest.cs](../src/Modules/Content/DTOs/FileObjects/GetPresignedUploadBulkUrlRequest.cs)
+- `PresignedUploadBulkUrlResponse` and `PresignedUploadUrlResponse`: [PresignedUploadUrlResponse.cs](../src/Modules/Content/DTOs/FileObjects/PresignedUploadUrlResponse.cs)
 
 Request:
 
@@ -93,26 +73,9 @@ Types:
 - Request: `ConfirmUploadRequest`.
 - Response: `ConfirmUploadResponse`.
 
-Properties:
-
-`ConfirmUploadRequest`:
-- `files: ConfirmUploadFileRequest[]`
-
-`ConfirmUploadFileRequest`:
-- `uploadId: string`
-- `key: string`
-
-`ConfirmUploadResponse`:
-- `files: UploadResponse[]`
-
-`UploadResponse`:
-- `id: number`
-- `key: string`
-- `category: string`
-- `name: string`
-- `contentType: string`
-- `size: number`
-- `publicUrl: string`
+DTO-backed types:
+- `ConfirmUploadRequest` and `ConfirmUploadFileRequest`: [ConfirmUploadRequest.cs](../src/Modules/Content/DTOs/FileObjects/ConfirmUploadRequest.cs)
+- `ConfirmUploadResponse` and `UploadResponse`: [UploadResponse.cs](../src/Modules/Content/DTOs/FileObjects/UploadResponse.cs)
 
 Request:
 
@@ -210,15 +173,9 @@ Claude should implement the client flow:
 - `hasPreviousPage: boolean`
 - `hasNextPage: boolean`
 
-`MediaFileResponse`:
-- `id: number`
-- `url: string`
-- `category: string`
-- `name: string`
-- `contentType: string`
-- `size: number`
-- `created: string`
-- `lastModified: string`
+DTO-backed media types:
+- `MediaFileResponse`: [MediaFileResponse.cs](../src/Modules/Content/DTOs/FileObjects/MediaFileResponse.cs)
+- `DeleteMediaFilesRequest`: [DeleteMediaFilesRequest.cs](../src/Modules/Content/DTOs/FileObjects/DeleteMediaFilesRequest.cs)
+## Claude Completion Note
 
-`DeleteMediaFilesRequest`:
-- `ids: number[]`
+After implementing this requirement, move this file to `requirements/done/`.

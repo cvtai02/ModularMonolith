@@ -23,6 +23,7 @@ Codex may read and edit `src/clients/shared/` only when backend contract work re
 
 ## .NET Build And Run Safety
 - Dont run or build anything with dotnet. you will break my computer.
+- If a Codex task changes entities, DbContext configuration, or anything else that requires an EF migration, Codex must not run migration commands unless explicitly allowed. Instead, Codex must include a clear migration handoff for Claude/the next implementer with the module name, suggested migration name, reason, and expected schema change.
 
 ## Codex Denied Paths
 

@@ -34,12 +34,15 @@ export default function EditProductPage() {
 
   const defaultValues = useMemo((): Partial<FormValues> | undefined => {
     if (!product) return undefined;
+    const mediaUrls = product.medias?.length
+      ? product.medias.map((m) => m.url)
+      : product.imageUrl ? [product.imageUrl] : [];
     return {
       name: product.name ?? "",
       categoryId: product.categoryId ?? 0,
       description: product.description ?? "",
-      status: String(product.status ?? 1),
-      imageUrl: product.imageUrl ?? "",
+      status: (product.status as string) ?? "Draft",
+      mediaUrls,
       currency: product.currency ?? 0,
       price: product.price ? String(product.price) : "",
       compareAtPrice: product.compareAtPrice ? String(product.compareAtPrice) : "",
@@ -87,6 +90,7 @@ export default function EditProductPage() {
         costPrice: !variant.useProductPricing && variant.costPrice ? String(variant.costPrice) : "",
         chargeTax: !variant.useProductPricing ? (variant.chargeTax ?? false) : false,
         useProductShipping: variant.useProductShipping ?? true,
+        physicalProduct: !variant.useProductShipping? variant.physicalProduct : false,
         weight: !variant.useProductShipping && variant.weight ? String(variant.weight) : "",
         width: !variant.useProductShipping && variant.width ? String(variant.width) : "",
         height: !variant.useProductShipping && variant.height ? String(variant.height) : "",
@@ -102,7 +106,7 @@ export default function EditProductPage() {
   }, [product, initialOptions]);
 
   const handleSubmit = async (values: FormValues, options: OptionEntry[], variants: Variant[], statusOverride?: string) => {
-    const finalStatus = parseInt(statusOverride ?? values.status);
+    const finalStatus = statusOverride ?? values.status;
     const hasVariants = variants.length > 0;
     const activeOptions = options.filter(
       (o) => o.name.trim() && getFilledValues(o.inputValues).length > 0
@@ -114,8 +118,9 @@ export default function EditProductPage() {
         name: values.name,
         categoryId: values.categoryId,
         description: values.description || undefined,
-        imageUrl: values.imageUrl || undefined,
-        status: finalStatus,
+        imageUrl: values.mediaUrls[0] || undefined,
+        medias: values.mediaUrls.map((url, i) => ({ url, type: "image", displayOrder: i })),
+        status: finalStatus as never,
         price: values.price ? parseFloat(values.price) : undefined,
         compareAtPrice: values.compareAtPrice ? parseFloat(values.compareAtPrice) : undefined,
         costPrice: values.costPrice ? parseFloat(values.costPrice) : undefined,

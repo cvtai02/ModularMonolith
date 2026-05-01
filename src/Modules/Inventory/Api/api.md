@@ -5,7 +5,3 @@
 
 ### ProductInventory
 - [Initialize](ProductInventoryController.cs#L12)
-
-## DTO References
-
-- Product inventory: [InitializeProductInventoryRequest](../DTOs/Inventory/InitializeProductInventoryRequest.cs), [InitializeProductInventoryResponse](../DTOs/Inventory/InitializeProductInventoryResponse.cs)

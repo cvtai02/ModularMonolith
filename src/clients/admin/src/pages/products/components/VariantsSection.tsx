@@ -1,18 +1,28 @@
-import { toast } from "sonner";
+import { useState } from "react";
 import { MoreHorizontalIcon } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
-import type { Variant } from "./types";
+import type { Variant, VariantOverride } from "./types";
 
 type VariantRowProps = {
   variant: Variant;
@@ -66,6 +76,157 @@ function VariantRow({ variant, isSelected, onSelect, productPrice, indent }: Var
   );
 }
 
+// ─── Bulk edit dialog ─────────────────────────────────────────────────────────
+
+type BulkEditMode = "price" | "inventory" | "shipping";
+
+function BulkEditDialog({
+  mode,
+  count,
+  onApply,
+  onClose,
+}: {
+  mode: BulkEditMode;
+  count: number;
+  onApply: (update: Partial<VariantOverride>) => void;
+  onClose: () => void;
+}) {
+  const [price, setPrice] = useState("");
+  const [compareAtPrice, setCompareAtPrice] = useState("");
+  const [costPrice, setCostPrice] = useState("");
+  const [trackInventory, setTrackInventory] = useState(true);
+  const [stock, setStock] = useState("");
+  const [allowBackorder, setAllowBackorder] = useState(false);
+  const [lowStockThreshold, setLowStockThreshold] = useState("");
+  const [physicalProduct, setPhysicalProduct] = useState(true);
+  const [weight, setWeight] = useState("");
+  const [width, setWidth] = useState("");
+  const [height, setHeight] = useState("");
+  const [length, setLength] = useState("");
+
+  const handleApply = () => {
+    if (mode === "price") {
+      onApply({
+        useProductPrice: false,
+        ...(price && { price }),
+        ...(compareAtPrice && { compareAtPrice }),
+        ...(costPrice && { costPrice }),
+      });
+    } else if (mode === "inventory") {
+      onApply({
+        useProductInventory: false,
+        trackInventory,
+        ...(stock && { stock }),
+        allowBackorder,
+        ...(lowStockThreshold && { lowStockThreshold }),
+      });
+    } else {
+      onApply({
+        useProductShipping: false,
+        physicalProduct,
+        ...(weight && { weight }),
+        ...(width && { width }),
+        ...(height && { height }),
+        ...(length && { length }),
+      });
+    }
+    onClose();
+  };
+
+  const titles: Record<BulkEditMode, string> = {
+    price: "Edit price",
+    inventory: "Edit inventory",
+    shipping: "Edit shipping",
+  };
+
+  return (
+    <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{titles[mode]} — {count} variant{count > 1 ? "s" : ""}</DialogTitle>
+        </DialogHeader>
+        <FieldGroup>
+          {mode === "price" && (
+            <>
+              <Field>
+                <FieldLabel>Price</FieldLabel>
+                <Input type="number" min="0" step="1000" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="Leave empty to keep existing" />
+              </Field>
+              <Field>
+                <FieldLabel>Compare-at price</FieldLabel>
+                <Input type="number" min="0" step="1000" value={compareAtPrice} onChange={(e) => setCompareAtPrice(e.target.value)} placeholder="Leave empty to keep existing" />
+              </Field>
+              <Field>
+                <FieldLabel>Cost per item</FieldLabel>
+                <Input type="number" min="0" step="1000" value={costPrice} onChange={(e) => setCostPrice(e.target.value)} placeholder="Leave empty to keep existing" />
+              </Field>
+            </>
+          )}
+          {mode === "inventory" && (
+            <>
+              <Field orientation="horizontal">
+                <FieldLabel>Track inventory</FieldLabel>
+                <Switch checked={trackInventory} onCheckedChange={setTrackInventory} />
+              </Field>
+              {trackInventory && (
+                <>
+                  <Field>
+                    <FieldLabel>Quantity</FieldLabel>
+                    <Input type="number" min="0" value={stock} onChange={(e) => setStock(e.target.value)} placeholder="0" />
+                  </Field>
+                  <Field orientation="horizontal">
+                    <FieldLabel>Continue selling when out of stock</FieldLabel>
+                    <Switch checked={allowBackorder} onCheckedChange={setAllowBackorder} />
+                  </Field>
+                  <Field>
+                    <FieldLabel>Low stock threshold</FieldLabel>
+                    <Input type="number" min="0" value={lowStockThreshold} onChange={(e) => setLowStockThreshold(e.target.value)} placeholder="e.g. 5" />
+                  </Field>
+                </>
+              )}
+            </>
+          )}
+          {mode === "shipping" && (
+            <>
+              <Field orientation="horizontal">
+                <FieldLabel>Physical product</FieldLabel>
+                <Switch checked={physicalProduct} onCheckedChange={setPhysicalProduct} />
+              </Field>
+              {physicalProduct && (
+                <>
+                  <div className="grid grid-cols-3 gap-2">
+                    {(["width", "height", "length"] as const).map((dim, i) => (
+                      <Field key={dim}>
+                        <FieldLabel>{dim.charAt(0).toUpperCase()} (cm)</FieldLabel>
+                        <Input
+                          type="number" min="0" step="0.1"
+                          value={[width, height, length][i]}
+                          onChange={(e) => [setWidth, setHeight, setLength][i](e.target.value)}
+                          placeholder="0"
+                        />
+                      </Field>
+                    ))}
+                  </div>
+                  <Field>
+                    <FieldLabel>Weight (g)</FieldLabel>
+                    <Input type="number" min="0" value={weight} onChange={(e) => setWeight(e.target.value)} placeholder="0" />
+                  </Field>
+                </>
+              )}
+            </>
+          )}
+        </FieldGroup>
+        <DialogFooter>
+          <Button variant="outline" type="button" onClick={onClose}>Cancel</Button>
+          <Button type="button" onClick={handleApply}>Apply to {count} variant{count > 1 ? "s" : ""}</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// ─── Main section ─────────────────────────────────────────────────────────────
+
 type Props = {
   variants: Variant[];
   selectedIds: Set<string>;
@@ -73,6 +234,7 @@ type Props = {
   onVariantClick: (id: string, ctrl: boolean) => void;
   variantGroups: Map<string, Variant[]> | null;
   productPrice: string;
+  onBulkUpdateVariants: (ids: Set<string>, update: Partial<VariantOverride>) => void;
 };
 
 export function VariantsSection({
@@ -82,8 +244,10 @@ export function VariantsSection({
   onVariantClick,
   variantGroups,
   productPrice,
+  onBulkUpdateVariants,
 }: Props) {
   const hasVariants = variants.length > 0;
+  const [bulkMode, setBulkMode] = useState<BulkEditMode | null>(null);
 
   return (
     <Card>
@@ -100,11 +264,14 @@ export function VariantsSection({
                 }
               />
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => toast.info(`Edit price for ${selectedIds.size} variants`)}>
+                <DropdownMenuItem onClick={() => setBulkMode("price")}>
                   Edit price
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => toast.info(`Edit inventory for ${selectedIds.size} variants`)}>
+                <DropdownMenuItem onClick={() => setBulkMode("inventory")}>
                   Edit inventory
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setBulkMode("shipping")}>
+                  Edit shipping
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -179,6 +346,15 @@ export function VariantsSection({
           </div>
         )}
       </CardContent>
+
+      {bulkMode && (
+        <BulkEditDialog
+          mode={bulkMode}
+          count={selectedIds.size}
+          onApply={(update) => onBulkUpdateVariants(selectedIds, update)}
+          onClose={() => setBulkMode(null)}
+        />
+      )}
     </Card>
   );
 }

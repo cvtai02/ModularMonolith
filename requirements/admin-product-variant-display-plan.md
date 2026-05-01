@@ -50,73 +50,10 @@ Build an admin product detail vision that makes product-level data and variant-l
 `GetProductParams`, `UpdateProductParams`:
 - `id: number`
 
-`ProductResponse`:
-- `id: number`
-- `name: string`
-- `description: string`
-- `categoryId: number`
-- `categoryName: string`
-- `slug: string`
-- `imageUrl: string`
-- `status: ProductStatus`
-- `price: number`
-- `currency: "VND" | "USD"`
-- `compareAtPrice: number`
-- `costPrice: number`
-- `chargeTax: boolean`
-- `stock: number`
-- `trackInventory: boolean`
-- `lowStockThreshold: number`
-- `allowBackorder: boolean`
-- `sold: number`
-- `reserved: number`
-- `physicalProduct: boolean`
-- `weight: number`
-- `width: number`
-- `height: number`
-- `length: number`
-- `medias: ProductMediaResponse[]`
-- `options: OptionResponse[]`
-- `variants: VariantResponse[]`
-
-`ProductMediaResponse`:
-- `id: number`
-- `url: string`
-- `type: string`
-- `displayOrder: number`
-
-`OptionResponse`:
-- `id: number`
-- `name: string`
-- `displayOrder: number`
-- `values: string[]`
-
-`VariantResponse`:
-- `id: number`
-- `useProductPricing: boolean`
-- `useProductShipping: boolean`
-- `price: number`
-- `compareAtPrice: number`
-- `costPrice: number`
-- `chargeTax: boolean`
-- `imageUrl: string`
-- `stock: number`
-- `sold: number`
-- `reserved: number`
-- `trackInventory: boolean`
-- `lowStockThreshold: number`
-- `allowBackorder: boolean`
-- `physicalProduct: boolean`
-- `weight: number`
-- `width: number`
-- `height: number`
-- `length: number`
-- `optionValues: VariantOptionValueDto[]`
-
-`VariantOptionValueDto`:
-- `optionId?: number | null`
-- `optionName: string`
-- `value: string`
+DTO-backed product display types:
+- `ProductResponse` and `ProductMediaResponse`: [ProductResponse.cs](../src/Modules/ProductCatalog/DTOs/Products/ProductResponse.cs)
+- `OptionResponse`: [OptionResponse.cs](../src/Modules/ProductCatalog/DTOs/Products/OptionResponse.cs)
+- `VariantResponse` and `VariantOptionValueDto`: [VariantResponse.cs](../src/Modules/ProductCatalog/DTOs/Products/VariantResponse.cs)
 
 `ListCategoriesQuery`:
 - generated query alias; use OpenAPI-backed query parameters.
@@ -158,3 +95,6 @@ Build an admin product detail vision that makes product-level data and variant-l
 ## Handoff Notes
 - Claude should not need new frontend-generated types if existing `productcatalog-types.ts` is current.
 - If backend changes are made for image URL or timestamps, Codex must update `src/Modules/ProductCatalog/Api/api.md` and `src/clients/shared/api/productcatalog-types.ts` as needed, while avoiding `src/clients/shared/api/lib`.
+## Claude Completion Note
+
+After implementing this requirement, move this file to `requirements/done/`.

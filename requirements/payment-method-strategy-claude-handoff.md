@@ -35,10 +35,7 @@ Payment supports payment methods through backend strategies. For now, the only s
 - `Cancelled`
 - `Refunded`
 
-`PaymentMethodResponse`:
-- `code: string`
-- `displayName: string`
-- `requiresRedirect: boolean`
+`PaymentMethodResponse`: [PaymentMethodResponse.cs](../src/Modules/Payment/DTOs/PaymentMethodResponse.cs)
 
 `ListPaymentMethodsResponse`:
 - `PaymentMethodResponse[]`
@@ -46,27 +43,9 @@ Payment supports payment methods through backend strategies. For now, the only s
 `CreatePaymentCheckoutParams`:
 - `orderId: number`
 
-`CreatePaymentCheckoutRequest`:
-- `provider?: string | null`
-- `returnUrl?: string | null`
-- `cancelUrl?: string | null`
-
-`CreatePaymentCheckoutResponse` and `PaymentTransactionResponse`:
-- `id: number`
-- `orderId: number`
-- `orderCode: string`
-- `customerId?: string | null`
-- `amount: number`
-- `currencyCode: string`
-- `provider: string`
-- `providerPaymentId: string`
-- `status: PaymentStatus`
-- `checkoutUrl?: string | null`
-- `failureReason?: string | null`
-- `paidAt?: string | null`
-- `cancelledAt?: string | null`
-- `created: string`
-- `lastModified: string`
+DTO-backed payment types:
+- `CreatePaymentCheckoutRequest`: [CreateCheckoutRequest.cs](../src/Modules/Payment/DTOs/CreateCheckoutRequest.cs)
+- `CreatePaymentCheckoutResponse` and `PaymentTransactionResponse`: [PaymentTransactionResponse.cs](../src/Modules/Payment/DTOs/PaymentTransactionResponse.cs)
 
 `GetPaymentTransactionParams`:
 - `id: number`
@@ -74,12 +53,7 @@ Payment supports payment methods through backend strategies. For now, the only s
 `PaymentWebhookParams`:
 - `provider: string`
 
-`PaymentWebhookRequest`:
-- `providerPaymentId: string`
-- `status: PaymentStatus`
-- `failureReason?: string | null`
-- `eventId?: string | null`
-- `signature?: string | null`
+`PaymentWebhookRequest`: [PaymentWebhookRequest.cs](../src/Modules/Payment/DTOs/PaymentWebhookRequest.cs)
 
 `PaymentWebhookResponse`:
 - same properties as `PaymentTransactionResponse`.
@@ -109,3 +83,6 @@ Payment supports payment methods through backend strategies. For now, the only s
 - Checkout is idempotent for the same order and provider while a transaction is `Pending` or `Succeeded`.
 - `CashOnDelivery` creates a pending transaction without a checkout URL.
 - Successful webhook updates publish `PaymentSucceeded`; the Order module marks placed orders as `Paid`.
+## Claude Completion Note
+
+After implementing this requirement, move this file to `requirements/done/`.

@@ -22,7 +22,6 @@ type Props = {
   title: string;
   categories: CategoryResponse[];
   isPending: boolean;
-  isCreating?: boolean;
   defaultValues?: Partial<FormValues>;
   initialOptions?: OptionEntry[];
   initialVariantOverrides?: Record<string, VariantOverride>;
@@ -38,7 +37,6 @@ export function ProductFormLayout({
   title,
   categories,
   isPending,
-  isCreating,
   defaultValues,
   initialOptions,
   initialVariantOverrides,
@@ -66,7 +64,6 @@ export function ProductFormLayout({
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   const variants = useMemo(() => deriveVariants(options, variantOverrides), [options, variantOverrides]);
-  const hasVariants = variants.length > 0;
 
   const selectedVariant = selectedIds.size === 1
     ? variants.find((v) => v.localId === [...selectedIds][0]) ?? null
@@ -140,6 +137,16 @@ export function ProductFormLayout({
     }));
   }, []);
 
+  const bulkUpdateVariants = useCallback((ids: Set<string>, update: Partial<VariantOverride>) => {
+    setVariantOverrides((p) => {
+      const next = { ...p };
+      ids.forEach((id) => {
+        next[id] = { ...DEFAULT_VARIANT_OVERRIDE, ...(p[id] ?? {}), ...update };
+      });
+      return next;
+    });
+  }, []);
+
   const handleVariantClick = useCallback((id: string, ctrl: boolean) => {
     setSelectedIds((prev) => {
       const next = new Set(prev);
@@ -161,7 +168,7 @@ export function ProductFormLayout({
   };
 
   const handleSave = handleSubmit((v) => doSubmit(v));
-  const handleSaveDraft = handleSubmit((v) => doSubmit(v, "2"));
+  const handleSaveDraft = handleSubmit((v) => doSubmit(v, "Draft"));
 
   return (
     <div className="flex min-h-0 flex-col bg-muted/30">
@@ -205,6 +212,7 @@ export function ProductFormLayout({
             onVariantClick={handleVariantClick}
             variantGroups={variantGroups}
             productPrice={watchPrice}
+            onBulkUpdateVariants={bulkUpdateVariants}
           />
         </div>
 

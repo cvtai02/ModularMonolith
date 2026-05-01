@@ -1,3 +1,5 @@
+import type { CurrencyCode } from "@shared/api/common-types";
+
 export type OptionEntry = {
   localId: string;
   name: string;
@@ -34,8 +36,8 @@ export type FormValues = {
   categoryId: number;
   description: string;
   status: string;
-  imageUrl: string;
-  currency: number;
+  mediaUrls: string[];
+  currency: CurrencyCode;
   trackInventory: boolean;
   stock: string;
   allowBackorder: boolean;
@@ -55,9 +57,9 @@ export const DEFAULT_FORM_VALUES: FormValues = {
   name: "",
   categoryId: 0,
   description: "",
-  status: "2", // Draft
-  imageUrl: "",
-  currency: 0, // VND
+  status: "Draft",
+  mediaUrls: [],
+  currency: 'VND',
   trackInventory: true,
   stock: "",
   allowBackorder: false,

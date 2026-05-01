@@ -32,49 +32,10 @@ Order checkout is direct item checkout. The client sends selected variants and q
 - `Cancelled`
 - `Shipped`
 
-`Address`:
-- `ownerName: string`
-- `type: string`
-- `phoneNumber: string`
-- `email: string`
-- `country: string`
-- `state?: string | null`
-- `city?: string | null`
-- `postalCode?: string | null`
-- `line1: string`
-- `line2?: string | null`
-
-`CreateOrderRequest`:
-- `currencyCode?: string | null`
-- `shippingAddress: Address`
-- `items: CreateOrderItemRequest[]`
-
-`CreateOrderItemRequest`:
-- `variantId: number`
-- `quantity: number`
-
-`CreateOrderResponse` and `OrderResponse`:
-- `id: number`
-- `code: string`
-- `customerId?: string | null`
-- `status: OrderStatus`
-- `currencyCode: string`
-- `totalAmount: number`
-- `inventoryReservationId?: number | null`
-- `rejectionReason?: string | null`
-- `shippingAddress?: Address | null`
-- `lines: OrderLineResponse[]`
-
-`OrderLineResponse`:
-- `id: number`
-- `productId: number`
-- `variantId: number`
-- `productName: string`
-- `variantName: string`
-- `imageUrl: string`
-- `unitPrice: number`
-- `quantity: number`
-- `subtotal: number`
+DTO-backed order types:
+- `Address`: [Address.cs](../src/SharedKernel/DTOs/Address.cs)
+- `CreateOrderRequest` and `CreateOrderItemRequest`: [CreateOrderRequest.cs](../src/Modules/Order/DTOs/Orders/CreateOrderRequest.cs)
+- `CreateOrderResponse`, `OrderResponse`, and `OrderLineResponse`: [OrderResponse.cs](../src/Modules/Order/DTOs/Orders/OrderResponse.cs)
 
 `GetOrderParams`:
 - `id: number`
@@ -93,16 +54,7 @@ Order checkout is direct item checkout. The client sends selected variants and q
 - `hasPreviousPage: boolean`
 - `hasNextPage: boolean`
 
-`OrderSummaryResponse`:
-- `id: number`
-- `code: string`
-- `customerId?: string | null`
-- `status: OrderStatus`
-- `currencyCode: string`
-- `totalAmount: number`
-- `rejectionReason?: string | null`
-- `lineCount: number`
-- `createdAt: string`
+`OrderSummaryResponse`: [OrderSummaryResponse.cs](../src/Modules/Order/DTOs/Orders/OrderSummaryResponse.cs)
 
 ### Endpoints
 
@@ -145,3 +97,6 @@ Order checkout is direct item checkout. The client sends selected variants and q
 ## Backend Migration Note
 
 Order line snapshots add `ProductId`, `VariantName`, and `ImageUrl` fields to `OrderLine`. Order adds `PendingInventory`/`Rejected` statuses plus inventory reservation and rejection fields. A backend migration must be generated when dotnet commands are allowed; Codex did not run dotnet build, test, run, or migration commands.
+## Claude Completion Note
+
+After implementing this requirement, move this file to `requirements/done/`.
