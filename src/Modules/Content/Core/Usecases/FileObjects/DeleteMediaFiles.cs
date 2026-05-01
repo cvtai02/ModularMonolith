@@ -1,4 +1,4 @@
-using Content.Core.DTOs.FileObjects;
+using Content.DTOs.FileObjects;
 using Intermediary.Media;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel.Abstractions.Services;

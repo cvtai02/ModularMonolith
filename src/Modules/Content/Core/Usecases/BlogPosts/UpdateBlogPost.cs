@@ -1,4 +1,4 @@
-using Content.Core.DTOs.BlogPosts;
+using Content.DTOs.BlogPosts;
 using Microsoft.EntityFrameworkCore;
 
 namespace Content.Core.Usecases.BlogPosts;

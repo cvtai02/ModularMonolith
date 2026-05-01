@@ -1,4 +1,4 @@
-using Content.Core.DTOs.BlogPosts;
+using Content.DTOs.BlogPosts;
 using Content.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel.DTOs;

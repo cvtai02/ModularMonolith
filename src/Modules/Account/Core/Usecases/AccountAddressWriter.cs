@@ -1,4 +1,4 @@
-using Account.Core.DTOs.AccountAddresses;
+using Account.DTOs.AccountAddresses;
 using Account.Core.Entities;
 using SharedKernel.Exceptions;
 

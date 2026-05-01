@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Payment.Core.DTOs;
+using Payment.DTOs;
 using Payment.Core.Usecases;
 using SharedKernel.Authorization;
 

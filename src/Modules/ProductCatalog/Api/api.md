@@ -22,3 +22,10 @@
 - [Create](CollectionController.cs#L36)
 - [Update](CollectionController.cs#L44)
 - [Delete](CollectionController.cs#L52)
+
+## DTO References
+
+- Products: [ProductResponse](../DTOs/Products/ProductResponse.cs), [VariantResponse](../DTOs/Products/VariantResponse.cs), [OptionResponse](../DTOs/Products/OptionResponse.cs), [CreateProductRequest](../DTOs/Products/CreateProductRequest.cs), [UpdateProductRequest](../DTOs/Products/UpdateProductRequest.cs), [CreateVariantRequest](../DTOs/Products/CreateVariantRequest.cs), [CreateOptionRequest](../DTOs/Products/CreateOptionRequest.cs), [ListProductsRequest](../DTOs/Products/ListProductsRequest.cs)
+- Categories: [CategoryResponse](../DTOs/Categories/CategoryResponse.cs), [CreateCategoryRequest](../DTOs/Categories/CreateCategoryRequest.cs), [UpdateCategoryRequest](../DTOs/Categories/UpdateCategoryRequest.cs)
+- Collections: [CollectionResponse](../DTOs/Collections/CollectionResponse.cs), [CreateCollectionRequest](../DTOs/Collections/CreateCollectionRequest.cs), [UpdateCollectionRequest](../DTOs/Collections/UpdateCollectionRequest.cs)
+- Inventory: [ProductInventoryResponse](../DTOs/Inventory/ProductInventoryResponse.cs), [AdjustProductInventoryRequest](../DTOs/Inventory/AdjustProductInventoryRequest.cs), [UpdateProductInventoryRequest](../DTOs/Inventory/UpdateProductInventoryRequest.cs)

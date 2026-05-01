@@ -1,5 +1,5 @@
-using Account.Core.DTOs.AccountAddresses;
-using Account.Core.DTOs.AccountProfiles;
+using Account.DTOs.AccountAddresses;
+using Account.DTOs.AccountProfiles;
 using Account.Core.Entities;
 
 namespace Account.Core.Usecases;

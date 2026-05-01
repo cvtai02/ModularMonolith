@@ -1,4 +1,4 @@
-using Content.Core.DTOs.BlogPosts;
+using Content.DTOs.BlogPosts;
 using SharedKernel.Exceptions;
 
 namespace Content.Core.Usecases.BlogPosts;

@@ -30,7 +30,7 @@ public class OrderProductLookup(ProductCatalogDbContext db, IFileManager fileMan
                 BuildVariantName(x),
                 fileManager.BuildPublicUrl(x.ImageKey),
                 x.Price,
-                x.Currency.ToString()))
+                x.Product.Currency.ToString()))
             .ToList();
     }
     private static string BuildVariantName(Variant variant)

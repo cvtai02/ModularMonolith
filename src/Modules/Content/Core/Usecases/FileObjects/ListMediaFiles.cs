@@ -1,4 +1,4 @@
-using Content.Core.DTOs.FileObjects;
+using Content.DTOs.FileObjects;
 using Content.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel.Abstractions.Services;

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
-using ProductCatalog.Core.DTOs.Collections;
+using ProductCatalog.DTOs.Collections;
 using ProductCatalog.Core.Usecases.Collections;
 using SharedKernel.DTOs;
 

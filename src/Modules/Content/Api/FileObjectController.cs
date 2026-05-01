@@ -1,4 +1,4 @@
-using Content.Core.DTOs.FileObjects;
+using Content.DTOs.FileObjects;
 using Content.Core.Usecases.FileObjects;
 using Microsoft.AspNetCore.Mvc;
 using SharedKernel.DTOs;

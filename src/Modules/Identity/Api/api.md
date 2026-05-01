@@ -9,3 +9,7 @@
 
 ### User
 - [GetCurrentUser](MinimalApi.cs#L13)
+
+## DTO References
+
+No Identity API DTOs are currently defined in this module.

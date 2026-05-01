@@ -14,3 +14,7 @@
 - Client method to invoke after order creation: `JoinOrder(orderId: number)`
 - Server event emitted when inventory is reserved and the order becomes placed: `OrderPlaced`
 - Plan and frontend handoff: [Order Realtime SignalR Plan](../../../../requirements/order-realtime-signalr-plan.md)
+
+## DTO References
+
+- Orders: [CreateOrderRequest](../DTOs/Orders/CreateOrderRequest.cs), [ListOrdersRequest](../DTOs/Orders/ListOrdersRequest.cs), [OrderResponse](../DTOs/Orders/OrderResponse.cs), [OrderSummaryResponse](../DTOs/Orders/OrderSummaryResponse.cs)

@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using Payment.Core.DTOs;
+using Payment.DTOs;
 
 namespace Payment.Core.Usecases;
 

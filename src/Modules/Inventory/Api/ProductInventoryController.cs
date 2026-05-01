@@ -1,4 +1,4 @@
-using Inventory.Core.DTOs.Inventory;
+using Inventory.DTOs.Inventory;
 using Inventory.Core.Usecases.Inventory;
 using Microsoft.AspNetCore.Mvc;
 

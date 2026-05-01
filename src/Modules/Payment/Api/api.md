@@ -19,3 +19,7 @@ Base route: `/api/Payment`
 - `POST /api/Payment/webhooks/{provider}`
   - Authorization: public provider callback.
   - Applies provider payment status updates.
+
+## DTO References
+
+- Payments: [CreateCheckoutRequest](../DTOs/CreateCheckoutRequest.cs), [PaymentMethodResponse](../DTOs/PaymentMethodResponse.cs), [PaymentTransactionResponse](../DTOs/PaymentTransactionResponse.cs), [PaymentWebhookRequest](../DTOs/PaymentWebhookRequest.cs)

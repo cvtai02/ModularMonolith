@@ -4,3 +4,7 @@
 ## API Endpoints
 
 No public Cart APIs are currently exposed.
+
+## DTO References
+
+No Cart API DTOs are currently defined.

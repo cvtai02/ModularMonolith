@@ -1,4 +1,4 @@
-using ProductCatalog.Core.DTOs.Collections;
+using ProductCatalog.DTOs.Collections;
 using ProductCatalog.Core.Entities;
 using SharedKernel.Abstractions.Services;
 

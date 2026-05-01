@@ -1,4 +1,4 @@
-using Payment.Core.DTOs;
+using Payment.DTOs;
 using Payment.Core.Entities;
 
 namespace Payment.Core.Usecases;

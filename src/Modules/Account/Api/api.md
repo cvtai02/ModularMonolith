@@ -22,20 +22,7 @@
 - Hub: `/hubs/notifications`
 - Auth: `TenantAdminUp` required
 - Server event emitted when inventory is reserved and an order becomes placed: `NotificationReceived`
-- `NotificationReceived` order payload:
-```json
-{
-  "type": "OrderPlaced",
-  "orderId": 1,
-  "orderCode": "ORD-20260430-ABCDEFGHIJ",
-  "customerId": "identity-user-id",
-  "totalAmount": 120000,
-  "currencyCode": "VND",
-  "reservationId": 10,
-  "status": "Placed",
-  "createdAt": "2026-04-30T12:00:00+00:00"
-}
-```
+- `NotificationReceived` order payload contract: [AdminOrderPlacedNotification](../Core/Notifications/AdminOrderPlacedNotification.cs)
 
 ## Contract Notes
 
@@ -44,3 +31,8 @@
 - Current-user endpoints require authentication.
 - Tenant admin profile endpoints require `TenantAdminUp`.
 - `GET /api/Account/profile` creates a profile on first access from the authenticated identity user.
+
+## DTO References
+
+- Account addresses: [AccountAddressResponse](../DTOs/AccountAddresses/AccountAddressResponse.cs), [SaveAccountAddressRequest](../DTOs/AccountAddresses/SaveAccountAddressRequest.cs)
+- Account profiles: [AccountProfileResponse](../DTOs/AccountProfiles/AccountProfileResponse.cs), [UpdateAccountProfileRequest](../DTOs/AccountProfiles/UpdateAccountProfileRequest.cs), [AdminUpdateAccountProfileRequest](../DTOs/AccountProfiles/AdminUpdateAccountProfileRequest.cs), [ListAccountProfilesRequest](../DTOs/AccountProfiles/ListAccountProfilesRequest.cs)

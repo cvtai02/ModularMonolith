@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using ProductCatalog.Core.DTOs.Collections;
+using ProductCatalog.DTOs.Collections;
 using SharedKernel.Abstractions.Services;
 
 namespace ProductCatalog.Core.Usecases.Collections;

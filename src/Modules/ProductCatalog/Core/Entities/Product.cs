@@ -12,15 +12,35 @@ public class Product : AuditableEntity
     public string ImageUrl { get; set; } = string.Empty;
 
     // Pricing
-    public decimal Price { get; set; }
-    public Currency Currency { get; set; }
-    public decimal CompareAtPrice { get; set; }
-    public decimal CostPrice { get; set; }
-    public bool ChargeTax { get; set; }
+    public decimal Price { get; private set; }
+    public Currency Currency { get; private set; }
+    public decimal CompareAtPrice { get; private set; }
+    public decimal CostPrice { get; private set; }
+    public bool ChargeTax { get; private set; }
+
+    public void ApplyPricing(
+        decimal price,
+        Currency currency,
+        decimal compareAtPrice,
+        decimal costPrice,
+        bool chargeTax)
+    {
+        Price = price;
+        Currency = currency;
+        CompareAtPrice = compareAtPrice >= price ? compareAtPrice : 0;
+        CostPrice = costPrice;
+        ChargeTax = chargeTax;
+    }
 
     // Inventory
-    public bool TrackInventory { get; set; } = true;
-    public bool AllowBackorder { get; set; }
+    public bool TrackInventory { get; private set; } = true;
+    public bool AllowBackorder { get; private set; }
+
+    public void SetInventoryPolicy(bool trackInventory, bool allowBackorder)
+    {
+        TrackInventory = trackInventory;
+        AllowBackorder = trackInventory && allowBackorder;
+    }
 
     public ProductStatus Status { get; set; } = ProductStatus.Active;
     

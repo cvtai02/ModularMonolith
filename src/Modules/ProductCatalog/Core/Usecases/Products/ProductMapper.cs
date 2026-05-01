@@ -1,4 +1,4 @@
-using ProductCatalog.Core.DTOs.Products;
+using ProductCatalog.DTOs.Products;
 using ProductCatalog.Core.Entities;
 using Inventory.Core.Entities;
 using SharedKernel.Abstractions.Services;
@@ -86,7 +86,7 @@ internal static class ProductMapper
         UseProductPricing = variant.UseProductPricing,
         UseProductShipping = variant.ShippingInfo?.UseProductShipping ?? true,
         Price = variant.Price,
-        CompareAtPrice = variant.CompareAtPrice,
+        CompareAtPrice = variant.CompareAtPrice ?? 0,
         CostPrice = variant.CostPrice,
         ChargeTax = variant.ChargeTax,
         ImageUrl = variant.ImageKey ?? string.Empty,

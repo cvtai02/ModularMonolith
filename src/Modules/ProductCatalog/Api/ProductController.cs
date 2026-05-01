@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using ProductCatalog.Core.DTOs.Products;
+using ProductCatalog.DTOs.Products;
 using ProductCatalog.Core.Usecases.Products;
 using SharedKernel.DTOs;
 

@@ -1,4 +1,4 @@
-using ProductCatalog.Core.DTOs.Categories;
+using ProductCatalog.DTOs.Categories;
 using ProductCatalog.Core.Entities;
 using SharedKernel.Abstractions.Services;
 

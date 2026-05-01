@@ -1,4 +1,4 @@
-using Inventory.Core.DTOs.Inventory;
+using Inventory.DTOs.Inventory;
 using Inventory.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel.Exceptions;
@@ -25,9 +25,7 @@ public class InitializeProductInventory(InventoryDbContext db)
             db.ProductInventories.Add(productInventory);
         }
 
-        productInventory.TrackInventory = request.TrackInventory;
-        productInventory.AllowBackorder = request.AllowBackorder;
-        productInventory.LowStockThreshold = request.LowStockThreshold;
+        productInventory.SetInventoryPolicy(request.TrackInventory, request.AllowBackorder, request.LowStockThreshold);
 
         foreach (var variantRequest in request.Variants)
         {
@@ -45,16 +43,13 @@ public class InitializeProductInventory(InventoryDbContext db)
                 db.VariantInventories.Add(variantInventory);
             }
 
-            variantInventory.UseProductInventory = variantRequest.UseProductInventory;
-            variantInventory.TrackInventory = variantRequest.UseProductInventory
-                ? request.TrackInventory
-                : variantRequest.TrackInventory;
-            variantInventory.AllowBackorder = variantRequest.UseProductInventory
-                ? request.AllowBackorder
-                : variantRequest.AllowBackorder;
-            variantInventory.LowStockThreshold = variantRequest.UseProductInventory
-                ? request.LowStockThreshold
-                : variantRequest.LowStockThreshold;
+            if (variantRequest.UseProductInventory)
+                variantInventory.ApplyProductInventory(productInventory);
+            else
+                variantInventory.ApplyVariantInventory(
+                    variantRequest.TrackInventory,
+                    variantRequest.AllowBackorder,
+                    variantRequest.LowStockThreshold);
             variantInventory.Tracking.OnHand = variantRequest.Quantity;
         }
 

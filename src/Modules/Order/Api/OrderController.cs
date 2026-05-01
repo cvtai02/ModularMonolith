@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using Order.Core.DTOs.Orders;
+using Order.DTOs.Orders;
 using Order.Core.Usecases.Orders;
 using SharedKernel.DTOs;
 

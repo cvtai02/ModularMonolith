@@ -19,7 +19,7 @@ const ViewProduct = LazyPage(() => import("@/pages/products/view"));
 const Categories = LazyPage(() => import("@/pages/categories"));
 const ContentFilesPage = LazyPage(() => import("@/pages/content/files"));
 const Collections = LazyPage(() => import("@/pages/collections"));
-// const Customers = LazyPage(() => import("@/pages/customers"));
+const Customers = LazyPage(() => import("@/pages/customers"));
 // const Promotions = LazyPage(() => import("@/pages/promotions"));
 // const Reviews = LazyPage(() => import("@/pages/reviews"));
 // const Settings = LazyPage(() => import("@/pages/settings"));
@@ -41,7 +41,7 @@ const AppRoutes: ReactNode =
         <Route path={ROUTES.productCollections} element={<Collections />} errorElement={<ErrorPage />} />
         <Route path={ROUTES.contentFiles} element={<ContentFilesPage />} errorElement={<ErrorPage />} />
         {/* <Route path={ROUTES.orders} element={<Orders />} /> */}
-        {/* <Route path={ROUTES.customers} element={<Customers />} /> */}
+        <Route path={ROUTES.customers} element={<Customers />} errorElement={<ErrorPage />} />
         {/* <Route path={ROUTES.promotions} element={<Promotions />} /> */}
         {/* <Route path={ROUTES.reviews} element={<Reviews />} /> */}
         {/* <Route path={ROUTES.settings} element={<Settings />} /> */}

@@ -11,10 +11,19 @@ import {
   BellIcon,
   LogOutIcon,
   TagIcon,
+  ShoppingCartIcon,
 } from "lucide-react";
 import { type ComponentType, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
+import { useNotificationHub } from "@/hooks/use-notification-hub";
+import { ROUTES } from "@/configs/routes";
 import {
   Collapsible,
   CollapsibleContent,
@@ -37,7 +46,6 @@ import {
   SidebarRail,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { ROUTES } from "@/configs/routes";
 import { useIdentityStore } from "@/stores/identity";
 import { cn } from "@/lib/utils";
 import { ModeToggle } from "../ui/mode-toggle";
@@ -164,6 +172,7 @@ function NavItemRow({ item }: { item: NavItem }) {
 export default function AppLayout() {
   const navigate = useNavigate();
   const { logout, email } = useIdentityStore();
+  const { notifications, clearAll } = useNotificationHub();
 
   const handleSignOut = () => {
     logout();
@@ -230,9 +239,64 @@ export default function AppLayout() {
           </div>
           <div className="flex items-center gap-2">
             <ModeToggle />
-            <Button variant="ghost" size="icon" className="size-8">
-              <BellIcon className="size-4" />
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                render={
+                  <Button variant="ghost" size="icon" className="size-8 relative">
+                    <BellIcon className="size-4" />
+                    {notifications.length > 0 && (
+                      <span className="absolute top-1 right-1 size-2 rounded-full bg-destructive" />
+                    )}
+                  </Button>
+                }
+              />
+              <DropdownMenuContent align="end" className="w-80 p-0">
+                <div className="flex items-center justify-between px-3 py-2 border-b">
+                  <span className="text-sm font-semibold">Notifications</span>
+                  {notifications.length > 0 && (
+                    <button onClick={clearAll} className="text-xs text-muted-foreground hover:text-foreground">
+                      Clear all
+                    </button>
+                  )}
+                </div>
+                <div className="max-h-80 overflow-y-auto">
+                  {notifications.length === 0 ? (
+                    <div className="flex flex-col items-center gap-2 py-8 text-center">
+                      <BellIcon className="size-6 text-muted-foreground/40" />
+                      <p className="text-xs text-muted-foreground">No notifications</p>
+                    </div>
+                  ) : (
+                    notifications.map((n, i) => (
+                      <div
+                        key={i}
+                        className="flex items-start gap-3 px-3 py-2.5 hover:bg-muted/50 cursor-pointer border-b last:border-0"
+                        onClick={() => {
+                          if (n.type === "OrderPlaced") {
+                            navigate(`/orders/${n.orderId}`);
+                          }
+                        }}
+                      >
+                        <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                          <ShoppingCartIcon className="size-3.5 text-primary" />
+                        </div>
+                        <div className="flex flex-col gap-0.5 min-w-0">
+                          <span className="text-xs font-medium leading-tight">New order {n.orderCode}</span>
+                          <span className="text-[11px] text-muted-foreground truncate">
+                            {new Intl.NumberFormat("vi-VN").format(n.totalAmount)} {n.currencyCode}
+                          </span>
+                          <span className="text-[10px] text-muted-foreground">
+                            {new Date(n.createdAt).toLocaleString("vi-VN")}
+                          </span>
+                        </div>
+                        {notifications.length > 0 && i === 0 && (
+                          <Badge variant="secondary" className="ml-auto shrink-0 text-[10px]">New</Badge>
+                        )}
+                      </div>
+                    ))
+                  )}
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Avatar className="size-7 cursor-pointer">
               <AvatarFallback className="bg-emerald-500 text-white text-xs font-bold">
                 {initials}

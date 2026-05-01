@@ -1,6 +1,6 @@
 using Intermediary.Events.Order;
 using Intermediary.Ordering;
-using Order.Core.DTOs.Orders;
+using Order.DTOs.Orders;
 using SharedKernel.Abstractions.Services;
 using SharedKernel.DTOs;
 using SharedKernel.Enums;

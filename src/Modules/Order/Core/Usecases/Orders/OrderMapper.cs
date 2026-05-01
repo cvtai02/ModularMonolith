@@ -1,4 +1,4 @@
-using Order.Core.DTOs.Orders;
+using Order.DTOs.Orders;
 
 namespace Order.Core.Usecases.Orders;
 

@@ -1,7 +1,30 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx tsc *)"
+      "Bash(npx tsc *)",
+      "Read(src/Modules/*/DTOs/**)"
+    ],
+    "deny": [
+      "Read(.git/**)",
+      "Read(**/bin/**)",
+      "Read(**/obj/**)",
+      "Read(**/node_modules/**)",
+      "Read(.github/**)",
+      "Read(.vscode/**)",
+      "Read(**/assets/**)",
+      "Read(src/AppHost/**)",
+      "Read(src/Infrastructure/**)",
+      "Read(src/Intermediary/**)",
+      "Read(src/Modules/*/Api/**)",
+      "Read(src/Modules/*/Infrastructure/**)",
+      "Read(src/Modules/*/Core/**)",
+      "Read(src/Modules/*/*.cs)",
+      "Read(src/Modules/*/*.csproj)",
+      "Read(src/SharedKernel/**)",
+      "Read(**/*.log)",
+      "Read(**/package-lock.json)",
+      "Read(**/openapi-types.ts)",
+      "Read(src/clients/shared/api/path-type-helppers.ts)"
     ]
   }
 }

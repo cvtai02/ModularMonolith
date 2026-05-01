@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Order;
 using Order.Core.Entities;
-using Payment.Core.DTOs;
+using Payment.DTOs;
 using Payment.Core.Entities;
 using Payment.Core.Strategies;
 using SharedKernel.Abstractions.Services;

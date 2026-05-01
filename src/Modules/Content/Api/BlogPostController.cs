@@ -1,4 +1,4 @@
-using Content.Core.DTOs.BlogPosts;
+using Content.DTOs.BlogPosts;
 using Content.Core.Usecases.BlogPosts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

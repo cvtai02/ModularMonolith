@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using ProductCatalog.Core.DTOs.Categories;
+using ProductCatalog.DTOs.Categories;
 using SharedKernel.Abstractions.Services;
 using SharedKernel.DTOs;
 

@@ -7,7 +7,7 @@ description: Implement/Update API endpoints.
 
 # Context
 - `src/Modules/*/Api/` for API implementation
-- `src/Modules/*/Api/api.md` for API documentation
+- `src/Modules/*/Api/api.md` for API summary
 - `src/Intermediary/**` for intermediary services / integration events between modules
 - Never read `src/Infrastructures`.
 - Restrict to read `src/AppHost`

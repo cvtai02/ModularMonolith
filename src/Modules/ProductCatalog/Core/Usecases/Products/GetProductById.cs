@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Inventory;
-using ProductCatalog.Core.DTOs.Products;
+using ProductCatalog.DTOs.Products;
 using SharedKernel.Abstractions.Services;
 
 namespace ProductCatalog.Core.Usecases.Products;

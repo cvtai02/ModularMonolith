@@ -1,4 +1,4 @@
-using Content.Core.DTOs.BlogPosts;
+using Content.DTOs.BlogPosts;
 using Content.Core.Entities;
 
 namespace Content.Core.Usecases.BlogPosts;

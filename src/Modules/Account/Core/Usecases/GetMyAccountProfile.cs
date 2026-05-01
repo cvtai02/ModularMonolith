@@ -1,4 +1,4 @@
-using Account.Core.DTOs.AccountProfiles;
+using Account.DTOs.AccountProfiles;
 using Account.Core.Entities;
 
 namespace Account.Core.Usecases;

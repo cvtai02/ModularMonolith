@@ -1,4 +1,4 @@
-using Payment.Core.DTOs;
+using Payment.DTOs;
 using SharedKernel.Exceptions;
 
 namespace Payment.Core.Strategies;

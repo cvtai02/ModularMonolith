@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using Account.Core.DTOs.AccountAddresses;
+using Account.DTOs.AccountAddresses;
 using Account.Core.Entities;
 using Account.Core.Usecases;
 using Microsoft.AspNetCore.Authorization;

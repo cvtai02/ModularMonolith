@@ -473,7 +473,7 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                     b.Property<bool>("ChargeTax")
                         .HasColumnType("boolean");
 
-                    b.Property<decimal>("CompareAtPrice")
+                    b.Property<decimal?>("CompareAtPrice")
                         .HasColumnType("numeric");
 
                     b.Property<decimal>("CostPrice")
@@ -485,9 +485,6 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<int>("Currency")
-                        .HasColumnType("integer");
 
                     b.Property<string>("ImageKey")
                         .HasColumnType("text");

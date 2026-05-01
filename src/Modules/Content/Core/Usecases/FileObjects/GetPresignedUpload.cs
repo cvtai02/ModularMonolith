@@ -1,5 +1,5 @@
 using Content.Core.Constants;
-using Content.Core.DTOs.FileObjects;
+using Content.DTOs.FileObjects;
 using SharedKernel.Abstractions.Services;
 using SharedKernel.Exceptions;
 using SharedKernel.Extensions;

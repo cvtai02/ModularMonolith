@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
-using ProductCatalog.Core.DTOs.Categories;
+using ProductCatalog.DTOs.Categories;
 using ProductCatalog.Core.Usecases.Categories;
 using SharedKernel.DTOs;
 

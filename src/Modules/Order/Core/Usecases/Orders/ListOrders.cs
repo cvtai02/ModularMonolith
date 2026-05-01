@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using Order.Core.DTOs.Orders;
+using Order.DTOs.Orders;
 using SharedKernel.DTOs;
 
 namespace Order.Core.Usecases.Orders;

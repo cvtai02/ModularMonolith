@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Inventory;
 using Inventory.Core.Entities;
-using ProductCatalog.Core.DTOs.Products;
+using ProductCatalog.DTOs.Products;
 using ProductCatalog.Core.Entities;
 using SharedKernel.Abstractions.Services;
 using SharedKernel.Exceptions;
@@ -31,13 +31,8 @@ public class UpdateProduct(ProductCatalogDbContext db, InventoryDbContext invent
         product.CategoryId = category.Id;
         product.Category = category;
         product.ImageUrl = request.ImageUrl.Trim();
-        product.Price = request.Price;
-        product.Currency = request.Currency;
-        product.CompareAtPrice = request.CompareAtPrice;
-        product.CostPrice = request.CostPrice;
-        product.ChargeTax = request.ChargeTax;
-        product.TrackInventory = request.TrackInventory;
-        product.AllowBackorder = request.AllowBackorder;
+        product.ApplyPricing(request.Price, request.Currency, request.CompareAtPrice, request.CostPrice, request.ChargeTax);
+        product.SetInventoryPolicy(request.TrackInventory, request.AllowBackorder);
         product.Status = request.Status;
         if (product.ShippingInfo is null)
         {
@@ -45,11 +40,7 @@ public class UpdateProduct(ProductCatalogDbContext db, InventoryDbContext invent
             db.ProductShippings.Add(product.ShippingInfo);
         }
 
-        product.ShippingInfo.Physical = request.PhysicalProduct;
-        product.ShippingInfo.Weight = request.Weight;
-        product.ShippingInfo.Width = request.Width;
-        product.ShippingInfo.Height = request.Height;
-        product.ShippingInfo.Length = request.Length;
+        product.ShippingInfo.ApplyShipping(request.PhysicalProduct, request.Weight, request.Width, request.Height, request.Length);
 
         await using var transaction = await db.Database.BeginTransactionAsync(ct);
 
@@ -88,16 +79,17 @@ public class UpdateProduct(ProductCatalogDbContext db, InventoryDbContext invent
         {
             var variantInput = request.Variants.FirstOrDefault(x => MatchesVariant(x, variant));
             var useProductShipping = variantInput?.UseProductShipping ?? true;
-            return new VariantShipping
-            {
-                VariantId = variant.Id,
-                UseProductShipping = useProductShipping,
-                Physical = useProductShipping ? request.PhysicalProduct : (variantInput?.PhysicalProduct ?? request.PhysicalProduct),
-                Weight = useProductShipping ? request.Weight : (variantInput?.Weight ?? request.Weight),
-                Width = useProductShipping ? request.Width : (variantInput?.Width ?? request.Width),
-                Height = useProductShipping ? request.Height : (variantInput?.Height ?? request.Height),
-                Length = useProductShipping ? request.Length : (variantInput?.Length ?? request.Length),
-            };
+            var shipping = new VariantShipping { VariantId = variant.Id };
+            if (useProductShipping)
+                shipping.ApplyProductShipping(product.ShippingInfo);
+            else
+                shipping.ApplyVariantShipping(
+                    variantInput?.PhysicalProduct ?? request.PhysicalProduct,
+                    variantInput?.Weight ?? request.Weight,
+                    variantInput?.Width ?? request.Width,
+                    variantInput?.Height ?? request.Height,
+                    variantInput?.Length ?? request.Length);
+            return shipping;
         }).ToList();
 
         if (shippingInfos.Count > 0)
@@ -181,43 +173,54 @@ public class UpdateProduct(ProductCatalogDbContext db, InventoryDbContext invent
         IReadOnlyDictionary<string, Option> optionLookup)
     {
         if (request.Variants.Count == 0)
+        {
+            var variant = new Variant
+            {
+                ProductId = product.Id,
+                ImageKey = string.IsNullOrWhiteSpace(product.ImageUrl) ? null : NormalizeMediaKey(product.ImageUrl)
+            };
+            variant.ApplyProductPricing(product);
+            variant.SetInventoryPolicy(request.TrackInventory, request.AllowBackorder);
             return
             [
-                new Variant
-                {
-                    ProductId = product.Id,
-                    ImageKey = string.IsNullOrWhiteSpace(product.ImageUrl) ? null : NormalizeMediaKey(product.ImageUrl),
-                    UseProductPricing = true,
-                    TrackInventory = request.TrackInventory,
-                    AllowBackorder = request.AllowBackorder,
-                    Price = request.Price,
-                    CompareAtPrice = request.CompareAtPrice,
-                    CostPrice = request.CostPrice,
-                    ChargeTax = request.ChargeTax
-                }
+                variant
             ];
+        }
 
-        return request.Variants.Select(variant => new Variant
+        return request.Variants.Select(variantRequest =>
         {
-            ProductId = product.Id,
-            ImageKey = string.IsNullOrWhiteSpace(variant.ImageKey) ? NormalizeMediaKey(product.ImageUrl) : NormalizeMediaKey(variant.ImageKey),
-            UseProductPricing = variant.UseProductPricing,
-            TrackInventory = variant.TrackInventory ?? request.TrackInventory,
-            AllowBackorder = variant.AllowBackorder ?? request.AllowBackorder,
-            Price = variant.UseProductPricing ? request.Price : (variant.Price ?? request.Price),
-            CompareAtPrice = variant.UseProductPricing ? request.CompareAtPrice : (variant.CompareAtPrice ?? request.CompareAtPrice),
-            CostPrice = variant.UseProductPricing ? request.CostPrice : (variant.CostPrice ?? request.CostPrice),
-            ChargeTax = variant.UseProductPricing ? request.ChargeTax : (variant.ChargeTax ?? request.ChargeTax),
-            OptionValues = variant.OptionValues.Select(optionValue =>
+            var variant = new Variant
             {
-                var option = optionLookup[optionValue.OptionName.Trim()];
-                return new VariantOptionValue
+                ProductId = product.Id,
+                ImageKey = string.IsNullOrWhiteSpace(variantRequest.ImageKey)
+                    ? NormalizeMediaKey(product.ImageUrl)
+                    : NormalizeMediaKey(variantRequest.ImageKey),
+                OptionValues = variantRequest.OptionValues.Select(optionValue =>
                 {
-                    OptionId = option.Id,
-                    OptionName = option.Name,
-                    Value = optionValue.Value.Trim()
-                };
-            }).ToList()
+                    var option = optionLookup[optionValue.OptionName.Trim()];
+                    return new VariantOptionValue
+                    {
+                        OptionId = option.Id,
+                        OptionName = option.Name,
+                        Value = optionValue.Value.Trim()
+                    };
+                }).ToList()
+            };
+
+            if (variantRequest.UseProductPricing)
+                variant.ApplyProductPricing(product);
+            else
+                variant.ApplyVariantPricing(
+                    variantRequest.Price ?? request.Price,
+                    variantRequest.CompareAtPrice ?? request.CompareAtPrice,
+                    variantRequest.CostPrice ?? request.CostPrice,
+                    variantRequest.ChargeTax ?? request.ChargeTax);
+
+            variant.SetInventoryPolicy(
+                variantRequest.TrackInventory ?? request.TrackInventory,
+                variantRequest.AllowBackorder ?? request.AllowBackorder);
+
+            return variant;
         }).ToList();
     }
 
@@ -247,9 +250,7 @@ public class UpdateProduct(ProductCatalogDbContext db, InventoryDbContext invent
             inventoryDb.ProductInventories.Add(productInventory);
         }
 
-        productInventory.TrackInventory = request.TrackInventory;
-        productInventory.AllowBackorder = request.AllowBackorder;
-        productInventory.LowStockThreshold = request.LowStockThreshold;
+        productInventory.SetInventoryPolicy(request.TrackInventory, request.AllowBackorder, request.LowStockThreshold);
 
         foreach (var variant in newVariants)
         {
@@ -257,26 +258,25 @@ public class UpdateProduct(ProductCatalogDbContext db, InventoryDbContext invent
             var useProductInventory = variantInput?.UseProductInventory ?? true;
             var quantity = variantInput?.Quantity ?? request.Stock;
 
-            inventoryDb.VariantInventories.Add(new VariantInventory
+            var variantInventory = new VariantInventory
             {
                 VariantId = variant.Id,
-                UseProductInventory = useProductInventory,
-                TrackInventory = useProductInventory
-                    ? request.TrackInventory
-                    : variantInput?.TrackInventory ?? request.TrackInventory,
-                AllowBackorder = useProductInventory
-                    ? request.AllowBackorder
-                    : variantInput?.AllowBackorder ?? request.AllowBackorder,
-                LowStockThreshold = useProductInventory
-                    ? request.LowStockThreshold
-                    : variantInput?.LowStockThreshold ?? request.LowStockThreshold,
                 Tracking = new VariantTracking
                 {
                     VariantId = variant.Id,
                     OnHand = quantity,
                     Reserved = 0
                 }
-            });
+            };
+            if (useProductInventory)
+                variantInventory.ApplyProductInventory(productInventory);
+            else
+                variantInventory.ApplyVariantInventory(
+                    variantInput?.TrackInventory ?? request.TrackInventory,
+                    variantInput?.AllowBackorder ?? request.AllowBackorder,
+                    variantInput?.LowStockThreshold ?? request.LowStockThreshold);
+
+            inventoryDb.VariantInventories.Add(variantInventory);
         }
 
         await inventoryDb.SaveChangesAsync(ct);
