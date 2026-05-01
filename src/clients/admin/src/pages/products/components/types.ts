@@ -1,4 +1,4 @@
-import type { CurrencyCode } from "@shared/api/common-types";
+import type { CurrencyCode } from "@shared/api/types/common";
 
 export type OptionEntry = {
   localId: string;

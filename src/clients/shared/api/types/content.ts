@@ -45,19 +45,19 @@ type GetAdminBlogPostByIdOperation =
 export type GetAllQuery =
     QueryParams<GetAllOperation>;
 export type GetAllResponse =
-    JsonResponse<GetAllOperation, 200>;
+    JsonResponse<GetAllOperation>;
 
 export type GetPresignedUploadBulkUrlRequest =
     JsonRequestBody<GetPresignedUploadBulkUrlOperation>;
 // 200 OK
 export type PresignedUploadBulkUrlResponse =
-    JsonResponse<GetPresignedUploadBulkUrlOperation, 200>;
+    JsonResponse<GetPresignedUploadBulkUrlOperation>;
 
 export type ConfirmUploadRequest =
     JsonRequestBody<ConfirmUploadOperation>;
 // 200 OK
 export type ConfirmUploadResponse =
-    JsonResponse<ConfirmUploadOperation, 200>;
+    JsonResponse<ConfirmUploadOperation>;
 
 export type DeleteMediaFilesRequest =
     JsonRequestBody<DeleteOperation>;
@@ -68,31 +68,31 @@ export type ListPublishedBlogPostsQuery =
     QueryParams<ListPublishedBlogPostsOperation>;
 // 200 OK
 export type ListPublishedBlogPostsResponse =
-    JsonResponse<ListPublishedBlogPostsOperation, 200>;
+    JsonResponse<ListPublishedBlogPostsOperation>;
 
 export type GetPublishedBlogPostBySlugParams =
     PathParams<GetPublishedBlogPostBySlugOperation>;
 // 200 OK
 export type BlogPostResponse =
-    JsonResponse<GetPublishedBlogPostBySlugOperation, 200>;
+    JsonResponse<GetPublishedBlogPostBySlugOperation>;
 
 export type ListAdminBlogPostsQuery =
     QueryParams<ListAdminBlogPostsOperation>;
 // 200 OK
 export type ListAdminBlogPostsResponse =
-    JsonResponse<ListAdminBlogPostsOperation, 200>;
+    JsonResponse<ListAdminBlogPostsOperation>;
 
 export type GetAdminBlogPostByIdParams =
     PathParams<GetAdminBlogPostByIdOperation>;
 // 200 OK
 export type GetAdminBlogPostByIdResponse =
-    JsonResponse<GetAdminBlogPostByIdOperation, 200>;
+    JsonResponse<GetAdminBlogPostByIdOperation>;
 
 export type CreateBlogPostRequest =
     JsonRequestBody<CreateBlogPostOperation>;
 // 201 Created
 export type CreateBlogPostResponse =
-    JsonResponse<CreateBlogPostOperation, 201>;
+    JsonResponse<CreateBlogPostOperation>;
 
 export type UpdateBlogPostParams =
     PathParams<UpdateBlogPostOperation>;
@@ -100,19 +100,19 @@ export type UpdateBlogPostRequest =
     JsonRequestBody<UpdateBlogPostOperation>;
 // 200 OK
 export type UpdateBlogPostResponse =
-    JsonResponse<UpdateBlogPostOperation, 200>;
+    JsonResponse<UpdateBlogPostOperation>;
 
 export type PublishBlogPostParams =
     PathParams<PublishBlogPostOperation>;
 // 200 OK
 export type PublishBlogPostResponse =
-    JsonResponse<PublishBlogPostOperation, 200>;
+    JsonResponse<PublishBlogPostOperation>;
 
 export type ArchiveBlogPostParams =
     PathParams<ArchiveBlogPostOperation>;
 // 200 OK
 export type ArchiveBlogPostResponse =
-    JsonResponse<ArchiveBlogPostOperation, 200>;
+    JsonResponse<ArchiveBlogPostOperation>;
 
 export type DeleteBlogPostParams =
     PathParams<DeleteBlogPostOperation>;

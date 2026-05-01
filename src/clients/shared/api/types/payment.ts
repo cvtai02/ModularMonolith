@@ -23,7 +23,7 @@ export type PaymentStatus = typeof paymentStatuses[number];
 
 // 200 OK
 export type ListPaymentMethodsResponse =
-    JsonResponse<ListPaymentMethodsOperation, 200>;
+    JsonResponse<ListPaymentMethodsOperation>;
 
 export type CreatePaymentCheckoutParams =
     PathParams<CreatePaymentCheckoutOperation>;
@@ -31,13 +31,13 @@ export type CreatePaymentCheckoutRequest =
     JsonRequestBody<CreatePaymentCheckoutOperation>;
 // 200 OK
 export type CreatePaymentCheckoutResponse =
-    JsonResponse<CreatePaymentCheckoutOperation, 200>;
+    JsonResponse<CreatePaymentCheckoutOperation>;
 
 export type GetPaymentTransactionParams =
     PathParams<GetPaymentTransactionOperation>;
 // 200 OK
 export type PaymentTransactionResponse =
-    JsonResponse<GetPaymentTransactionOperation, 200>;
+    JsonResponse<GetPaymentTransactionOperation>;
 
 export type PaymentWebhookParams =
     PathParams<PaymentWebhookOperation>;
@@ -45,4 +45,4 @@ export type PaymentWebhookRequest =
     JsonRequestBody<PaymentWebhookOperation>;
 // 200 OK
 export type PaymentWebhookResponse =
-    JsonResponse<PaymentWebhookOperation, 200>;
+    JsonResponse<PaymentWebhookOperation>;

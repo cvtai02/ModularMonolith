@@ -8,7 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { ProductResponse } from "@shared/api/productcatalog-types";
+import type { ProductResponse } from "@shared/api/types/productcatalog";
 
 function Row({ label, value }: { label: string; value: React.ReactNode }) {
   return (

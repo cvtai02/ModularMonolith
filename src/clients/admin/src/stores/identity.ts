@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { toast } from 'sonner';
 import { identityFetchClient } from '@/api/api-client';
-import type { LoginResponse as AuthTokenInfo, UserInfo as UserProfile, LoginRequest as LoginForm } from '@shared/api/api-types';
+import type { LoginResponse as AuthTokenInfo, UserInfo as UserProfile, LoginRequest as LoginForm } from '@shared/api/types/identity';
 
 // ---- Types ----------------------------------------------------------------
 

@@ -1,5 +1,4 @@
 import type {
-  AdminAccountInput,
   ForgotPasswordRequest,
   InfoRequest,
   InfoResponse,
@@ -11,7 +10,6 @@ import type {
   RegisterRequest,
   ResendConfirmationEmailRequest,
   ResetPasswordRequest,
-  SeedRolesResponse,
   TwoFactorRequest,
   TwoFactorResponse,
   UpdateInfoResponse,
@@ -48,10 +46,4 @@ export interface IIdentityClient {
 
   // Request/response aliases are generated from ASP.NET Identity OpenAPI in src/clients/shared/api/types/identity.ts.
   updateInfo(input: InfoRequest): Promise<UpdateInfoResponse>;
-
-  // Request: src/Modules/Identity/Api/SetupController.cs
-  seedAdmin(input: AdminAccountInput): Promise<void>;
-
-  // Response: src/Modules/Identity/Api/SetupController.cs
-  seedRoles(): Promise<SeedRolesResponse>;
 }

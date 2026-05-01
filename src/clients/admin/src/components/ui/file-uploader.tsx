@@ -1,9 +1,10 @@
 import { useCallback, useRef, useState } from "react";
 import { UploadCloudIcon, XIcon } from "lucide-react";
 import { toast } from "sonner";
+import { useMutation } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
-import { tanstackQueryClient } from "@/api/api-client";
-import { ApiError, ValidationError } from "@shared/api/api-types";
+import { useContentClient } from "@/components/containers/api-client-provider";
+import { ApiError, ValidationError } from "@shared/api/types/common";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -40,15 +41,15 @@ export function FileUploader({
   const [isDragging, setIsDragging] = useState(false);
   const [uploadStates, setUploadStates] = useState<UploadState[]>([]);
 
-  const { mutateAsync: getPresignedUrls } = tanstackQueryClient.useMutation(
-    "post",
-    "/api/Content/file-objects/presigned-upload"
-  );
+  const contentClient = useContentClient();
 
-  const { mutateAsync: confirmUpload } = tanstackQueryClient.useMutation(
-    "post",
-    "/api/Content/file-objects/confirm-upload"
-  );
+  const { mutateAsync: getPresignedUrls } = useMutation({
+    mutationFn: contentClient.getPresignedUploadBulkUrl.bind(contentClient),
+  });
+
+  const { mutateAsync: confirmUpload } = useMutation({
+    mutationFn: contentClient.confirmUpload.bind(contentClient),
+  });
 
   const processFiles = useCallback(
     async (files: FileList) => {
@@ -67,9 +68,7 @@ export function FileUploader({
 
       try {
         const presignedUrls = await getPresignedUrls({
-          body: {
-            files: fileArray.map((f) => ({ category, fileName: f.name, contentType: f.type, size: f.size })),
-          },
+          files: fileArray.map((f) => ({ category, fileName: f.name, contentType: f.type, size: f.size })),
         });
 
         await Promise.all(
@@ -87,16 +86,14 @@ export function FileUploader({
         );
 
         const confirmed = await confirmUpload({
-          body: {
-            files: fileArray.map((f, i) => ({
-              uploadId: presignedUrls.files[i].uploadId!,
-              key: presignedUrls.files[i].key!,
-              category,
-              contentType: f.type,
-              name: f.name,
-              size: f.size,
-            })),
-          },
+          files: fileArray.map((f, i) => ({
+            uploadId: presignedUrls.files[i].uploadId!,
+            key: presignedUrls.files[i].key!,
+            category,
+            contentType: f.type,
+            name: f.name,
+            size: f.size,
+          })),
         });
 
         const publicUrls = confirmed.files.map((r) => r.publicUrl!);

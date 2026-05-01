@@ -16,7 +16,7 @@ export type ListOrdersQuery = QueryParams<ListOrdersOperation>;
 export type ListOrdersResponse = JsonResponse<ListOrdersOperation>;
 export type CreateOrderRequest = JsonRequestBody<CreateOrderOperation>;
 // 202 Accepted
-export type CreateOrderResponse = JsonResponse<CreateOrderOperation, 202>;
+export type CreateOrderResponse = JsonResponse<CreateOrderOperation>;
 export type GetOrderParams = PathParams<GetOrderOperation>;
 // 200 OK
 export type OrderResponse = JsonResponse<GetOrderOperation>;

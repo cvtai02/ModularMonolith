@@ -20,7 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import type { CategoryResponse } from "@shared/api/api-types";
+import type { CategoryResponse } from "@shared/api/types/productcatalog";
 import type { FormValues } from "./types";
 import { MediaPickerModal } from "./MediaPickerModal";
 

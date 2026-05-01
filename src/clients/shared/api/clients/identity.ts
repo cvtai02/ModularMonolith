@@ -1,7 +1,6 @@
-import createFetchClient, { Client } from "openapi-fetch";
+import createFetchClient, { type Client } from "openapi-fetch";
 import type { paths } from "../lib/openapi-types";
 import type {
-  AdminAccountInput,
   ForgotPasswordRequest,
   InfoRequest,
   InfoResponse,
@@ -13,7 +12,6 @@ import type {
   RegisterRequest,
   ResendConfirmationEmailRequest,
   ResetPasswordRequest,
-  SeedRolesResponse,
   TwoFactorRequest,
   TwoFactorResponse,
   UpdateInfoResponse,
@@ -89,16 +87,5 @@ export class IdentityClient implements IIdentityClient {
     const { data, error } = await this.client.POST("/manage/info", { body: input });
     if (error) throw error;
     return requireData(data, "Update info response was empty.");
-  }
-
-  async seedAdmin(input: AdminAccountInput): Promise<void> {
-    const { error } = await this.client.POST("/api/setup/seed-admin", { body: input });
-    if (error) throw error;
-  }
-
-  async seedRoles(): Promise<SeedRolesResponse> {
-    const { data, error } = await this.client.POST("/api/setup/seed-roles");
-    if (error) throw error;
-    return requireData(data, "Seed roles response was empty.");
   }
 }

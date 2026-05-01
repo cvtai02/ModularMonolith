@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import queryClient from "@/components/containers/query-client";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import {
   UsersIcon,
@@ -40,10 +40,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { tanstackQueryClient } from "@/api/api-client";
+import { useAccountClient } from "@/components/containers/api-client-provider";
 import { AdminErrorState } from "@/components/admin/admin-page";
-import { accountTypes, accountStatuses } from "@shared/api/account-types";
-import type { AccountType, AccountStatus, AccountProfileResponse, AdminUpdateAccountProfileRequest } from "@shared/api/account-types";
+import { accountTypes, accountStatuses } from "@shared/api/types/account";
+import type { AccountType, AccountStatus, AccountProfileResponse, AdminUpdateAccountProfileRequest } from "@shared/api/types/account";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -118,7 +118,12 @@ function EditAccountDialog({
     },
   });
 
-  const mutation = tanstackQueryClient.useMutation("put", "/api/Account/admin/profiles/{id}");
+  const accountClient = useAccountClient();
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: (input: AdminUpdateAccountProfileRequest) => accountClient.updateAdminProfile(account.id, input),
+  });
 
   const onSubmit = async (values: EditForm) => {
     const body: AdminUpdateAccountProfileRequest = {
@@ -129,12 +134,9 @@ function EditAccountDialog({
       status: (values.status as AccountStatus) || null,
       avatarUrl: null,
     };
-    await mutation.mutateAsync({
-      params: { path: { id: account.id } },
-      body,
-    });
+    await mutation.mutateAsync(body);
     toast.success("Account updated");
-    queryClient.invalidateQueries({ queryKey: ["get", "/api/Account/admin/profiles"] });
+    queryClient.invalidateQueries({ queryKey: ["admin-profiles"] });
     onClose();
   };
 
@@ -267,6 +269,7 @@ export default function CustomersPage() {
   const [page, setPage] = useState(1);
   const [sort, setSort] = useState<{ field: SortField; dir: SortDir }>({ field: "created", dir: "desc" });
   const [editingAccount, setEditingAccount] = useState<AccountProfileResponse | null>(null);
+  const accountClient = useAccountClient();
 
   function handleSort(field: SortField) {
     setSort((prev) =>
@@ -282,23 +285,20 @@ export default function CustomersPage() {
     setPage(1);
   }
 
-  const { data, isLoading, isError } = tanstackQueryClient.useQuery(
-    "get",
-    "/api/Account/admin/profiles",
-    {
-      params: {
-        query: {
-          PageNumber: page,
-          pageSize,
-          search: search.trim() || null,
-          type: typeFilter || null,
-          status: statusFilter || null,
-          sortBy: sort.field,
-          sortDirection: sort.dir,
-        },
-      },
-    }
-  );
+  const profilesQuery = {
+    PageNumber: page,
+    pageSize,
+    search: search.trim() || null,
+    type: typeFilter || null,
+    status: statusFilter || null,
+    sortBy: sort.field,
+    sortDirection: sort.dir,
+  };
+
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["admin-profiles", profilesQuery],
+    queryFn: () => accountClient.listAdminProfiles(profilesQuery),
+  });
 
   const accounts = data?.items ?? [];
   const totalCount = data?.totalCount ?? 0;

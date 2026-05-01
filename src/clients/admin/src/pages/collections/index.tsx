@@ -8,6 +8,7 @@ import {
   PlusIcon,
   Trash2Icon,
 } from "lucide-react";
+import { useQuery, useMutation } from "@tanstack/react-query";
 
 import {
   AlertDialog,
@@ -48,10 +49,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
-import { tanstackQueryClient } from "@/api/api-client";
+import { useProductCatalogClient } from "@/components/containers/api-client-provider";
 import { AdminErrorState } from "@/components/admin/admin-page";
 import { applyValidationErrors } from "@/lib/form-error";
-import type { CollectionResponse } from "@shared/api/api-types";
+import type { CollectionResponse } from "@shared/api/types/productcatalog";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -73,23 +74,27 @@ export default function CollectionsPage() {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [editing, setEditing] = useState<CollectionResponse | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<CollectionResponse | null>(null);
+  const productCatalogClient = useProductCatalogClient();
 
-  const { data, isLoading, isError, refetch } = tanstackQueryClient.useQuery(
-    "get",
-    "/api/ProductCatalog/collections",
-    { params: { query: { pageSize: 200 } } }
-  );
+  const { data, isLoading, isError, refetch } = useQuery({
+    queryKey: ["collections"],
+    queryFn: () => productCatalogClient.listCollection({ pageSize: 200 }),
+  });
 
   const collections = data?.items ?? [];
 
-  const { mutateAsync: createCollection, isPending: isCreating } =
-    tanstackQueryClient.useMutation("post", "/api/ProductCatalog/collections");
+  const { mutateAsync: createCollection, isPending: isCreating } = useMutation({
+    mutationFn: productCatalogClient.createCollection.bind(productCatalogClient),
+  });
 
-  const { mutateAsync: updateCollection, isPending: isUpdating } =
-    tanstackQueryClient.useMutation("put", "/api/ProductCatalog/collections/{id}");
+  const { mutateAsync: updateCollection, isPending: isUpdating } = useMutation({
+    mutationFn: ({ id, input }: { id: number; input: Parameters<typeof productCatalogClient.updateCollection>[1] }) =>
+      productCatalogClient.updateCollection(id, input),
+  });
 
-  const { mutateAsync: deleteCollection } =
-    tanstackQueryClient.useMutation("delete", "/api/ProductCatalog/collections/{id}");
+  const { mutateAsync: deleteCollection } = useMutation({
+    mutationFn: productCatalogClient.deleteCollection.bind(productCatalogClient),
+  });
 
   const isPending = isCreating || isUpdating;
 
@@ -122,8 +127,8 @@ export default function CollectionsPage() {
     try {
       if (editing) {
         await updateCollection({
-          params: { path: { id: editing.id! } },
-          body: {
+          id: editing.id!,
+          input: {
             description: values.description,
             slug: values.slug,
             imageKey: null,
@@ -132,11 +137,9 @@ export default function CollectionsPage() {
         toast.success("Collection updated");
       } else {
         await createCollection({
-          body: {
-            title: values.title,
-            slug: values.slug || undefined,
-            description: values.description,
-          },
+          title: values.title,
+          slug: values.slug || undefined,
+          description: values.description,
         });
         toast.success("Collection created");
       }
@@ -150,7 +153,7 @@ export default function CollectionsPage() {
   async function confirmDelete() {
     if (!deleteTarget) return;
     try {
-      await deleteCollection({ params: { path: { id: deleteTarget.id! } } });
+      await deleteCollection(deleteTarget.id!);
       toast.success(`"${deleteTarget.title}" deleted`);
       setDeleteTarget(null);
       refetch();

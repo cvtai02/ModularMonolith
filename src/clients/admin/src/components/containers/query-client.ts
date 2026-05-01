@@ -1,6 +1,6 @@
 import { MutationCache, QueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { ValidationError } from '@shared/api/api-types';
+import { ValidationError } from '@shared/api/types/common';
 
 // default behaveior for all queries and mutations
 const queryClient = new QueryClient({

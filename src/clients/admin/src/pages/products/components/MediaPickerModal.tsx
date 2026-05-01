@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { CheckIcon, FileIcon, ImageIcon, SearchIcon } from "lucide-react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -14,7 +14,7 @@ import { FileUploader } from "@/components/ui/file-uploader";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { tanstackQueryClient } from "@/api/api-client";
+import { useContentClient } from "@/components/containers/api-client-provider";
 import { cn } from "@/lib/utils";
 
 const PAGE_SIZE = 18;
@@ -28,6 +28,7 @@ type Props = {
 
 export function MediaPickerModal({ open, onOpenChange, selectedUrl, onSelect }: Props) {
   const queryClient = useQueryClient();
+  const contentClient = useContentClient();
   const [pendingUrl, setPendingUrl] = useState(selectedUrl);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -40,30 +41,25 @@ export function MediaPickerModal({ open, onOpenChange, selectedUrl, onSelect }: 
     }
   }, [open, selectedUrl]);
 
-  const { data, isLoading, isFetching } = tanstackQueryClient.useQuery(
-    "get",
-    "/api/Content/file-objects",
-    {
-      params: {
-        query: {
-          PageNumber: page,
-          PageSize: PAGE_SIZE,
-          Search: search || undefined,
-          Category: "product",
-          SortBy: "created",
-          SortDirection: "desc",
-        },
-      },
-    },
-    { enabled: open }
-  );
+  const { data, isLoading, isFetching } = useQuery({
+    queryKey: ["content-files", { page, search }],
+    queryFn: () => contentClient.listMediaFiles({
+      PageNumber: page,
+      PageSize: PAGE_SIZE,
+      Search: search || undefined,
+      Category: "product",
+      SortBy: "created",
+      SortDirection: "desc",
+    }),
+    enabled: open,
+  });
 
   const files = data?.items ?? [];
   const totalPages = data?.totalPages ?? 1;
 
   const handleUpload = useCallback(
     (urls: string[]) => {
-      queryClient.invalidateQueries({ queryKey: ["get", "/api/Content/file-objects"] });
+      queryClient.invalidateQueries({ queryKey: ["content-files"] });
       setSearch("");
       setPage(1);
       if (urls.length > 0) setPendingUrl(urls[0]);

@@ -36,28 +36,28 @@ export type AccountStatus = typeof accountStatuses[number];
 
 // 200 OK
 export type AccountProfileResponse =
-    JsonResponse<GetMyAccountProfileOperation, 200>;
+    JsonResponse<GetMyAccountProfileOperation>;
 export type UpdateAccountProfileRequest =
     JsonRequestBody<UpdateMyAccountProfileOperation>;
 // 200 OK
 export type UpdateAccountProfileResponse =
-    JsonResponse<UpdateMyAccountProfileOperation, 200>;
+    JsonResponse<UpdateMyAccountProfileOperation>;
 
 // 200 OK
 export type ListAccountAddressesResponse =
-    JsonResponse<ListMyAccountAddressesOperation, 200>;
+    JsonResponse<ListMyAccountAddressesOperation>;
 export type SaveAccountAddressRequest =
     JsonRequestBody<CreateMyAccountAddressOperation>;
 // 200 OK
 export type CreateAccountAddressResponse =
-    JsonResponse<CreateMyAccountAddressOperation, 200>;
+    JsonResponse<CreateMyAccountAddressOperation>;
 export type UpdateAccountAddressParams =
     PathParams<UpdateMyAccountAddressOperation>;
 export type UpdateAccountAddressRequest =
     JsonRequestBody<UpdateMyAccountAddressOperation>;
 // 200 OK
 export type UpdateAccountAddressResponse =
-    JsonResponse<UpdateMyAccountAddressOperation, 200>;
+    JsonResponse<UpdateMyAccountAddressOperation>;
 export type DeleteAccountAddressParams =
     PathParams<DeleteMyAccountAddressOperation>;
 // No content
@@ -67,16 +67,16 @@ export type ListAdminAccountProfilesQuery =
     QueryParams<ListAdminAccountProfilesOperation>;
 // 200 OK
 export type ListAdminAccountProfilesResponse =
-    JsonResponse<ListAdminAccountProfilesOperation, 200>;
+    JsonResponse<ListAdminAccountProfilesOperation>;
 export type GetAdminAccountProfileByIdParams =
     PathParams<GetAdminAccountProfileByIdOperation>;
 // 200 OK
 export type GetAdminAccountProfileByIdResponse =
-    JsonResponse<GetAdminAccountProfileByIdOperation, 200>;
+    JsonResponse<GetAdminAccountProfileByIdOperation>;
 export type UpdateAdminAccountProfileParams =
     PathParams<UpdateAdminAccountProfileOperation>;
 export type AdminUpdateAccountProfileRequest =
     JsonRequestBody<UpdateAdminAccountProfileOperation>;
 // 200 OK
 export type UpdateAdminAccountProfileResponse =
-    JsonResponse<UpdateAdminAccountProfileOperation, 200>;
+    JsonResponse<UpdateAdminAccountProfileOperation>;

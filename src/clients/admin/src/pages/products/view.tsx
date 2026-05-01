@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeftIcon, PencilIcon } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { tanstackQueryClient } from "@/api/api-client";
+import { useProductCatalogClient } from "@/components/containers/api-client-provider";
 import { ROUTES } from "@/configs/routes";
 import { AdminErrorState } from "@/components/admin/admin-page";
 import { ProductDetailHeader } from "./view/ProductDetailHeader";
@@ -20,12 +22,12 @@ export default function ProductViewPage() {
   const productId = Number(id);
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<Tab>("overview");
+  const productCatalogClient = useProductCatalogClient();
 
-  const { data: product, isLoading, isError } = tanstackQueryClient.useQuery(
-    "get",
-    "/api/ProductCatalog/products/{id}",
-    { params: { path: { id: productId } } }
-  );
+  const { data: product, isLoading, isError } = useQuery({
+    queryKey: ["product", productId],
+    queryFn: () => productCatalogClient.getProduct(productId),
+  });
 
   if (isError) {
     return (

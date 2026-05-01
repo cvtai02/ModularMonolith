@@ -1,4 +1,4 @@
-import createFetchClient, { Client } from "openapi-fetch";
+import createFetchClient, { type Client } from "openapi-fetch";
 import type { paths } from "../lib/openapi-types";import type {
   CategoryResponse,
   CollectionResponse,

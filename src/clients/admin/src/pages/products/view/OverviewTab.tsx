@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { ProductResponse } from "@shared/api/productcatalog-types";
+import type { ProductResponse } from "@shared/api/types/productcatalog";
 
 function formatPrice(amount: number | null | undefined, currency: string | null | undefined) {
   if (amount == null || Number(amount) === 0) return "—";

@@ -5,8 +5,8 @@ export type JsonRequestBody<TOperation> =
         ? TRequest
         : never;
 
-export type JsonResponse<TOperation, TStatus extends number = 200> =
-    TOperation extends { responses: Record<TStatus, { content: { "application/json": infer TResponse } }> }
+export type JsonResponse<TOperation> =
+    TOperation extends { responses: Record<200, { content: { "application/json": infer TResponse } }> } //openapi alway generate 200, actual can be 2xx
         ? TResponse
         : never;
 

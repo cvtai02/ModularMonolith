@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import type { ProductResponse } from "@shared/api/productcatalog-types";
+import type { ProductResponse } from "@shared/api/types/productcatalog";
 
 function formatPrice(amount: number | null | undefined, currency: string | null | undefined) {
   if (amount == null || Number(amount) === 0) return null;

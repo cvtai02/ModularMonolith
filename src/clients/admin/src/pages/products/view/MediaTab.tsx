@@ -1,5 +1,5 @@
 import { ImageIcon } from "lucide-react";
-import type { ProductResponse } from "@shared/api/productcatalog-types";
+import type { ProductResponse } from "@shared/api/types/productcatalog";
 
 type Media = ProductResponse["medias"][number];
 

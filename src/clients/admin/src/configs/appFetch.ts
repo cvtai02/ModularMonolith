@@ -1,4 +1,4 @@
-import { ApiError, ValidationError } from "@shared/api/api-types";
+import { ApiError, ValidationError } from "@shared/api/types/common";
 import { useIdentityStore } from '@/stores/identity';
 
 //override default fetch function to include API_INTERCEPTOR_CONFIG behavior

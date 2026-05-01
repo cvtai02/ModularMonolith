@@ -3,7 +3,6 @@ import type { components } from "../lib/openapi-types";
 
 type ApiTypes = components['schemas'] // donot export this
 // SharedKernel - Pagination
-export type PaginatedProductResponse = ApiTypes['SharedKernel.DTOs.PaginatedList`1[[ProductCatalog.Core.DTOs.Products.ProductResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'];
 export type ValidationResponse = ApiTypes['Microsoft.AspNetCore.Http.HttpValidationProblemDetails'];
 
 // SharedKernel.Enums.Currency

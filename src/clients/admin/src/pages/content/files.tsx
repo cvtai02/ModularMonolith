@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import {
   FileIcon,
   FolderOpenIcon,
@@ -43,13 +43,11 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AdminErrorState } from "@/components/admin/admin-page";
-import { API_BASE_URL, tanstackQueryClient } from "@/api/api-client";
-import { appFetch } from "@/configs/appFetch";
+import { useContentClient } from "@/components/containers/api-client-provider";
 import { cn } from "@/lib/utils";
-import type { GetAllQuery, GetAllResponse } from "@shared/api/content-types";
+import type { GetAllQuery, GetAllResponse } from "@shared/api/types/content";
 
 type MediaFileListParams = GetAllQuery;
-type MediaFilePaginatedList = GetAllResponse;
 type MediaFileResponse = GetAllResponse["items"][number];
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -79,14 +77,6 @@ function isImage(contentType: string): boolean {
   return contentType.startsWith("image/");
 }
 
-async function fetchFiles(params: MediaFileListParams): Promise<MediaFilePaginatedList> {
-  const url = new URL(`${API_BASE_URL}/api/Content/file-objects`);
-  Object.entries(params).forEach(([k, v]) => {
-    if (v !== undefined && v !== "") url.searchParams.set(k, String(v));
-  });
-  const res = await appFetch(url);
-  return res.json();
-}
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
@@ -242,6 +232,8 @@ export default function ContentFilesPage() {
   const [uploadOpen, setUploadOpen] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
 
+  const contentClient = useContentClient();
+
   const params: MediaFileListParams = {
     PageNumber: page,
     PageSize: PAGE_SIZE,
@@ -253,12 +245,13 @@ export default function ContentFilesPage() {
 
   const { data, isLoading, isError, refetch, isFetching } = useQuery({
     queryKey: ["content-files", params],
-    queryFn: () => fetchFiles(params),
+    queryFn: () => contentClient.listMediaFiles(params),
     staleTime: 30_000,
   });
 
-  const { mutateAsync: deleteFiles, isPending: isDeleting } =
-    tanstackQueryClient.useMutation("delete", "/api/Content/file-objects");
+  const { mutateAsync: deleteFiles, isPending: isDeleting } = useMutation({
+    mutationFn: contentClient.deleteMediaFiles.bind(contentClient),
+  });
 
   const files = data?.items ?? [];
   const totalCount = data?.totalCount ?? 0;
@@ -284,7 +277,7 @@ export default function ContentFilesPage() {
 
   async function handleDelete() {
     try {
-      await deleteFiles({ body: { ids: Array.from(selectedIds) } });
+      await deleteFiles({ ids: Array.from(selectedIds) });
       toast.success(`${selectedIds.size} file${selectedIds.size > 1 ? "s" : ""} deleted`);
       setSelectedIds(new Set());
       setDeleteConfirmOpen(false);

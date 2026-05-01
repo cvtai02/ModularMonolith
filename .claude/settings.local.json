@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(npx tsc *)",
-      "Read(src/Modules/*/DTOs/**)"
+      "Read(src/Modules/*/DTOs/**)",
+      "Bash(npm run *)"
     ],
     "deny": [
       "Read(.git/**)",

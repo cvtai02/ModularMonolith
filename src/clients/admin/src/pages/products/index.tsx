@@ -13,6 +13,8 @@ import {
   ChevronDownIcon,
   ChevronsUpDownIcon,
 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -32,10 +34,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { tanstackQueryClient } from "@/api/api-client";
+import { useProductCatalogClient } from "@/components/containers/api-client-provider";
 import { AdminErrorState } from "@/components/admin/admin-page";
 import { ROUTES } from "@/configs/routes";
-import type { ProductResponse } from "@shared/api/productcatalog-types";
+import type { ProductResponse } from "@shared/api/types/productcatalog";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -119,6 +121,7 @@ const PAGE_SIZES = [10, 20, 50];
 
 export default function ProductsPage() {
   const navigate = useNavigate();
+  const productCatalogClient = useProductCatalogClient();
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("");
@@ -151,29 +154,25 @@ export default function ProductsPage() {
     setPage(1);
   }
 
-  const { data, isLoading, isError } = tanstackQueryClient.useQuery(
-    "get",
-    "/api/ProductCatalog/products",
-    {
-      params: {
-        query: {
-          PageNumber: page,
-          PageSize: pageSize,
-          Search: search.trim() || undefined,
-          Status: statusFilter || undefined,
-          CategoryName: categoryFilter || undefined,
-          SortBy: sort.field,
-          SortDirection: sort.dir,
-        },
-      },
-    }
-  );
+  const productsQuery = {
+    PageNumber: page,
+    PageSize: pageSize,
+    Search: search.trim() || undefined,
+    Status: statusFilter || undefined,
+    CategoryName: categoryFilter || undefined,
+    SortBy: sort.field,
+    SortDirection: sort.dir,
+  };
 
-  const { data: categoriesData } = tanstackQueryClient.useQuery(
-    "get",
-    "/api/ProductCatalog/categories",
-    { params: { query: { pageSize: 200 } } }
-  );
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["products", productsQuery],
+    queryFn: () => productCatalogClient.listProduct(productsQuery),
+  });
+
+  const { data: categoriesData } = useQuery({
+    queryKey: ["categories"],
+    queryFn: () => productCatalogClient.listCategory({ pageSize: 200 }),
+  });
 
   const products = data?.items ?? [];
   const totalCount = data?.totalCount ?? 0;

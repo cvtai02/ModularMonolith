@@ -9,6 +9,7 @@ import {
   SearchIcon,
   MoreHorizontalIcon,
 } from "lucide-react";
+import { useQuery, useMutation } from "@tanstack/react-query";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -49,10 +50,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
-import { tanstackQueryClient } from "@/api/api-client";
+import { useProductCatalogClient } from "@/components/containers/api-client-provider";
 import { AdminErrorState } from "@/components/admin/admin-page";
 import { applyValidationErrors } from "@/lib/form-error";
-import type { CategoryResponse } from "@shared/api/api-types";
+import type { CategoryResponse } from "@shared/api/types/productcatalog";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -75,23 +76,27 @@ export default function CategoriesPage() {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [editing, setEditing] = useState<CategoryResponse | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<CategoryResponse | null>(null);
+  const productCatalogClient = useProductCatalogClient();
 
-  const { data, isLoading, isError, refetch } = tanstackQueryClient.useQuery(
-    "get",
-    "/api/ProductCatalog/categories",
-    { params: { query: { pageSize: 200, search: search.trim() || undefined } } }
-  );
+  const { data, isLoading, isError, refetch } = useQuery({
+    queryKey: ["categories", { search: search.trim() || undefined }],
+    queryFn: () => productCatalogClient.listCategory({ pageSize: 200, search: search.trim() || undefined }),
+  });
 
   const categories = data?.items ?? [];
 
-  const { mutateAsync: createCategory, isPending: isCreating } =
-    tanstackQueryClient.useMutation("post", "/api/ProductCatalog/categories");
+  const { mutateAsync: createCategory, isPending: isCreating } = useMutation({
+    mutationFn: productCatalogClient.createCategory.bind(productCatalogClient),
+  });
 
-  const { mutateAsync: updateCategory, isPending: isUpdating } =
-    tanstackQueryClient.useMutation("put", "/api/ProductCatalog/categories/{name}");
+  const { mutateAsync: updateCategory, isPending: isUpdating } = useMutation({
+    mutationFn: ({ name, input }: { name: string; input: Parameters<typeof productCatalogClient.updateCategory>[1] }) =>
+      productCatalogClient.updateCategory(name, input),
+  });
 
-  const { mutateAsync: deleteCategory } =
-    tanstackQueryClient.useMutation("delete", "/api/ProductCatalog/categories/{name}");
+  const { mutateAsync: deleteCategory } = useMutation({
+    mutationFn: productCatalogClient.deleteCategory.bind(productCatalogClient),
+  });
 
   const isPending = isCreating || isUpdating;
 
@@ -124,8 +129,8 @@ export default function CategoriesPage() {
     try {
       if (editing) {
         await updateCategory({
-          params: { path: { name: editing.name! } },
-          body: {
+          name: editing.name!,
+          input: {
             description: values.description,
             slug: values.slug,
             status: editing.status,
@@ -136,11 +141,9 @@ export default function CategoriesPage() {
         toast.success("Category updated");
       } else {
         await createCategory({
-          body: {
-            name: values.name,
-            slug: values.slug || undefined,
-            description: values.description,
-          },
+          name: values.name,
+          slug: values.slug || undefined,
+          description: values.description,
         });
         toast.success("Category created");
       }
@@ -154,7 +157,7 @@ export default function CategoriesPage() {
   async function confirmDelete() {
     if (!deleteTarget) return;
     try {
-      await deleteCategory({ params: { path: { name: deleteTarget.name! } } });
+      await deleteCategory(deleteTarget.name!);
       toast.success(`"${deleteTarget.name}" deleted`);
       setDeleteTarget(null);
       refetch();

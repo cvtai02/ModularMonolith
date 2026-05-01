@@ -5,7 +5,7 @@ import { ArrowLeftIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
-import type { CategoryResponse } from "@shared/api/api-types";
+import type { CategoryResponse } from "@shared/api/types/productcatalog";
 import { applyValidationErrors } from "@/lib/form-error";
 
 import { DEFAULT_FORM_VALUES, DEFAULT_VARIANT_OVERRIDE } from "./types";

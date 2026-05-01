@@ -1,7 +1,7 @@
 import type { FieldValues, Path, UseFormSetError } from "react-hook-form";
 import { toast } from "sonner";
 
-import { ValidationError } from "@shared/api/api-types";
+import { ValidationError } from "@shared/api/types/common";
 
 /**
  * Handles a ValidationError (400) by binding field messages to the form and

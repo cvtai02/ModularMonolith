@@ -21,6 +21,7 @@ import type {
   UpdateBlogPostRequest,
   UpdateBlogPostResponse,
 } from "../types/content";
+export * from "../types/content"
 
 export interface IContentClient {
   // Query: src/Modules/Content/DTOs/FileObjects/ListMediaFilesRequest.cs

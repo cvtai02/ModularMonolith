@@ -1,7 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { useQuery, useMutation } from "@tanstack/react-query";
 
-import { tanstackQueryClient } from "@/api/api-client";
+import { useProductCatalogClient } from "@/components/containers/api-client-provider";
 import { ROUTES } from "@/configs/routes";
 
 import type { FormValues, OptionEntry, Variant } from "./components/types";
@@ -10,18 +11,17 @@ import { ProductFormLayout } from "./components/ProductFormLayout";
 
 export default function AddProductPage() {
   const navigate = useNavigate();
+  const productCatalogClient = useProductCatalogClient();
 
-  const { data: categoriesData } = tanstackQueryClient.useQuery(
-    "get",
-    "/api/ProductCatalog/categories",
-    { params: { query: { pageSize: 200 } } }
-  );
+  const { data: categoriesData } = useQuery({
+    queryKey: ["categories"],
+    queryFn: () => productCatalogClient.listCategory({ pageSize: 200 }),
+  });
   const categories = categoriesData?.items ?? [];
 
-  const { mutateAsync: createProduct, isPending } = tanstackQueryClient.useMutation(
-    "post",
-    "/api/ProductCatalog/products"
-  );
+  const { mutateAsync: createProduct, isPending } = useMutation({
+    mutationFn: productCatalogClient.createProduct.bind(productCatalogClient),
+  });
 
   const handleSubmit = async (values: FormValues, options: OptionEntry[], variants: Variant[], statusOverride?: string) => {
     const finalStatus = statusOverride ?? values.status;
@@ -31,34 +31,32 @@ export default function AddProductPage() {
     );
 
     await createProduct({
-      body: {
-        name: values.name,
-        categoryId: values.categoryId,
-        description: values.description || undefined,
-        imageUrl: values.mediaUrls[0] || undefined,
-        medias: values.mediaUrls.map((url, i) => ({ url, type: "image", displayOrder: i })),
-        status: finalStatus as never,
-        currency: values.currency,
-        price: values.price ? parseFloat(values.price) : undefined,
-        compareAtPrice: values.compareAtPrice ? parseFloat(values.compareAtPrice) : undefined,
-        costPrice: values.costPrice ? parseFloat(values.costPrice) : undefined,
-        chargeTax: values.chargeTax,
-        stock: !hasVariants && values.stock ? parseInt(values.stock) : undefined,
-        trackInventory: values.trackInventory,
-        allowBackorder: values.allowBackorder,
-        lowStockThreshold: values.lowStockThreshold ? parseInt(values.lowStockThreshold) : undefined,
-        physicalProduct: values.isPhysical,
-        weight: values.weight ? parseFloat(values.weight) : undefined,
-        width: values.width ? parseFloat(values.width) : undefined,
-        height: values.height ? parseFloat(values.height) : undefined,
-        length: values.length ? parseFloat(values.length) : undefined,
-        options: activeOptions.map((opt, displayOrder) => ({
-          name: opt.name,
-          displayOrder,
-          values: getFilledValues(opt.inputValues),
-        })),
-        variants: buildVariantsPayload(variants, hasVariants),
-      },
+      name: values.name,
+      categoryId: values.categoryId,
+      description: values.description || undefined,
+      imageUrl: values.mediaUrls[0] || undefined,
+      medias: values.mediaUrls.map((url, i) => ({ url, type: "image", displayOrder: i })),
+      status: finalStatus as never,
+      currency: values.currency,
+      price: values.price ? parseFloat(values.price) : undefined,
+      compareAtPrice: values.compareAtPrice ? parseFloat(values.compareAtPrice) : undefined,
+      costPrice: values.costPrice ? parseFloat(values.costPrice) : undefined,
+      chargeTax: values.chargeTax,
+      stock: !hasVariants && values.stock ? parseInt(values.stock) : undefined,
+      trackInventory: values.trackInventory,
+      allowBackorder: values.allowBackorder,
+      lowStockThreshold: values.lowStockThreshold ? parseInt(values.lowStockThreshold) : undefined,
+      physicalProduct: values.isPhysical,
+      weight: values.weight ? parseFloat(values.weight) : undefined,
+      width: values.width ? parseFloat(values.width) : undefined,
+      height: values.height ? parseFloat(values.height) : undefined,
+      length: values.length ? parseFloat(values.length) : undefined,
+      options: activeOptions.map((opt, displayOrder) => ({
+        name: opt.name,
+        displayOrder,
+        values: getFilledValues(opt.inputValues),
+      })),
+      variants: buildVariantsPayload(variants, hasVariants),
     });
 
     toast.success("Product created!");

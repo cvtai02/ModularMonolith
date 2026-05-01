@@ -1,8 +1,9 @@
 import { useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
+import { useQuery, useMutation } from "@tanstack/react-query";
 
-import { tanstackQueryClient } from "@/api/api-client";
+import { useProductCatalogClient } from "@/components/containers/api-client-provider";
 import { ROUTES } from "@/configs/routes";
 
 import type { FormValues, OptionEntry, Variant, VariantOverride } from "./components/types";
@@ -13,24 +14,22 @@ export default function EditProductPage() {
   const { id } = useParams<{ id: string }>();
   const productId = Number(id);
   const navigate = useNavigate();
+  const productCatalogClient = useProductCatalogClient();
 
-  const { data: product, isLoading: loadingProduct } = tanstackQueryClient.useQuery(
-    "get",
-    "/api/ProductCatalog/products/{id}",
-    { params: { path: { id: productId } } }
-  );
+  const { data: product, isLoading: loadingProduct } = useQuery({
+    queryKey: ["product", productId],
+    queryFn: () => productCatalogClient.getProduct(productId),
+  });
 
-  const { data: categoriesData } = tanstackQueryClient.useQuery(
-    "get",
-    "/api/ProductCatalog/categories",
-    { params: { query: { pageSize: 200 } } }
-  );
+  const { data: categoriesData } = useQuery({
+    queryKey: ["categories"],
+    queryFn: () => productCatalogClient.listCategory({ pageSize: 200 }),
+  });
   const categories = categoriesData?.items ?? [];
 
-  const { mutateAsync: updateProduct, isPending } = tanstackQueryClient.useMutation(
-    "put",
-    "/api/ProductCatalog/products/{id}"
-  );
+  const { mutateAsync: updateProduct, isPending } = useMutation({
+    mutationFn: productCatalogClient.updateProduct.bind(productCatalogClient, productId),
+  });
 
   const defaultValues = useMemo((): Partial<FormValues> | undefined => {
     if (!product) return undefined;
@@ -43,7 +42,7 @@ export default function EditProductPage() {
       description: product.description ?? "",
       status: (product.status as string) ?? "Draft",
       mediaUrls,
-      currency: product.currency ?? 0,
+      currency: product.currency ?? "VND",
       price: product.price ? String(product.price) : "",
       compareAtPrice: product.compareAtPrice ? String(product.compareAtPrice) : "",
       costPrice: product.costPrice ? String(product.costPrice) : "",
@@ -90,7 +89,7 @@ export default function EditProductPage() {
         costPrice: !variant.useProductPricing && variant.costPrice ? String(variant.costPrice) : "",
         chargeTax: !variant.useProductPricing ? (variant.chargeTax ?? false) : false,
         useProductShipping: variant.useProductShipping ?? true,
-        physicalProduct: !variant.useProductShipping? variant.physicalProduct : false,
+        physicalProduct: !variant.useProductShipping ? variant.physicalProduct : false,
         weight: !variant.useProductShipping && variant.weight ? String(variant.weight) : "",
         width: !variant.useProductShipping && variant.width ? String(variant.width) : "",
         height: !variant.useProductShipping && variant.height ? String(variant.height) : "",
@@ -113,34 +112,31 @@ export default function EditProductPage() {
     );
 
     await updateProduct({
-      params: { path: { id: productId } },
-      body: {
-        name: values.name,
-        categoryId: values.categoryId,
-        description: values.description || undefined,
-        imageUrl: values.mediaUrls[0] || undefined,
-        medias: values.mediaUrls.map((url, i) => ({ url, type: "image", displayOrder: i })),
-        status: finalStatus as never,
-        price: values.price ? parseFloat(values.price) : undefined,
-        compareAtPrice: values.compareAtPrice ? parseFloat(values.compareAtPrice) : undefined,
-        costPrice: values.costPrice ? parseFloat(values.costPrice) : undefined,
-        chargeTax: values.chargeTax,
-        stock: !hasVariants && values.stock ? parseInt(values.stock) : undefined,
-        trackInventory: values.trackInventory,
-        allowBackorder: values.allowBackorder,
-        lowStockThreshold: values.lowStockThreshold ? parseInt(values.lowStockThreshold) : undefined,
-        physicalProduct: values.isPhysical,
-        weight: values.weight ? parseFloat(values.weight) : undefined,
-        width: values.width ? parseFloat(values.width) : undefined,
-        height: values.height ? parseFloat(values.height) : undefined,
-        length: values.length ? parseFloat(values.length) : undefined,
-        options: activeOptions.map((opt, displayOrder) => ({
-          name: opt.name,
-          displayOrder,
-          values: getFilledValues(opt.inputValues),
-        })),
-        variants: buildVariantsPayload(variants, hasVariants),
-      },
+      name: values.name,
+      categoryId: values.categoryId,
+      description: values.description || undefined,
+      imageUrl: values.mediaUrls[0] || undefined,
+      medias: values.mediaUrls.map((url, i) => ({ url, type: "image", displayOrder: i })),
+      status: finalStatus as never,
+      price: values.price ? parseFloat(values.price) : undefined,
+      compareAtPrice: values.compareAtPrice ? parseFloat(values.compareAtPrice) : undefined,
+      costPrice: values.costPrice ? parseFloat(values.costPrice) : undefined,
+      chargeTax: values.chargeTax,
+      stock: !hasVariants && values.stock ? parseInt(values.stock) : undefined,
+      trackInventory: values.trackInventory,
+      allowBackorder: values.allowBackorder,
+      lowStockThreshold: values.lowStockThreshold ? parseInt(values.lowStockThreshold) : undefined,
+      physicalProduct: values.isPhysical,
+      weight: values.weight ? parseFloat(values.weight) : undefined,
+      width: values.width ? parseFloat(values.width) : undefined,
+      height: values.height ? parseFloat(values.height) : undefined,
+      length: values.length ? parseFloat(values.length) : undefined,
+      options: activeOptions.map((opt, displayOrder) => ({
+        name: opt.name,
+        displayOrder,
+        values: getFilledValues(opt.inputValues),
+      })),
+      variants: buildVariantsPayload(variants, hasVariants),
     });
 
     toast.success("Product updated!");
