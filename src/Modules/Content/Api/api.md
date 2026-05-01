@@ -3,6 +3,8 @@
 
 ## API Endpoints
 
+Client contract: [ContentClient](../../../clients/shared/api/clients/content.ts), [IContentClient](../../../clients/shared/api/contracts/content.ts)
+
 ### FileObject
 - [GetAll](FileObjectController.cs#L17)
 - [GetPresignedUploadBulkUrl](FileObjectController.cs#L22)

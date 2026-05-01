@@ -4,6 +4,8 @@ Base route: `/api/Payment`
 
 ## Endpoints
 
+Client contract: [PaymentClient](../../../clients/shared/api/clients/payment.ts), [IPaymentClient](../../../clients/shared/api/contracts/payment.ts)
+
 - `GET /api/Payment/methods`
   - Authorization: public.
   - Lists supported payment methods.

@@ -15,6 +15,7 @@ type TwoFactorOperation = IdentityPaths["/manage/2fa"]["post"];
 type GetInfoOperation = IdentityPaths["/manage/info"]["get"];
 type UpdateInfoOperation = IdentityPaths["/manage/info"]["post"];
 type SeedAdminOperation = IdentityPaths["/api/setup/seed-admin"]["post"];
+type SeedRolesOperation = IdentityPaths["/api/setup/seed-roles"]["post"];
 
 export type RegisterRequest = JsonRequestBody<RegisterOperation>;
 
@@ -47,3 +48,5 @@ export type InfoRequest = JsonRequestBody<UpdateInfoOperation>;
 export type UpdateInfoResponse = JsonResponse<UpdateInfoOperation>;
 
 export type AdminAccountInput = JsonRequestBody<SeedAdminOperation>;
+// 200 OK
+export type SeedRolesResponse = JsonResponse<SeedRolesOperation>;

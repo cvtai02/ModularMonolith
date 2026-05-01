@@ -3,6 +3,8 @@
 
 ## API Endpoints
 
+Client contract: [AccountClient](../../../clients/shared/api/clients/account.ts), [IAccountClient](../../../clients/shared/api/contracts/account.ts)
+
 ### Current Account
 - [GetMe](AccountProfileController.cs#L19)
 - [UpdateMe](AccountProfileController.cs#L23)

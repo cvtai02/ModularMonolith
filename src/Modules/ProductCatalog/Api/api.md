@@ -3,11 +3,14 @@
 
 ## API Endpoints
 
+Client contract: [ProductCatalogClient](../../../clients/shared/api/clients/productcatalog.ts), [IProductCatalogClient](../../../clients/shared/api/contracts/productcatalog.ts)
+
 ### Product
 - [GetAll](ProductController.cs#L17)
 - [GetById](ProductController.cs#L22)
 - [Create](ProductController.cs#L29)
-- [Update](ProductController.cs#L37) uses [UpdateProductRequest](../DTOs/Products/UpdateProductRequest.cs)
+- [Update](ProductController.cs#L37)
+
 
 ### Category
 - [GetAll](CategoryController.cs#L19)

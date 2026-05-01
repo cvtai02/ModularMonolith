@@ -3,6 +3,8 @@
 
 ## API Endpoints
 
+Client contract: [IdentityClient](../../../clients/shared/api/clients/identity.ts), [IIdentityClient](../../../clients/shared/api/contracts/identity.ts)
+
 ### Setup
 - [SeedAdmin](SetupController.cs#L31)
 - [SeedRoles](SetupController.cs#L85)

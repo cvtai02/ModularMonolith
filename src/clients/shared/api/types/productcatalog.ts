@@ -1,5 +1,5 @@
-import type { paths } from "./lib/openapi-types";
-import type { JsonRequestBody, JsonResponse, PathParams, QueryParams } from "./path-type-helpers";
+import type { paths } from "../lib/openapi-types";
+import type { JsonRequestBody, JsonResponse, PathParams, QueryParams } from "../path-type-helpers";
 
 // -- API Types --
 type ProductCatalogPaths = paths; // do not export this
@@ -12,6 +12,8 @@ type GetCategoryOperation =
     ProductCatalogPaths["/api/ProductCatalog/categories/{name}"]["get"];
 type UpdateCategoryOperation =
     ProductCatalogPaths["/api/ProductCatalog/categories/{name}"]["put"];
+type DeleteCategoryOperation =
+    ProductCatalogPaths["/api/ProductCatalog/categories/{name}"]["delete"];
 
 type ListCollectionsOperation =
     ProductCatalogPaths["/api/ProductCatalog/collections"]["get"];
@@ -21,6 +23,8 @@ type GetCollectionOperation =
     ProductCatalogPaths["/api/ProductCatalog/collections/{id}"]["get"];
 type UpdateCollectionOperation =
     ProductCatalogPaths["/api/ProductCatalog/collections/{id}"]["put"];
+type DeleteCollectionOperation =
+    ProductCatalogPaths["/api/ProductCatalog/collections/{id}"]["delete"];
 
 type ListProductsOperation =
     ProductCatalogPaths["/api/ProductCatalog/products"]["get"];
@@ -44,6 +48,9 @@ export type UpdateCategoryParams = PathParams<UpdateCategoryOperation>;
 export type UpdateCategoryRequest = JsonRequestBody<UpdateCategoryOperation>;
 // 200 OK
 export type UpdateCategoryResponse = JsonResponse<UpdateCategoryOperation>;
+export type DeleteCategoryParams = PathParams<DeleteCategoryOperation>;
+// No content
+export type DeleteCategoryResponse = void;
 
 export type ListCollectionsQuery = QueryParams<ListCollectionsOperation>;
 // 200 OK
@@ -58,6 +65,9 @@ export type UpdateCollectionParams = PathParams<UpdateCollectionOperation>;
 export type UpdateCollectionRequest = JsonRequestBody<UpdateCollectionOperation>;
 // 200 OK
 export type UpdateCollectionResponse = JsonResponse<UpdateCollectionOperation>;
+export type DeleteCollectionParams = PathParams<DeleteCollectionOperation>;
+// No content
+export type DeleteCollectionResponse = void;
 
 export type ListProductsQuery = QueryParams<ListProductsOperation>;
 // 200 OK

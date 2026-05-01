@@ -60,9 +60,8 @@ export type UpdateAccountAddressResponse =
     JsonResponse<UpdateMyAccountAddressOperation, 200>;
 export type DeleteAccountAddressParams =
     PathParams<DeleteMyAccountAddressOperation>;
-// 204 No Content
-export type DeleteAccountAddressResponse =
-    JsonResponse<DeleteMyAccountAddressOperation, 204>;
+// No content
+export type DeleteAccountAddressResponse = void;
 
 export type ListAdminAccountProfilesQuery =
     QueryParams<ListAdminAccountProfilesOperation>;

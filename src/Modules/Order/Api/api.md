@@ -3,6 +3,8 @@
 
 ## API Endpoints
 
+Client contract: [OrderClient](../../../clients/shared/api/clients/order.ts), [IOrderClient](../../../clients/shared/api/contracts/order.ts)
+
 ### Order
 - [Create](OrderController.cs#L16)
 - [GetById](OrderController.cs#L25)

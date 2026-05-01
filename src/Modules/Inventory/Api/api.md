@@ -3,5 +3,7 @@
 
 ## API Endpoints
 
+Client contract: [InventoryClient](../../../clients/shared/api/clients/inventory.ts), [IInventoryClient](../../../clients/shared/api/contracts/inventory.ts)
+
 ### ProductInventory
 - [Initialize](ProductInventoryController.cs#L12)

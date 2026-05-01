@@ -61,9 +61,8 @@ export type ConfirmUploadResponse =
 
 export type DeleteMediaFilesRequest =
     JsonRequestBody<DeleteOperation>;
-// 204 No Content
-export type DeleteMediaFilesResponse =
-    JsonResponse<DeleteOperation, 204>;
+// No content
+export type DeleteMediaFilesResponse = void;
 
 export type ListPublishedBlogPostsQuery =
     QueryParams<ListPublishedBlogPostsOperation>;
@@ -117,6 +116,5 @@ export type ArchiveBlogPostResponse =
 
 export type DeleteBlogPostParams =
     PathParams<DeleteBlogPostOperation>;
-// 204 No Content
-export type DeleteBlogPostResponse =
-    JsonResponse<DeleteBlogPostOperation, 204>;
+// No content
+export type DeleteBlogPostResponse = void;
