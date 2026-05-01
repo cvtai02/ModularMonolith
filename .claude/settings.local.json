@@ -15,7 +15,7 @@
       "Read(src/AppHost/**)",
       "Read(src/Infrastructure/**)",
       "Read(src/Intermediary/**)",
-      "Read(src/Modules/*/Api/**)",
+      "Read(src/Modules/*/Api/*.cs)",
       "Read(src/Modules/*/Infrastructure/**)",
       "Read(src/Modules/*/Core/**)",
       "Read(src/Modules/*/*.cs)",

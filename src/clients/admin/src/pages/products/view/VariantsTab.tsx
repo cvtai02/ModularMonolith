@@ -21,11 +21,11 @@ import type { ProductResponse } from "@shared/api/productcatalog-types";
 
 type Variant = ProductResponse["variants"][number];
 
-function formatPrice(amount: number | null | undefined, currency: number | null | undefined) {
+function formatPrice(amount: number | null | undefined, currency: string | null | undefined) {
   const n = Number(amount);
   if (!amount || isNaN(n)) return "—";
-  const cur = currency === 1 ? "USD" : "VND";
-  const locale = currency === 1 ? "en-US" : "vi-VN";
+  const cur = currency === "USD" ? "USD" : "VND";
+  const locale = currency === "USD" ? "en-US" : "vi-VN";
   return new Intl.NumberFormat(locale, { style: "currency", currency: cur }).format(n);
 }
 

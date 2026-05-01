@@ -45,10 +45,10 @@ type SortDir = "asc" | "desc";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-function formatPrice(amount: number | null | undefined, currency: number | null | undefined) {
+function formatPrice(amount: number | null | undefined, currency: string | null | undefined) {
   if (amount == null || Number(amount) === 0) return "—";
-  const cur = currency === 1 ? "USD" : "VND";
-  const locale = currency === 1 ? "en-US" : "vi-VN";
+  const cur = currency === "USD" ? "USD" : "VND";
+  const locale = currency === "USD" ? "en-US" : "vi-VN";
   return new Intl.NumberFormat(locale, { style: "currency", currency: cur }).format(Number(amount));
 }
 

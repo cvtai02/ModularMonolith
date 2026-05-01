@@ -97,11 +97,11 @@ export function PricingCard({
                 control={control}
                 name="currency"
                 render={({ field }) => {
-                  const code = currencies[field.value] ?? currencies[0];
+                  const code = currencies.includes(field.value as typeof currencies[number]) ? field.value : currencies[0];
                   return (
                     <Select
                       value={code}
-                      onValueChange={(v) => field.onChange(currencies.indexOf(v as typeof currencies[number]))}
+                      onValueChange={(v) => field.onChange(v)}
                       disabled={!!selectedVariant}
                     >
                       <SelectTrigger className="w-20">

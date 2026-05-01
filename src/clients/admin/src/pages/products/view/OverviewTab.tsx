@@ -1,10 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { ProductResponse } from "@shared/api/productcatalog-types";
 
-function formatPrice(amount: number | null | undefined, currency: number | null | undefined) {
+function formatPrice(amount: number | null | undefined, currency: string | null | undefined) {
   if (amount == null || Number(amount) === 0) return "—";
-  const cur = currency === 1 ? "USD" : "VND";
-  const locale = currency === 1 ? "en-US" : "vi-VN";
+  const cur = currency === "USD" ? "USD" : "VND";
+  const locale = currency === "USD" ? "en-US" : "vi-VN";
   return new Intl.NumberFormat(locale, { style: "currency", currency: cur }).format(Number(amount));
 }
 
@@ -43,7 +43,7 @@ export function OverviewTab({ product }: { product: ProductResponse }) {
           <Row label="Price" value={formatPrice(product.price, product.currency)} />
           <Row label="Compare-at price" value={formatPrice(product.compareAtPrice, product.currency)} />
           <Row label="Cost price" value={formatPrice(product.costPrice, product.currency)} />
-          <Row label="Currency" value={product.currency === 1 ? "USD" : "VND"} />
+          <Row label="Currency" value={product.currency ?? "VND"} />
           <Row label="Charge tax" value={product.chargeTax ? "Yes" : "No"} />
         </CardContent>
       </Card>

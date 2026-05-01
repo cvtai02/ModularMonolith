@@ -2,10 +2,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import type { ProductResponse } from "@shared/api/productcatalog-types";
 
-function formatPrice(amount: number | null | undefined, currency: number | null | undefined) {
+function formatPrice(amount: number | null | undefined, currency: string | null | undefined) {
   if (amount == null || Number(amount) === 0) return null;
-  const cur = currency === 1 ? "USD" : "VND";
-  const locale = currency === 1 ? "en-US" : "vi-VN";
+  const cur = currency === "USD" ? "USD" : "VND";
+  const locale = currency === "USD" ? "en-US" : "vi-VN";
   return new Intl.NumberFormat(locale, { style: "currency", currency: cur }).format(Number(amount));
 }
 

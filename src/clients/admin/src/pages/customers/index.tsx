@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { toast } from "sonner";
+import queryClient from "@/components/containers/query-client";
 import { useForm } from "react-hook-form";
 import {
   UsersIcon,
@@ -126,13 +127,14 @@ function EditAccountDialog({
       phoneNumber: values.phoneNumber || null,
       type: (values.type as AccountType) || null,
       status: (values.status as AccountStatus) || null,
+      avatarUrl: null,
     };
     await mutation.mutateAsync({
       params: { path: { id: account.id } },
       body,
     });
     toast.success("Account updated");
-    tanstackQueryClient.invalidateQueries({ queryKey: ["get", "/api/Account/admin/profiles"] });
+    queryClient.invalidateQueries({ queryKey: ["get", "/api/Account/admin/profiles"] });
     onClose();
   };
 
@@ -286,7 +288,7 @@ export default function CustomersPage() {
     {
       params: {
         query: {
-          pageNumber: page,
+          PageNumber: page,
           pageSize,
           search: search.trim() || null,
           type: typeFilter || null,
