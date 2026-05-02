@@ -18,7 +18,10 @@ const EditProduct = LazyPage(() => import("@/pages/products/edit"));
 const ViewProduct = LazyPage(() => import("@/pages/products/view"));
 const Categories = LazyPage(() => import("@/pages/categories"));
 const ContentFilesPage = LazyPage(() => import("@/pages/content/files"));
+const Inventory = LazyPage(() => import("@/pages/products/inventory"));
 const Collections = LazyPage(() => import("@/pages/collections"));
+const AddCollection = LazyPage(() => import("@/pages/collections/add"));
+const EditCollection = LazyPage(() => import("@/pages/collections/edit"));
 const Customers = LazyPage(() => import("@/pages/customers"));
 // const Promotions = LazyPage(() => import("@/pages/promotions"));
 // const Reviews = LazyPage(() => import("@/pages/reviews"));
@@ -36,9 +39,11 @@ const AppRoutes: ReactNode =
         <Route path={ROUTES.productNew} element={<AddProduct />} errorElement={<ErrorPage />} />
         <Route path="/products/:id" element={<ViewProduct />} errorElement={<ErrorPage />} />
         <Route path="/products/:id/edit" element={<EditProduct />} errorElement={<ErrorPage />} />
-        {/* <Route path={ROUTES.productInventory} element={<Inventory />} /> */}
+        <Route path={ROUTES.productInventory} element={<Inventory />} errorElement={<ErrorPage />} />
         <Route path={ROUTES.productCategory} element={<Categories />} errorElement={<ErrorPage />} />
         <Route path={ROUTES.productCollections} element={<Collections />} errorElement={<ErrorPage />} />
+        <Route path={ROUTES.collectionNew} element={<AddCollection />} errorElement={<ErrorPage />} />
+        <Route path="/products/collections/:id/edit" element={<EditCollection />} errorElement={<ErrorPage />} />
         <Route path={ROUTES.contentFiles} element={<ContentFilesPage />} errorElement={<ErrorPage />} />
         {/* <Route path={ROUTES.orders} element={<Orders />} /> */}
         <Route path={ROUTES.customers} element={<Customers />} errorElement={<ErrorPage />} />

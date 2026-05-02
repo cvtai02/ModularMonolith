@@ -46,18 +46,33 @@ public class AddProductsToCollection(ProductCatalogDbContext db, IFileManager fm
 
         if (errors.Count > 0) throw new ValidationException("Validation failed", errors);
 
-        var currentProductIds = await db.CollectionProducts
+        var currentProducts = await db.CollectionProducts
             .Where(x => x.CollectionId == id)
-            .Select(x => x.ProductId)
             .ToListAsync(ct);
+        var duplicateCurrentProducts = currentProducts
+            .GroupBy(x => x.ProductId)
+            .SelectMany(x => x.OrderBy(cp => cp.DisplayOrder).Skip(1))
+            .ToList();
+        if (duplicateCurrentProducts.Count > 0)
+            db.CollectionProducts.RemoveRange(duplicateCurrentProducts);
+
+        var currentProductIds = currentProducts
+            .GroupBy(x => x.ProductId)
+            .Select(x => x.Key)
+            .ToList();
         var newProductIds = productIds.Except(currentProductIds).ToList();
         if (newProductIds.Count == 0)
-            return CollectionMapper.ToResponse(collection, fm);
+        {
+            if (duplicateCurrentProducts.Count > 0)
+                await db.SaveChangesAsync(ct);
 
-        var nextDisplayOrder = await db.CollectionProducts
-            .Where(x => x.CollectionId == id)
+            return CollectionMapper.ToResponse(collection, fm, currentProductIds.Count);
+        }
+
+        var nextDisplayOrder = currentProducts
+            .Except(duplicateCurrentProducts)
             .Select(x => (int?)x.DisplayOrder)
-            .MaxAsync(ct) ?? -1;
+            .Max() ?? -1;
 
         db.CollectionProducts.AddRange(newProductIds.Select((productId, index) => new CollectionProduct
         {
@@ -67,6 +82,6 @@ public class AddProductsToCollection(ProductCatalogDbContext db, IFileManager fm
         }));
 
         await db.SaveChangesAsync(ct);
-        return CollectionMapper.ToResponse(collection, fm);
+        return CollectionMapper.ToResponse(collection, fm, currentProductIds.Count + newProductIds.Count);
     }
 }

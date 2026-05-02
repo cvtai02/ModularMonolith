@@ -21,7 +21,7 @@ Client contract: [ProductCatalogClient](../../../clients/shared/api/clients/prod
 
 ### Collection
 - [GetAll](CollectionController.cs#L19)
-- [GetById](CollectionController.cs#L29)
+- [GetById](CollectionController.cs#L29) - returns collection detail with assigned product summaries
 - [Create](CollectionController.cs#L36)
 - [AddProducts](CollectionController.cs#L44)
 - [Update](CollectionController.cs#L52)

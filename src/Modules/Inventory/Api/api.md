@@ -6,4 +6,5 @@
 Client contract: [InventoryClient](../../../clients/shared/api/clients/inventory.ts), [IInventoryClient](../../../clients/shared/api/contracts/inventory.ts)
 
 ### ProductInventory
-- [Initialize](ProductInventoryController.cs#L12)
+- [Initialize](ProductInventoryController.cs#L13)
+- [ImportVariants](ProductInventoryController.cs#L20)

@@ -2,7 +2,7 @@ import type {
   AddCollectionProductsRequest,
   AddCollectionProductsResponse,
   CategoryResponse,
-  CollectionResponse,
+  CollectionDetailResponse,
   CreateCategoryRequest,
   CreateCategoryResponse,
   CreateCollectionRequest,
@@ -71,8 +71,9 @@ export interface IProductCatalogClient {
   // Wrapper response is generated in src/clients/shared/api/types/productcatalog.ts.
   listCollection(query?: ListCollectionsQuery): Promise<ListCollectionsResponse>;
 
+  // Method: getCollection - returns collection detail with assigned product summaries.
   // Response: src/Modules/ProductCatalog/DTOs/Collections/CollectionResponse.cs
-  getCollection(id: number): Promise<CollectionResponse>;
+  getCollection(id: number): Promise<CollectionDetailResponse>;
 
   // Request: src/Modules/ProductCatalog/DTOs/Collections/CreateCollectionRequest.cs
   // Response: src/Modules/ProductCatalog/DTOs/Collections/CollectionResponse.cs

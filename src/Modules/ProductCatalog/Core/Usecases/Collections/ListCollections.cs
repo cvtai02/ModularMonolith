@@ -30,6 +30,11 @@ public class ListCollections(ProductCatalogDbContext db, IFileManager fm)
                 Description = x.Description,
                 Slug = x.Slug,
                 ImageUrl = string.IsNullOrWhiteSpace(x.ImageKey) ? null : fm.BuildPublicUrl(x.ImageKey),
+                ProductCount = db.CollectionProducts
+                    .Where(cp => cp.CollectionId == x.Id)
+                    .Select(cp => cp.ProductId)
+                    .Distinct()
+                    .Count(),
             })
             .ToListAsync(ct);
 

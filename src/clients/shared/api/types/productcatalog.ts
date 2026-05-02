@@ -54,16 +54,36 @@ export type DeleteCategoryResponse = void;
 
 export type ListCollectionsQuery = QueryParams<ListCollectionsOperation>;
 // 200 OK
-export type ListCollectionsResponse = JsonResponse<ListCollectionsOperation>;
+type ListCollectionsResponseBody = JsonResponse<ListCollectionsOperation>;
 type CreateCollectionRequestBody = JsonRequestBody<CreateCollectionOperation>;
 export type CreateCollectionRequest = CreateCollectionRequestBody & {
     productIds?: number[] | null;
 };
-// 200 OK
-export type CreateCollectionResponse = JsonResponse<CreateCollectionOperation>;
 export type GetCollectionParams = PathParams<GetCollectionOperation>;
 // 200 OK
-export type CollectionResponse = JsonResponse<GetCollectionOperation>;
+type CollectionResponseBody = JsonResponse<GetCollectionOperation>;
+export type CollectionResponse = CollectionResponseBody & {
+    productCount: number;
+};
+export type CollectionProductResponse = {
+    productId: number;
+    name: string;
+    slug: string;
+    imageUrl: string;
+    status: ProductResponse["status"];
+    price: number;
+    currency: ProductResponse["currency"];
+    displayOrder: number;
+};
+export type CollectionDetailResponse = CollectionResponse & {
+    products: CollectionProductResponse[];
+};
+// 200 OK
+export type ListCollectionsResponse = Omit<ListCollectionsResponseBody, "items"> & {
+    items: CollectionResponse[];
+};
+// 200 OK
+export type CreateCollectionResponse = CollectionResponse;
 export type AddCollectionProductsParams = {
     id: number;
 };
@@ -75,10 +95,11 @@ export type AddCollectionProductsResponse = CollectionResponse;
 export type UpdateCollectionParams = PathParams<UpdateCollectionOperation>;
 type UpdateCollectionRequestBody = JsonRequestBody<UpdateCollectionOperation>;
 export type UpdateCollectionRequest = UpdateCollectionRequestBody & {
+    title?: string | null;
     productIds?: number[] | null;
 };
 // 200 OK
-export type UpdateCollectionResponse = JsonResponse<UpdateCollectionOperation>;
+export type UpdateCollectionResponse = CollectionResponse;
 export type DeleteCollectionParams = PathParams<DeleteCollectionOperation>;
 // No content
 export type DeleteCollectionResponse = void;

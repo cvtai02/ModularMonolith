@@ -4,7 +4,7 @@ import type {
   AddCollectionProductsRequest,
   AddCollectionProductsResponse,
   CategoryResponse,
-  CollectionResponse,
+  CollectionDetailResponse,
   CreateCategoryRequest,
   CreateCategoryResponse,
   CreateCollectionRequest,
@@ -131,12 +131,12 @@ export class ProductCatalogClient implements IProductCatalogClient {
     return requireData(data, "Collection response was empty.");
   }
 
-  async getCollection(id: number): Promise<CollectionResponse> {
+  async getCollection(id: number): Promise<CollectionDetailResponse> {
     const { data, error } = await this.client.GET("/api/ProductCatalog/collections/{id}", {
       params: { path: { id } },
     });
     if (error) throw error;
-    return requireData(data, "Create collection response was empty.");
+    return requireData(data, "Collection detail response was empty.") as CollectionDetailResponse;
   }
 
   async createCollection(input: CreateCollectionRequest): Promise<CreateCollectionResponse> {

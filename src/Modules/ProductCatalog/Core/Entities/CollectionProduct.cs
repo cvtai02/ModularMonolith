@@ -1,6 +1,11 @@
 namespace ProductCatalog.Core.Entities;  
 public class CollectionProduct : AuditableEntity
 {
+    public CollectionProduct()
+    {
+        IsSoftDeleted = false;
+    }
+
     public int Id { get; set; }
     public int CollectionId { get; set; }
     public int ProductId { get; set; }

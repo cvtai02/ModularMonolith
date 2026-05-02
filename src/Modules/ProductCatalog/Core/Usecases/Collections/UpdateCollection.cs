@@ -14,8 +14,13 @@ public class UpdateCollection(ProductCatalogDbContext db, IFileManager fm)
         var collection = await db.Collections.FirstOrDefaultAsync(x => x.Id == id, ct);
         if (collection is null) return null;
 
+        var title = request.Title?.Trim();
         var slug = request.Slug?.Trim() ?? string.Empty;
         var errors = new Dictionary<string, string[]>();
+
+        if (request.Title is not null && string.IsNullOrWhiteSpace(title))
+            errors[nameof(request.Title)] = ["Collection title is required."];
+
         if (!string.IsNullOrWhiteSpace(slug) && slug != collection.Slug &&
             await db.Collections.AnyAsync(x => x.Slug == slug && x.Id != id, ct))
             errors[nameof(request.Slug)] = ["Slug already exists."];
@@ -23,10 +28,12 @@ public class UpdateCollection(ProductCatalogDbContext db, IFileManager fm)
         var productIds = request.ProductIds is null
             ? null
             : await ValidateProductIdsAsync(request.ProductIds, errors, ct);
+        var productCount = productIds?.Count;
 
         if (errors.Count > 0) throw new ValidationException("Validation failed", errors);
 
         collection.Description = request.Description?.Trim() ?? string.Empty;
+        if (title is not null) collection.Title = title;
         if (!string.IsNullOrWhiteSpace(slug)) collection.Slug = slug;
         collection.ImageKey = request.ImageKey?.Trim();
 
@@ -35,17 +42,57 @@ public class UpdateCollection(ProductCatalogDbContext db, IFileManager fm)
             var currentProducts = await db.CollectionProducts
                 .Where(x => x.CollectionId == id)
                 .ToListAsync(ct);
-            db.CollectionProducts.RemoveRange(currentProducts);
-            db.CollectionProducts.AddRange(productIds.Select((productId, index) => new CollectionProduct
-            {
-                CollectionId = id,
-                ProductId = productId,
-                DisplayOrder = index
-            }));
+            SyncCollectionProducts(id, productIds, currentProducts);
         }
 
         await db.SaveChangesAsync(ct);
-        return CollectionMapper.ToResponse(collection, fm);
+        productCount ??= await db.CollectionProducts
+            .Where(x => x.CollectionId == id)
+            .Select(x => x.ProductId)
+            .Distinct()
+            .CountAsync(ct);
+        return CollectionMapper.ToResponse(collection, fm, productCount.Value);
+    }
+
+    private void SyncCollectionProducts(
+        int collectionId,
+        List<int> requestedProductIds,
+        List<CollectionProduct> currentProducts)
+    {
+        var canonicalCurrentProducts = currentProducts
+            .GroupBy(x => x.ProductId)
+            .ToDictionary(
+                x => x.Key,
+                x => x.OrderBy(cp => cp.DisplayOrder).First());
+        var duplicateCurrentProducts = currentProducts
+            .Where(x => !ReferenceEquals(x, canonicalCurrentProducts[x.ProductId]))
+            .ToList();
+        if (duplicateCurrentProducts.Count > 0)
+            db.CollectionProducts.RemoveRange(duplicateCurrentProducts);
+
+        var requestedProductIdSet = requestedProductIds.ToHashSet();
+        var removedProducts = canonicalCurrentProducts.Values
+            .Where(x => !requestedProductIdSet.Contains(x.ProductId))
+            .ToList();
+        if (removedProducts.Count > 0)
+            db.CollectionProducts.RemoveRange(removedProducts);
+
+        for (var index = 0; index < requestedProductIds.Count; index++)
+        {
+            var productId = requestedProductIds[index];
+            if (canonicalCurrentProducts.TryGetValue(productId, out var existingProduct))
+            {
+                existingProduct.DisplayOrder = index;
+                continue;
+            }
+
+            db.CollectionProducts.Add(new CollectionProduct
+            {
+                CollectionId = collectionId,
+                ProductId = productId,
+                DisplayOrder = index
+            });
+        }
     }
 
     private async Task<List<int>> ValidateProductIdsAsync(

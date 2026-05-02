@@ -66,6 +66,6 @@ public class CreateCollection(ProductCatalogDbContext db, IFileManager fm)
         }));
         await db.SaveChangesAsync(ct);
 
-        return CollectionMapper.ToResponse(collection, fm);
+        return CollectionMapper.ToResponse(collection, fm, productIds.Count);
     }
 }

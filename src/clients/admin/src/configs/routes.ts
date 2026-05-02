@@ -13,6 +13,8 @@ export const ROUTES = {
   productEdit: (id: number | string) => `/products/${id}/edit`,
   productCategory: "/products/category",
   productCollections: "/products/collections",
+  collectionNew: "/products/collections/new",
+  collectionEdit: (id: number | string) => `/products/collections/${id}/edit`,
   productInventory: "/products/inventory",
   productPurchaseOrders: "/products/purchase-orders",
 

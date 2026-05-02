@@ -27,7 +27,7 @@ public class CollectionController(
         => Ok(await listCollections.ExecuteAsync(pageNumber, pageSize, search, cancellationToken));
 
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<CollectionResponse>> GetById(int id, CancellationToken cancellationToken)
+    public async Task<ActionResult<CollectionDetailResponse>> GetById(int id, CancellationToken cancellationToken)
     {
         var result = await getCollectionById.ExecuteAsync(id, cancellationToken);
         return result is null ? NotFound() : Ok(result);

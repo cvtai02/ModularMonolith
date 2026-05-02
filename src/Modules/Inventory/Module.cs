@@ -27,6 +27,7 @@ public class InventoryModule(IHostApplicationBuilder b) : Module(b)
     protected override void RegisterUsecases()
     {
         Services.AddScoped<InitializeProductInventory>();
+        Services.AddScoped<ImportVariantInventory>();
         Services.AddScoped<IEventHandler<OrderSubmitted>, OrderSubmittedHandler>();
         Services.AddScoped<IEventHandler<OrderPlaced>, OrderPlacedHandler>();
     }

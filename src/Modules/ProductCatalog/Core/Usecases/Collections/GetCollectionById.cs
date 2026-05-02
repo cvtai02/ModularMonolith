@@ -6,12 +6,22 @@ namespace ProductCatalog.Core.Usecases.Collections;
 
 public class GetCollectionById(ProductCatalogDbContext db, IFileManager fm)
 {
-    public async Task<CollectionResponse?> ExecuteAsync(int id, CancellationToken ct)
+    public async Task<CollectionDetailResponse?> ExecuteAsync(int id, CancellationToken ct)
     {
         var collection = await db.Collections
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == id, ct);
 
-        return collection is null ? null : CollectionMapper.ToResponse(collection, fm);
+        if (collection is null) return null;
+
+        var collectionProducts = await db.CollectionProducts
+            .AsNoTracking()
+            .Include(x => x.Product).ThenInclude(x => x.Medias)
+            .Include(x => x.Product).ThenInclude(x => x.Variants)
+            .Where(x => x.CollectionId == id)
+            .OrderBy(x => x.DisplayOrder)
+            .ToListAsync(ct);
+
+        return CollectionMapper.ToDetailResponse(collection, fm, collectionProducts);
     }
 }

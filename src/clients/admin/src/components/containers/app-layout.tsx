@@ -45,6 +45,7 @@ import {
   SidebarProvider,
   SidebarRail,
   SidebarTrigger,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { useIdentityStore } from "@/stores/identity";
 import { cn } from "@/lib/utils";
@@ -110,6 +111,7 @@ const navItems: NavItem[] = [
 
 function NavItemRow({ item }: { item: NavItem }) {
   const location = useLocation();
+  const { state: sidebarState, setOpen: setSidebarOpen } = useSidebar();
   const isActive =
     item.to !== ROUTES.dashboard
       ? location.pathname.startsWith(item.to)
@@ -125,7 +127,13 @@ function NavItemRow({ item }: { item: NavItem }) {
           <SidebarMenuButton
             isActive={isActive}
             tooltip={item.label}
-            onClick={() => setOpen((o) => !o)}
+            onClick={() => {
+              if (sidebarState === "collapsed") {
+                setSidebarOpen(true);
+              } else {
+                setOpen((o) => !o);
+              }
+            }}
           >
             <item.icon />
             <span>{item.label}</span>

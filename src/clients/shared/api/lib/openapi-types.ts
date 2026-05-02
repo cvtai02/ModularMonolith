@@ -1940,9 +1940,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["ProductCatalog.DTOs.Collections.CollectionResponse"];
-                        "application/json": components["schemas"]["ProductCatalog.DTOs.Collections.CollectionResponse"];
-                        "text/json": components["schemas"]["ProductCatalog.DTOs.Collections.CollectionResponse"];
+                        "text/plain": components["schemas"]["ProductCatalog.DTOs.Collections.CollectionDetailResponse"];
+                        "application/json": components["schemas"]["ProductCatalog.DTOs.Collections.CollectionDetailResponse"];
+                        "text/json": components["schemas"]["ProductCatalog.DTOs.Collections.CollectionDetailResponse"];
                     };
                 };
             };
@@ -2557,12 +2557,32 @@ export interface components {
         "ProductCatalog.DTOs.Collections.AddCollectionProductsRequest": {
             productIds: components["schemas"]["System.Collections.Generic.List`1[[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
         };
+        "ProductCatalog.DTOs.Collections.CollectionDetailResponse": {
+            products: components["schemas"]["System.Collections.Generic.List`1[[ProductCatalog.DTOs.Collections.CollectionProductResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+            id: components["schemas"]["System.Int32"];
+            title: components["schemas"]["System.String"];
+            description: components["schemas"]["System.String"];
+            slug: components["schemas"]["System.String"];
+            imageUrl: null | components["schemas"]["System.String"];
+            productCount: components["schemas"]["System.Int32"];
+        };
+        "ProductCatalog.DTOs.Collections.CollectionProductResponse": {
+            productId: components["schemas"]["System.Int32"];
+            name: components["schemas"]["System.String"];
+            slug: components["schemas"]["System.String"];
+            imageUrl: components["schemas"]["System.String"];
+            status: components["schemas"]["ProductCatalog.Core.Entities.ProductStatus"];
+            price: components["schemas"]["System.Decimal"];
+            currency: components["schemas"]["SharedKernel.Enums.Currency"];
+            displayOrder: components["schemas"]["System.Int32"];
+        };
         "ProductCatalog.DTOs.Collections.CollectionResponse": {
             id: components["schemas"]["System.Int32"];
             title: components["schemas"]["System.String"];
             description: components["schemas"]["System.String"];
             slug: components["schemas"]["System.String"];
             imageUrl: null | components["schemas"]["System.String"];
+            productCount: components["schemas"]["System.Int32"];
         };
         "ProductCatalog.DTOs.Collections.CreateCollectionRequest": {
             title: components["schemas"]["System.String"];
@@ -2572,6 +2592,7 @@ export interface components {
             productIds?: components["schemas"]["System.Collections.Generic.List`1[[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
         };
         "ProductCatalog.DTOs.Collections.UpdateCollectionRequest": {
+            title: null | components["schemas"]["System.String"];
             description: components["schemas"]["System.String"];
             slug: components["schemas"]["System.String"];
             imageKey: null | components["schemas"]["System.String"];
@@ -2817,6 +2838,7 @@ export interface components {
         "System.Collections.Generic.List`1[[Order.DTOs.Orders.OrderLineResponse, Order, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["Order.DTOs.Orders.OrderLineResponse"][];
         "System.Collections.Generic.List`1[[Order.DTOs.Orders.OrderSummaryResponse, Order, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["Order.DTOs.Orders.OrderSummaryResponse"][];
         "System.Collections.Generic.List`1[[ProductCatalog.DTOs.Categories.CategoryResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["ProductCatalog.DTOs.Categories.CategoryResponse"][];
+        "System.Collections.Generic.List`1[[ProductCatalog.DTOs.Collections.CollectionProductResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["ProductCatalog.DTOs.Collections.CollectionProductResponse"][];
         "System.Collections.Generic.List`1[[ProductCatalog.DTOs.Collections.CollectionResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["ProductCatalog.DTOs.Collections.CollectionResponse"][];
         "System.Collections.Generic.List`1[[ProductCatalog.DTOs.Products.CreateProductMediaRequest, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["ProductCatalog.DTOs.Products.CreateProductMediaRequest"][];
         "System.Collections.Generic.List`1[[ProductCatalog.DTOs.Products.CreateProductOptionRequest, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["ProductCatalog.DTOs.Products.CreateProductOptionRequest"][];
