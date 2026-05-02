@@ -13,20 +13,6 @@
             "problemMatcher": "$msCompile"
         },
         {
-            "label": "generate-openapi-types",
-            "command": "npx",
-            "type": "process",
-            "args": [
-                "openapi-typescript",
-                "http://localhost:5265/openapi/v1.json",
-                "-o",
-                "${workspaceFolder}/src/clients/shared/api/lib/types.ts",
-                "--properties-required-by-default",
-                "true"
-            ],
-            "problemMatcher": []
-        },
-        {
             "label": "schedule-openapi-types-after-launch",
             "type": "process",
             "command": "powershell",
@@ -35,7 +21,7 @@
                 "-ExecutionPolicy",
                 "Bypass",
                 "-Command",
-                "$cmd = 'for($i=0; $i -lt 120; $i++){ try { Invoke-WebRequest -Uri ''http://localhost:5265/openapi/v1.json'' -UseBasicParsing -TimeoutSec 2 | Out-Null; openapi-typescript ''http://localhost:5265/openapi/v1.json'' -o ''${workspaceFolder}/src/clients/shared/api/lib/openapi-types.ts''; exit $LASTEXITCODE } catch { Start-Sleep -Seconds 1 } } Write-Error ''OpenAPI endpoint not ready in 120s.''; exit 1'; Start-Process -WindowStyle Hidden -FilePath 'powershell' -ArgumentList @('-NoProfile','-ExecutionPolicy','Bypass','-Command',$cmd) | Out-Null"
+                "$cmd = 'for($i=0; $i -lt 120; $i++){ try { Invoke-WebRequest -Uri ''http://localhost:5265/openapi/v1.json'' -UseBasicParsing -TimeoutSec 2 | Out-Null; openapi-typescript ''http://localhost:5265/openapi/v1.json'' -o ''${workspaceFolder}/src/clients/shared/api/lib/openapi-types.ts'' --properties-required-by-default true ; exit $LASTEXITCODE } catch { Start-Sleep -Seconds 1 } } Write-Error ''OpenAPI endpoint not ready in 120s.''; exit 1'; Start-Process -WindowStyle Hidden -FilePath 'powershell' -ArgumentList @('-NoProfile','-ExecutionPolicy','Bypass','-Command',$cmd) | Out-Null"
             ],
             "problemMatcher": []
         },

@@ -1,0 +1,13 @@
+{
+  "name": "@modular-monolith/clients-shared",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./api/clients": "./api/clients/index.ts",
+    "./api/contracts": "./api/contracts/index.ts",
+    "./api/types/*": "./api/types/*.ts"
+  },
+  "dependencies": {
+    "openapi-fetch": "^0.17.0"
+  }
+}

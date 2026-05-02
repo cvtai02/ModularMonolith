@@ -49,7 +49,6 @@ function StatusBadge({ status }: { status?: string | null }) {
 }
 
 function StockCell({ stock, low, track }: { stock: number; low?: number | null; track?: boolean | null }) {
-  const available = stock;
   if (stock === 0)
     return <span className="text-destructive font-semibold tabular-nums">0</span>;
   if (track && low != null && stock <= low)
@@ -205,7 +204,7 @@ export default function InventoryPage() {
   const inventoryClient = useInventoryClient();
 
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"Active" | "Draft" | "Unlisted" | "">("");
   const [pageSize, setPageSize] = useState(20);
   const [page, setPage] = useState(1);
   const [importOpen, setImportOpen] = useState(false);
@@ -264,7 +263,7 @@ export default function InventoryPage() {
           </div>
           <select
             value={statusFilter}
-            onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
+            onChange={(e) => { setStatusFilter(e.target.value as "Active" | "Draft" | "Unlisted" | ""); setPage(1); }}
             className="rounded-md border bg-background px-2.5 py-1.5 text-sm outline-none focus:ring-1 focus:ring-ring"
           >
             <option value="">All statuses</option>

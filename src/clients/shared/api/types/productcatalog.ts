@@ -61,10 +61,7 @@ export type CreateCollectionRequest = CreateCollectionRequestBody & {
 };
 export type GetCollectionParams = PathParams<GetCollectionOperation>;
 // 200 OK
-type CollectionResponseBody = JsonResponse<GetCollectionOperation>;
-export type CollectionResponse = CollectionResponseBody & {
-    productCount: number;
-};
+export type CollectionResponse = JsonResponse<CreateCollectionOperation>;
 export type CollectionProductResponse = {
     productId: number;
     name: string;
@@ -75,9 +72,7 @@ export type CollectionProductResponse = {
     currency: ProductResponse["currency"];
     displayOrder: number;
 };
-export type CollectionDetailResponse = CollectionResponse & {
-    products: CollectionProductResponse[];
-};
+export type CollectionDetailResponse = JsonResponse<GetCollectionOperation>;
 // 200 OK
 export type ListCollectionsResponse = Omit<ListCollectionsResponseBody, "items"> & {
     items: CollectionResponse[];
@@ -99,7 +94,7 @@ export type UpdateCollectionRequest = UpdateCollectionRequestBody & {
     productIds?: number[] | null;
 };
 // 200 OK
-export type UpdateCollectionResponse = CollectionResponse;
+export type UpdateCollectionResponse = JsonResponse<UpdateCollectionOperation>;
 export type DeleteCollectionParams = PathParams<DeleteCollectionOperation>;
 // No content
 export type DeleteCollectionResponse = void;

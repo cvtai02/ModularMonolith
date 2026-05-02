@@ -144,7 +144,7 @@ export class ProductCatalogClient implements IProductCatalogClient {
       body: input,
     });
     if (error) throw error;
-    return requireData(data, "Update collection response was empty.");
+    return requireData(data, "Create collection response was empty.");
   }
 
   async addCollectionProducts(id: number, input: AddCollectionProductsRequest): Promise<AddCollectionProductsResponse> {
@@ -163,7 +163,7 @@ export class ProductCatalogClient implements IProductCatalogClient {
       body: input,
     });
     if (error) throw error;
-    return data;
+    return requireData(data, "Update collection response was empty.");
   }
 
   async deleteCollection(id: number): Promise<DeleteCollectionResponse> {
