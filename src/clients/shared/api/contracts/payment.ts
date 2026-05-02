@@ -7,6 +7,8 @@ import type {
   PaymentWebhookResponse,
 } from "../types/payment";
 
+export * from "../types/payment"
+
 export interface IPaymentClient {
   // Item response: src/Modules/Payment/DTOs/PaymentMethodResponse.cs
   // Wrapper response is generated in src/clients/shared/api/types/payment.ts.

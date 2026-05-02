@@ -1,4 +1,6 @@
 import type {
+  AddCollectionProductsRequest,
+  AddCollectionProductsResponse,
   CategoryResponse,
   CollectionResponse,
   CreateCategoryRequest,
@@ -23,6 +25,8 @@ import type {
   UpdateProductRequest,
   UpdateProductResponse,
 } from "../types/productcatalog";
+
+export * from "../types/productcatalog"
 
 export interface IProductCatalogClient {
   // Query: src/Modules/ProductCatalog/DTOs/Products/ListProductsRequest.cs
@@ -73,6 +77,10 @@ export interface IProductCatalogClient {
   // Request: src/Modules/ProductCatalog/DTOs/Collections/CreateCollectionRequest.cs
   // Response: src/Modules/ProductCatalog/DTOs/Collections/CollectionResponse.cs
   createCollection(input: CreateCollectionRequest): Promise<CreateCollectionResponse>;
+
+  // Request: src/Modules/ProductCatalog/DTOs/Collections/AddCollectionProductsRequest.cs
+  // Response: src/Modules/ProductCatalog/DTOs/Collections/CollectionResponse.cs
+  addCollectionProducts(id: number, input: AddCollectionProductsRequest): Promise<AddCollectionProductsResponse>;
 
   // Request: src/Modules/ProductCatalog/DTOs/Collections/UpdateCollectionRequest.cs
   // Response: src/Modules/ProductCatalog/DTOs/Collections/CollectionResponse.cs

@@ -26,7 +26,10 @@
       "Read(**/*.log)",
       "Read(**/package-lock.json)",
       "Read(**/openapi-types.ts)",
-      "Read(src/clients/shared/api/path-type-helppers.ts)"
+      "Read(src/clients/shared/api/path-type-helppers.ts)",
+      "Read(src/clients/shared/api/clients/**)",
+      "Read(src/clients/shared/api/types/**)",
+      "Read(src/clients/shared/api/lib/**)"
     ]
   }
 }

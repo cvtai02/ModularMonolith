@@ -79,7 +79,7 @@ public class Order : AuditableEntity
         int variantId,
         string productName,
         string variantName,
-        string imageUrl,
+        string? imageUrl,
         decimal unitPrice,
         int quantity)
     {

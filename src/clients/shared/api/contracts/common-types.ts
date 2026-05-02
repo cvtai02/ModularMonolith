@@ -1,9 +1,14 @@
-
-import type { components } from "../lib/openapi-types";
-
-type ApiTypes = components['schemas'] // donot export this
 // SharedKernel - Pagination
-export type ValidationResponse = ApiTypes['Microsoft.AspNetCore.Http.HttpValidationProblemDetails'];
+export type ValidationResponse = {
+    type: string | null;
+    title: string | null;
+    status: number | null;
+    detail: string | null;
+    instance: string | null;
+    errors: {
+        [key: string]: string[];
+    };
+}
 
 // SharedKernel.Enums.Currency
 export const currencies = ["VND", "USD"] as const;
@@ -37,16 +42,6 @@ export type PaginatedList<T> = {
     totalCount: number;
     hasPreviousPage: boolean;
     hasNextPage: boolean;
-};
-
-// SharedKernel.DTOs.Result<T>
-export type Result<T> = {
-    value: T;
-    exception?: unknown;
-    errors: Record<string, string[]>;
-    isSuccess: boolean;
-    isFailure: boolean;
-    isNull: boolean;
 };
 
 // SharedKernel.Authorization.UserClaims / RoleClaims

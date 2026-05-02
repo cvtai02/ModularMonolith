@@ -15,6 +15,8 @@ import type {
   UpdateAdminAccountProfileResponse,
 } from "../types/account";
 
+export * from "../types/account"
+
 export interface IAccountClient {
   // Response: src/Modules/Account/DTOs/AccountProfiles/AccountProfileResponse.cs
   getMe(): Promise<AccountProfileResponse>;

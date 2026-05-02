@@ -2003,6 +2003,51 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/ProductCatalog/collections/{id}/products": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: components["schemas"]["System.Int32"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ProductCatalog.DTOs.Collections.AddCollectionProductsRequest"];
+                    "text/json": components["schemas"]["ProductCatalog.DTOs.Collections.AddCollectionProductsRequest"];
+                    "application/*+json": components["schemas"]["ProductCatalog.DTOs.Collections.AddCollectionProductsRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProductCatalog.DTOs.Collections.CollectionResponse"];
+                        "application/json": components["schemas"]["ProductCatalog.DTOs.Collections.CollectionResponse"];
+                        "text/json": components["schemas"]["ProductCatalog.DTOs.Collections.CollectionResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/ProductCatalog/products": {
         parameters: {
             query?: never;
@@ -2509,6 +2554,9 @@ export interface components {
             parentName: null | components["schemas"]["System.String"];
             slug: components["schemas"]["System.String"];
         };
+        "ProductCatalog.DTOs.Collections.AddCollectionProductsRequest": {
+            productIds: components["schemas"]["System.Collections.Generic.List`1[[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
+        };
         "ProductCatalog.DTOs.Collections.CollectionResponse": {
             id: components["schemas"]["System.Int32"];
             title: components["schemas"]["System.String"];
@@ -2521,11 +2569,13 @@ export interface components {
             description?: components["schemas"]["System.String"];
             slug?: components["schemas"]["System.String"];
             imageKey?: null | components["schemas"]["System.String"];
+            productIds?: components["schemas"]["System.Collections.Generic.List`1[[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
         };
         "ProductCatalog.DTOs.Collections.UpdateCollectionRequest": {
             description: components["schemas"]["System.String"];
             slug: components["schemas"]["System.String"];
             imageKey: null | components["schemas"]["System.String"];
+            productIds: null | components["schemas"]["System.Collections.Generic.List`1[[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
         };
         "ProductCatalog.DTOs.Products.CreateProductMediaRequest": {
             url: components["schemas"]["System.String"];

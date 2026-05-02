@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { useProductCatalogClient } from "@/components/containers/api-client-provider";
 import { ROUTES } from "@/configs/routes";
@@ -14,6 +14,7 @@ export default function EditProductPage() {
   const { id } = useParams<{ id: string }>();
   const productId = Number(id);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const productCatalogClient = useProductCatalogClient();
 
   const { data: product, isLoading: loadingProduct } = useQuery({
@@ -140,7 +141,9 @@ export default function EditProductPage() {
     });
 
     toast.success("Product updated!");
-    navigate(ROUTES.products);
+    await queryClient.invalidateQueries({ queryKey: ["products"] });
+    queryClient.invalidateQueries({ queryKey: ["product", productId] });
+    navigate(ROUTES.productDetail(productId));
   };
 
   if (loadingProduct || !product || !initialOptions || !defaultValues) {

@@ -12,6 +12,7 @@ public class CollectionController(
     ListCollections listCollections,
     GetCollectionById getCollectionById,
     CreateCollection createCollection,
+    AddProductsToCollection addProductsToCollection,
     UpdateCollection updateCollection,
     DeleteCollection deleteCollection) : ControllerBase
 {
@@ -38,6 +39,14 @@ public class CollectionController(
     {
         var result = await createCollection.ExecuteAsync(request, cancellationToken);
         return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
+    }
+
+    [HttpPost("{id:int}/products")]
+    public async Task<ActionResult<CollectionResponse>> AddProducts(
+        int id, [FromBody] AddCollectionProductsRequest request, CancellationToken cancellationToken)
+    {
+        var result = await addProductsToCollection.ExecuteAsync(id, request, cancellationToken);
+        return result is null ? NotFound() : Ok(result);
     }
 
     [HttpPut("{id:int}")]

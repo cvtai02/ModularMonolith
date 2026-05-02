@@ -34,6 +34,7 @@ public class ProductCatalogModule(IHostApplicationBuilder b) : Module(b)
         Services.AddScoped<ListCollections>();
         Services.AddScoped<GetCollectionById>();
         Services.AddScoped<CreateCollection>();
+        Services.AddScoped<AddProductsToCollection>();
         Services.AddScoped<UpdateCollection>();
         Services.AddScoped<DeleteCollection>();
 

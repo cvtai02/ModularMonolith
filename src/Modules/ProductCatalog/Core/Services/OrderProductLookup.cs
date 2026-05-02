@@ -28,11 +28,31 @@ public class OrderProductLookup(ProductCatalogDbContext db, IFileManager fileMan
                 x.Product.Status == ProductStatus.Active,
                 x.Id,
                 BuildVariantName(x),
-                fileManager.BuildPublicUrl(x.ImageKey),
+                BuildImageUrl(x),
                 x.Price,
                 x.Product.Currency.ToString()))
             .ToList();
     }
+
+    private string? BuildImageUrl(Variant variant)
+    {
+        var variantUrl = fileManager.BuildPublicUrl(variant.ImageKey);
+        if (!string.IsNullOrWhiteSpace(variantUrl))
+            return variantUrl;
+
+        var primaryProductMediaKey = variant.Product.Medias
+            .OrderBy(x => x.DisplayOrder)
+            .Select(x => x.Key)
+            .FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
+        var primaryProductMediaUrl = fileManager.BuildPublicUrl(primaryProductMediaKey);
+        if (!string.IsNullOrWhiteSpace(primaryProductMediaUrl))
+            return primaryProductMediaUrl;
+
+        return string.IsNullOrWhiteSpace(variant.Product.ImageUrl)
+            ? null
+            : variant.Product.ImageUrl.Trim();
+    }
+
     private static string BuildVariantName(Variant variant)
     {
         var options = variant.OptionValues

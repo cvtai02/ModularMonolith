@@ -8,7 +8,7 @@ public class OrderLine : AuditableEntity
     public int VariantId { get; private set; }
     public string ProductName { get; private set; } = string.Empty;
     public string VariantName { get; private set; } = string.Empty;
-    public string ImageUrl { get; private set; }
+    public string ImageUrl { get; private set; } = string.Empty;
     public decimal UnitPrice { get; private set; }
     public int Quantity { get; private set; }
     public decimal Subtotal { get; private set; }
@@ -23,7 +23,7 @@ public class OrderLine : AuditableEntity
         int variantId,
         string productName,
         string variantName,
-        string imageUrl,
+        string? imageUrl,
         decimal unitPrice,
         int quantity)
     {
@@ -31,7 +31,7 @@ public class OrderLine : AuditableEntity
         UpdatePricing(unitPrice, quantity);
     }
 
-    public void SetSnapshot(int productId, int variantId, string productName, string variantName, string imageUrl)
+    public void SetSnapshot(int productId, int variantId, string productName, string variantName, string? imageUrl)
     {
         if (productId <= 0)
         {
@@ -47,7 +47,7 @@ public class OrderLine : AuditableEntity
         VariantId = variantId;
         ProductName = RequireText(productName, nameof(productName), 256);
         VariantName = RequireText(variantName, nameof(variantName), 256);
-        ImageUrl = imageUrl.Trim();
+        ImageUrl = NormalizeOptionalText(imageUrl, nameof(imageUrl), 1000);
     }
 
     public void UpdatePricing(decimal unitPrice, int quantity)
@@ -70,6 +70,22 @@ public class OrderLine : AuditableEntity
     private static string RequireText(string value, string paramName, int maxLength)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(value, paramName);
+
+        var normalized = value.Trim();
+        if (normalized.Length > maxLength)
+        {
+            throw new ArgumentOutOfRangeException(paramName, $"Value cannot exceed {maxLength} characters.");
+        }
+
+        return normalized;
+    }
+
+    private static string NormalizeOptionalText(string? value, string paramName, int maxLength)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return string.Empty;
+        }
 
         var normalized = value.Trim();
         if (normalized.Length > maxLength)

@@ -13,7 +13,7 @@ import { Link } from "react-router-dom"
 import { ROUTES } from "@/configs/routes"
 import { useIdentityStore } from "@/stores/identity"
 import { useForm, type SubmitHandler } from 'react-hook-form'
-import { ApiError } from "@shared/api/types/common"
+import { ApiError } from "@shared/api/contracts/common-types"
 import {type LoginRequest as FormInput } from '@shared/api/types/identity'
 import { useMutation } from "@tanstack/react-query"
 import { useNavigate } from "react-router-dom"

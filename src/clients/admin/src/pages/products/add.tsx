@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { useProductCatalogClient } from "@/components/containers/api-client-provider";
 import { ROUTES } from "@/configs/routes";
@@ -11,6 +11,7 @@ import { ProductFormLayout } from "./components/ProductFormLayout";
 
 export default function AddProductPage() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const productCatalogClient = useProductCatalogClient();
 
   const { data: categoriesData } = useQuery({
@@ -30,7 +31,7 @@ export default function AddProductPage() {
       (o) => o.name.trim() && getFilledValues(o.inputValues).length > 0
     );
 
-    await createProduct({
+    const created = await createProduct({
       name: values.name,
       categoryId: values.categoryId,
       description: values.description || undefined,
@@ -60,7 +61,8 @@ export default function AddProductPage() {
     });
 
     toast.success("Product created!");
-    navigate(ROUTES.products);
+    await queryClient.invalidateQueries({ queryKey: ["products"] });
+    navigate(ROUTES.productDetail(created.id!));
   };
 
   return (

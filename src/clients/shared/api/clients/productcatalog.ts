@@ -1,5 +1,8 @@
 import createFetchClient, { type Client } from "openapi-fetch";
-import type { paths } from "../lib/openapi-types";import type {
+import type { paths } from "../lib/openapi-types";
+import type {
+  AddCollectionProductsRequest,
+  AddCollectionProductsResponse,
   CategoryResponse,
   CollectionResponse,
   CreateCategoryRequest,
@@ -28,6 +31,15 @@ import type { IProductCatalogClient } from "../contracts/productcatalog";
 import { requireData, type Fetch } from "./shared";
 
 type OpenApiClient = Client<paths>;
+type CollectionProductsPostClient = {
+  POST(
+    path: "/api/ProductCatalog/collections/{id}/products",
+    options: {
+      params: { path: { id: number } };
+      body: AddCollectionProductsRequest;
+    },
+  ): Promise<{ data?: AddCollectionProductsResponse; error?: unknown }>;
+};
 
 export class ProductCatalogClient implements IProductCatalogClient {
   private readonly client: OpenApiClient;
@@ -133,6 +145,16 @@ export class ProductCatalogClient implements IProductCatalogClient {
     });
     if (error) throw error;
     return requireData(data, "Update collection response was empty.");
+  }
+
+  async addCollectionProducts(id: number, input: AddCollectionProductsRequest): Promise<AddCollectionProductsResponse> {
+    const client = this.client as unknown as CollectionProductsPostClient;
+    const { data, error } = await client.POST("/api/ProductCatalog/collections/{id}/products", {
+      params: { path: { id } },
+      body: input,
+    });
+    if (error) throw error;
+    return requireData(data, "Add collection products response was empty.");
   }
 
   async updateCollection(id: number, input: UpdateCollectionRequest): Promise<UpdateCollectionResponse> {

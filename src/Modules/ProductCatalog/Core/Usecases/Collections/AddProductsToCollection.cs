@@ -1,28 +1,25 @@
 using Microsoft.EntityFrameworkCore;
-using ProductCatalog.DTOs.Collections;
 using ProductCatalog.Core.Entities;
+using ProductCatalog.DTOs.Collections;
 using SharedKernel.Abstractions.Services;
 using SharedKernel.Exceptions;
-using SharedKernel.Extensions;
 
 namespace ProductCatalog.Core.Usecases.Collections;
 
-public class CreateCollection(ProductCatalogDbContext db, IFileManager fm)
+public class AddProductsToCollection(ProductCatalogDbContext db, IFileManager fm)
 {
-    public async Task<CollectionResponse> ExecuteAsync(CreateCollectionRequest request, CancellationToken ct)
+    public async Task<CollectionResponse?> ExecuteAsync(int id, AddCollectionProductsRequest request, CancellationToken ct)
     {
+        request ??= new AddCollectionProductsRequest();
+        var collection = await db.Collections.FirstOrDefaultAsync(x => x.Id == id, ct);
+        if (collection is null) return null;
+
         request.ProductIds ??= [];
-        var title = request.Title.Trim();
-        var slug = string.IsNullOrWhiteSpace(request.Slug) ? title.ToSlug() : request.Slug.Trim();
         var errors = new Dictionary<string, string[]>();
-
-        if (string.IsNullOrWhiteSpace(title))
-            errors[nameof(request.Title)] = ["Collection title is required."];
-
-        if (await db.Collections.AnyAsync(x => x.Slug == slug, ct))
-            errors[nameof(request.Slug)] = ["Slug already exists."];
-
         var productIdErrors = new List<string>();
+        if (request.ProductIds.Count == 0)
+            productIdErrors.Add("At least one product id is required.");
+
         var productIds = request.ProductIds
             .Where(x => x > 0)
             .Distinct()
@@ -49,23 +46,27 @@ public class CreateCollection(ProductCatalogDbContext db, IFileManager fm)
 
         if (errors.Count > 0) throw new ValidationException("Validation failed", errors);
 
-        var collection = new Collection
-        {
-            Title = title,
-            Description = request.Description.Trim(),
-            Slug = slug,
-            ImageKey = request.ImageKey?.Trim(),
-        };
+        var currentProductIds = await db.CollectionProducts
+            .Where(x => x.CollectionId == id)
+            .Select(x => x.ProductId)
+            .ToListAsync(ct);
+        var newProductIds = productIds.Except(currentProductIds).ToList();
+        if (newProductIds.Count == 0)
+            return CollectionMapper.ToResponse(collection, fm);
 
-        db.Collections.Add(collection);
-        db.CollectionProducts.AddRange(productIds.Select((productId, index) => new CollectionProduct
+        var nextDisplayOrder = await db.CollectionProducts
+            .Where(x => x.CollectionId == id)
+            .Select(x => (int?)x.DisplayOrder)
+            .MaxAsync(ct) ?? -1;
+
+        db.CollectionProducts.AddRange(newProductIds.Select((productId, index) => new CollectionProduct
         {
-            Collection = collection,
+            CollectionId = id,
             ProductId = productId,
-            DisplayOrder = index
+            DisplayOrder = nextDisplayOrder + index + 1
         }));
-        await db.SaveChangesAsync(ct);
 
+        await db.SaveChangesAsync(ct);
         return CollectionMapper.ToResponse(collection, fm);
     }
 }

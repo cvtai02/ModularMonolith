@@ -45,12 +45,13 @@ public class CreateOrder(
         foreach (var item in request.Items)
         {
             var variant = variantById[item.VariantId];
+            var imageUrl = variant.ImageUrl?.Trim() ?? string.Empty;
             order.AddLine(
                 variant.ProductId,
                 variant.VariantId,
                 variant.ProductName,
                 variant.VariantName,
-                variant.ImageUrl,
+                imageUrl,
                 variant.UnitPrice,
                 item.Quantity);
         }

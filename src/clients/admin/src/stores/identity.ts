@@ -1,8 +1,11 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { toast } from 'sonner';
-import { identityFetchClient } from '@/api/api-client';
+import { IdentityClient } from '@shared/api/clients';
+import { appFetch } from '@/configs/appFetch';
 import type { LoginResponse as AuthTokenInfo, UserInfo as UserProfile, LoginRequest as LoginForm } from '@shared/api/types/identity';
+
+const identityClient = new IdentityClient(appFetch, import.meta.env.VITE_API_IDENTITY_URL as string);
 
 // ---- Types ----------------------------------------------------------------
 
@@ -33,13 +36,11 @@ export const useIdentityStore = create<IdentityState>()(
       login: async (input: LoginForm) => {
         set({ isLoading: true });
         try {
-          const tokenInfo = (await identityFetchClient.POST('/login', {
-            body: input,
-          })).data;
-          set({ ...tokenInfo, expiresTime: (tokenInfo!.expiresIn as number * 1000) + Date.now(),  isLoading: false });
+          const tokenInfo = await identityClient.login(input);
+          set({ ...tokenInfo, expiresTime: (tokenInfo.expiresIn * 1000) + Date.now(), isLoading: false });
 
-          const userInfo = (await identityFetchClient.GET('/me')).data;
-          set({...userInfo});
+          const userInfo = await identityClient.getCurrentUser();
+          set({ ...userInfo });
         } catch (error) {
           // rollback
           sessionStorage.removeItem('identity-storage');

@@ -55,14 +55,28 @@ export type DeleteCategoryResponse = void;
 export type ListCollectionsQuery = QueryParams<ListCollectionsOperation>;
 // 200 OK
 export type ListCollectionsResponse = JsonResponse<ListCollectionsOperation>;
-export type CreateCollectionRequest = JsonRequestBody<CreateCollectionOperation>;
+type CreateCollectionRequestBody = JsonRequestBody<CreateCollectionOperation>;
+export type CreateCollectionRequest = CreateCollectionRequestBody & {
+    productIds?: number[] | null;
+};
 // 200 OK
 export type CreateCollectionResponse = JsonResponse<CreateCollectionOperation>;
 export type GetCollectionParams = PathParams<GetCollectionOperation>;
 // 200 OK
 export type CollectionResponse = JsonResponse<GetCollectionOperation>;
+export type AddCollectionProductsParams = {
+    id: number;
+};
+export type AddCollectionProductsRequest = {
+    productIds: number[];
+};
+// 200 OK
+export type AddCollectionProductsResponse = CollectionResponse;
 export type UpdateCollectionParams = PathParams<UpdateCollectionOperation>;
-export type UpdateCollectionRequest = JsonRequestBody<UpdateCollectionOperation>;
+type UpdateCollectionRequestBody = JsonRequestBody<UpdateCollectionOperation>;
+export type UpdateCollectionRequest = UpdateCollectionRequestBody & {
+    productIds?: number[] | null;
+};
 // 200 OK
 export type UpdateCollectionResponse = JsonResponse<UpdateCollectionOperation>;
 export type DeleteCollectionParams = PathParams<DeleteCollectionOperation>;

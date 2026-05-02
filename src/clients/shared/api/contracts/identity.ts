@@ -16,6 +16,8 @@ import type {
   UserInfo,
 } from "../types/identity";
 
+export * from "../types/identity"
+
 export interface IIdentityClient {
   // Request alias is generated from ASP.NET Identity OpenAPI in src/clients/shared/api/types/identity.ts.
   register(input: RegisterRequest): Promise<void>;

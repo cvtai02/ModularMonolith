@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { useMutation } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
 import { useContentClient } from "@/components/containers/api-client-provider";
-import { ApiError, ValidationError } from "@shared/api/types/common";
+import { ApiError, ValidationError } from "@shared/api/contracts/common-types";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 

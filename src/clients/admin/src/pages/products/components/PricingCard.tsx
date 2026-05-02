@@ -21,7 +21,7 @@ import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import type { FormValues, Variant, VariantOverride } from "./types";
 
-import { currencies } from "@shared/api/types/common";
+import { currencies } from "@shared/api/contracts/common-types";
 
 type Props = {
   register: UseFormRegister<FormValues>;

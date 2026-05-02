@@ -23,5 +23,6 @@ Client contract: [ProductCatalogClient](../../../clients/shared/api/clients/prod
 - [GetAll](CollectionController.cs#L19)
 - [GetById](CollectionController.cs#L29)
 - [Create](CollectionController.cs#L36)
-- [Update](CollectionController.cs#L44)
-- [Delete](CollectionController.cs#L52)
+- [AddProducts](CollectionController.cs#L44)
+- [Update](CollectionController.cs#L52)
+- [Delete](CollectionController.cs#L60)

@@ -6,6 +6,8 @@ import type {
   OrderResponse,
 } from "../types/order";
 
+export * from "../types/order"
+
 export interface IOrderClient {
   // Request: src/Modules/Order/DTOs/Orders/CreateOrderRequest.cs
   // Response: src/Modules/Order/DTOs/Orders/OrderResponse.cs
