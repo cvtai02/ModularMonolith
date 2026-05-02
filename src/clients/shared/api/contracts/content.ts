@@ -1,10 +1,14 @@
 import type {
   ArchiveBlogPostResponse,
   BlogPostResponse,
+  BlogPostCollectionResponse,
   ConfirmUploadRequest,
   ConfirmUploadResponse,
+  CreateBlogPostCollectionRequest,
+  CreateBlogPostCollectionResponse,
   CreateBlogPostRequest,
   CreateBlogPostResponse,
+  DeleteBlogPostCollectionResponse,
   DeleteBlogPostResponse,
   DeleteMediaFilesRequest,
   DeleteMediaFilesResponse,
@@ -12,12 +16,16 @@ import type {
   GetAllResponse,
   GetAdminBlogPostByIdResponse,
   GetPresignedUploadBulkUrlRequest,
+  ListBlogPostCollectionsQuery,
+  ListBlogPostCollectionsResponse,
   ListAdminBlogPostsQuery,
   ListAdminBlogPostsResponse,
   ListPublishedBlogPostsQuery,
   ListPublishedBlogPostsResponse,
   PresignedUploadBulkUrlResponse,
   PublishBlogPostResponse,
+  UpdateBlogPostCollectionRequest,
+  UpdateBlogPostCollectionResponse,
   UpdateBlogPostRequest,
   UpdateBlogPostResponse,
 } from "../types/content";
@@ -74,4 +82,31 @@ export interface IContentClient {
 
   // No response body. Alias is generated in src/clients/shared/api/types/content.ts.
   deleteBlogPost(id: number): Promise<DeleteBlogPostResponse>;
+
+  // Contract method: getPublicBlogPostCollectionByKey. Public collection lookup by key.
+  // Response: src/Modules/Content/DTOs/BlogPostCollections/BlogPostCollectionResponse.cs
+  getPublicBlogPostCollectionByKey(key: string): Promise<BlogPostCollectionResponse>;
+
+  // Contract method: listAdminBlogPostCollections. Admin collection listing.
+  // Query: src/Modules/Content/DTOs/BlogPostCollections/ListBlogPostCollectionsRequest.cs
+  // Item response: src/Modules/Content/DTOs/BlogPostCollections/BlogPostCollectionSummaryResponse.cs
+  listAdminBlogPostCollections(query?: ListBlogPostCollectionsQuery): Promise<ListBlogPostCollectionsResponse>;
+
+  // Contract method: getAdminBlogPostCollectionById. Admin collection detail.
+  // Response: src/Modules/Content/DTOs/BlogPostCollections/BlogPostCollectionResponse.cs
+  getAdminBlogPostCollectionById(id: number): Promise<BlogPostCollectionResponse>;
+
+  // Contract method: createBlogPostCollection. Creates a keyed collection with ordered posts.
+  // Request: src/Modules/Content/DTOs/BlogPostCollections/CreateBlogPostCollectionRequest.cs
+  // Response: src/Modules/Content/DTOs/BlogPostCollections/BlogPostCollectionResponse.cs
+  createBlogPostCollection(input: CreateBlogPostCollectionRequest): Promise<CreateBlogPostCollectionResponse>;
+
+  // Contract method: updateBlogPostCollection. Updates collection metadata and replaces ordered posts.
+  // Request: src/Modules/Content/DTOs/BlogPostCollections/UpdateBlogPostCollectionRequest.cs
+  // Response: src/Modules/Content/DTOs/BlogPostCollections/BlogPostCollectionResponse.cs
+  updateBlogPostCollection(id: number, input: UpdateBlogPostCollectionRequest): Promise<UpdateBlogPostCollectionResponse>;
+
+  // Contract method: deleteBlogPostCollection. Soft deletes the collection.
+  // No response body. Alias is generated in src/clients/shared/api/types/content.ts.
+  deleteBlogPostCollection(id: number): Promise<DeleteBlogPostCollectionResponse>;
 }

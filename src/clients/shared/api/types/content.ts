@@ -1,4 +1,5 @@
 import type { paths } from "../lib/openapi-types";
+import type { PaginatedList } from "../contracts/common-types";
 import type { JsonRequestBody, JsonResponse, PathParams, QueryParams } from "./path-type-helpers";
 
 // -- API Types --
@@ -118,3 +119,72 @@ export type DeleteBlogPostParams =
     PathParams<DeleteBlogPostOperation>;
 // No content
 export type DeleteBlogPostResponse = void;
+
+export type BlogPostSummary = {
+    id: number;
+    title: string;
+    slug: string;
+    summary: string;
+    imageUrl: string;
+    status: "Draft" | "Published" | "Archived";
+    publishedAt?: string | null;
+    created: string;
+    lastModified: string;
+};
+
+export type BlogPostCollectionResponse = {
+    id: number;
+    key: string;
+    title: string;
+    description: string;
+    isPublic: boolean;
+    items: BlogPostSummary[];
+    created: string;
+    lastModified: string;
+};
+
+export type BlogPostCollectionSummaryResponse = {
+    id: number;
+    key: string;
+    title: string;
+    description: string;
+    isPublic: boolean;
+    itemCount: number;
+    created: string;
+    lastModified: string;
+};
+
+export type ListBlogPostCollectionsQuery = {
+    pageNumber?: number;
+    pageSize?: number;
+    search?: string | null;
+    isPublic?: boolean | null;
+    sortBy?: string | null;
+    sortDirection?: string | null;
+};
+
+export type ListBlogPostCollectionsResponse =
+    PaginatedList<BlogPostCollectionSummaryResponse>;
+
+export type CreateBlogPostCollectionRequest = {
+    key: string;
+    title: string;
+    description?: string | null;
+    isPublic: boolean;
+    blogPostIds: number[];
+};
+
+export type CreateBlogPostCollectionResponse =
+    BlogPostCollectionResponse;
+
+export type UpdateBlogPostCollectionRequest = {
+    title: string;
+    description?: string | null;
+    isPublic: boolean;
+    blogPostIds: number[];
+};
+
+export type UpdateBlogPostCollectionResponse =
+    BlogPostCollectionResponse;
+
+export type DeleteBlogPostCollectionResponse = void;

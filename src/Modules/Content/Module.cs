@@ -1,4 +1,5 @@
 using Content.Core.Usecases.BlogPosts;
+using Content.Core.Usecases.BlogPostCollections;
 using Content.Core.Usecases.FileObjects;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -36,6 +37,12 @@ public class ContentModule(IHostApplicationBuilder b) : Module(b)
         Services.AddScoped<PublishBlogPost>();
         Services.AddScoped<ArchiveBlogPost>();
         Services.AddScoped<DeleteBlogPost>();
+        Services.AddScoped<GetPublicBlogPostCollectionByKey>();
+        Services.AddScoped<ListAdminBlogPostCollections>();
+        Services.AddScoped<GetAdminBlogPostCollectionById>();
+        Services.AddScoped<CreateBlogPostCollection>();
+        Services.AddScoped<UpdateBlogPostCollection>();
+        Services.AddScoped<DeleteBlogPostCollection>();
     }
 }
 

@@ -21,3 +21,11 @@ Client contract: [ContentClient](../../../clients/shared/api/clients/content.ts)
 - [Publish](BlogPostController.cs#L77)
 - [Archive](BlogPostController.cs#L87)
 - [Delete](BlogPostController.cs#L97)
+
+### BlogPostCollection
+- [GetPublicByKey](BlogPostCollectionController.cs#L21)
+- [GetAdmin](BlogPostCollectionController.cs#L31)
+- [GetAdminById](BlogPostCollectionController.cs#L38)
+- [Create](BlogPostCollectionController.cs#L48)
+- [Update](BlogPostCollectionController.cs#L58)
+- [Delete](BlogPostCollectionController.cs#L69)

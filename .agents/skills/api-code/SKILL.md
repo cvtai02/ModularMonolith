@@ -66,7 +66,7 @@ description: Implement/Update API endpoints.
 
 # Migrations
 - If entity/schema changes require a migration, do not run migration commands.
-- At the end of the task, provide a migration handoff for Claude/the user with:
+- At the end of the task, provide a migration handoff .md in requirements/migrations for Claude/the user with:
   - module/project
   - suggested migration name
   - why it is needed
