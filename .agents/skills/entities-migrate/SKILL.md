@@ -1,3 +1,4 @@
+<!-- obsolete, wait for codex update that be able to build and run backend -->
 ---
 name: entities-migrate
 description: Use this skill when there are changes in dbcontext entities.
