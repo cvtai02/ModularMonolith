@@ -1,9 +1,13 @@
 {
+  "env": {
+    "CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION": "1"
+  },
   "permissions": {
     "allow": [
       "Bash(npx tsc *)",
       "Read(src/Modules/*/DTOs/**)",
-      "Bash(Remove-Item \"C:\\\\Users\\\\TaiChuVan\\\\OneDriveNASHTECH\\\\Desktop\\\\CakeTeaCofi\\\\requirements\\\\frontend-handoff\\\\collection-products-frontend-handoff.md\")"
+      "Bash(Remove-Item \"C:\\\\Users\\\\TaiChuVan\\\\OneDriveNASHTECH\\\\Desktop\\\\CakeTeaCofi\\\\requirements\\\\frontend-handoff\\\\collection-products-frontend-handoff.md\")",
+      "Bash(npm run *)"
     ],
     "deny": [
       "Read(.git/**)",

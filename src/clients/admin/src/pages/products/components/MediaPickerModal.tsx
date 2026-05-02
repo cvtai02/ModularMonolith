@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { CheckIcon, FileIcon, ImageIcon, SearchIcon } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -29,17 +29,19 @@ type Props = {
 export function MediaPickerModal({ open, onOpenChange, selectedUrl, onSelect }: Props) {
   const queryClient = useQueryClient();
   const contentClient = useContentClient();
+  const [prevOpen, setPrevOpen] = useState(open);
   const [pendingUrl, setPendingUrl] = useState(selectedUrl);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
 
-  useEffect(() => {
+  if (prevOpen !== open) {
+    setPrevOpen(open);
     if (open) {
       setPendingUrl(selectedUrl);
       setSearch("");
       setPage(1);
     }
-  }, [open, selectedUrl]);
+  }
 
   const { data, isLoading, isFetching } = useQuery({
     queryKey: ["content-files", { page, search }],

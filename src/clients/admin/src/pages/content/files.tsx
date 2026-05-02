@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import {
   FileIcon,
@@ -170,11 +170,13 @@ function UploadDialog({
   onUploaded: () => void;
 }) {
   const [category, setCategory] = useState<FileCategory>("product");
+  const [prevOpen, setPrevOpen] = useState(open);
   const [urls, setUrls] = useState<string[]>([]);
 
-  useEffect(() => {
+  if (prevOpen !== open) {
+    setPrevOpen(open);
     if (open) setUrls([]);
-  }, [open]);
+  }
 
   const handleChange = (newUrls: string[]) => {
     setUrls(newUrls);

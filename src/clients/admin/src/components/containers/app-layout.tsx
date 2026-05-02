@@ -13,7 +13,7 @@ import {
   TagIcon,
   ShoppingCartIcon,
 } from "lucide-react";
-import { type ComponentType, useEffect, useState } from "react";
+import { type ComponentType, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -117,8 +117,13 @@ function NavItemRow({ item }: { item: NavItem }) {
       ? location.pathname.startsWith(item.to)
       : location.pathname === item.to;
 
+  const [prevIsActive, setPrevIsActive] = useState(isActive);
   const [open, setOpen] = useState(isActive);
-  useEffect(() => { if (isActive) setOpen(true); }, [isActive]);
+
+  if (prevIsActive !== isActive) {
+    setPrevIsActive(isActive);
+    if (isActive) setOpen(true);
+  }
 
   if (item.subItems) {
     return (

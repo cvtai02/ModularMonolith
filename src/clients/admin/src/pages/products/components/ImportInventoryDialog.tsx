@@ -10,8 +10,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import type { IInventoryClient } from "@shared/api/contracts/inventory";
-import type { ImportVariantInventoryRequest, ImportVariantInventoryResponse } from "@shared/api/contracts/inventory";
+import type { IInventoryClient, ImportVariantInventoryRequest } from "@shared/api/contracts/inventory";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -26,26 +25,42 @@ type RowError = {
   quantity?: string;
 };
 
+type ImportRowResult = {
+  variantId: number;
+  status: string;
+  previousQuantity?: number | null;
+  newQuantity?: number | null;
+  message?: string | null;
+};
+
+type ImportSummaryResult = {
+  total: number;
+  applied: number;
+  skipped: number;
+  failed: number;
+  rows?: ImportRowResult[];
+};
+
 // ─── Summary view ─────────────────────────────────────────────────────────────
 
 function ImportSummary({
   result,
   onClose,
 }: {
-  result: ImportVariantInventoryResponse;
+  result: ImportSummaryResult;
   onClose: () => void;
 }) {
-  const rows = (result as any).rows ?? [];
+  const rows = result.rows ?? [];
 
   return (
     <div className="flex flex-col gap-4">
       {/* Counts */}
       <div className="grid grid-cols-4 gap-3">
         {[
-          { label: "Total", value: (result as any).total ?? 0, color: "text-foreground" },
-          { label: "Applied", value: (result as any).applied ?? 0, color: "text-emerald-600" },
-          { label: "Skipped", value: (result as any).skipped ?? 0, color: "text-muted-foreground" },
-          { label: "Failed", value: (result as any).failed ?? 0, color: "text-destructive" },
+          { label: "Total", value: result.total ?? 0, color: "text-foreground" },
+          { label: "Applied", value: result.applied ?? 0, color: "text-emerald-600" },
+          { label: "Skipped", value: result.skipped ?? 0, color: "text-muted-foreground" },
+          { label: "Failed", value: result.failed ?? 0, color: "text-destructive" },
         ].map((item) => (
           <div key={item.label} className="rounded-lg border bg-muted/40 p-3 text-center">
             <div className={`text-xl font-bold tabular-nums ${item.color}`}>{item.value}</div>
@@ -61,7 +76,7 @@ function ImportSummary({
             Row Results
           </div>
           <div className="divide-y max-h-60 overflow-y-auto">
-            {rows.map((row: any, i: number) => {
+            {rows.map((row, i) => {
               const status = row.status ?? "";
               const isApplied = status === "Applied";
               const isSkipped = status === "Skipped";
@@ -117,7 +132,7 @@ export function ImportInventoryDialog({ open, onClose, inventoryClient, onSucces
   const [note, setNote] = useState("");
   const [referenceId, setReferenceId] = useState("");
   const [isPending, setIsPending] = useState(false);
-  const [result, setResult] = useState<ImportVariantInventoryResponse | null>(null);
+  const [result, setResult] = useState<ImportSummaryResult | null>(null);
 
   function addRow() {
     setRows((prev) => [...prev, { id: nextId(), variantId: "", quantity: "" }]);
@@ -177,10 +192,10 @@ export function ImportInventoryDialog({ open, onClose, inventoryClient, onSucces
           variantId: parseInt(r.variantId, 10),
           quantity: parseInt(r.quantity, 10),
         })),
-      } as any;
+      };
 
       const res = await inventoryClient.importVariantInventory(input);
-      setResult(res);
+      setResult(res as unknown as ImportSummaryResult);
       onSuccess();
       toast.success("Inventory imported");
     } catch {

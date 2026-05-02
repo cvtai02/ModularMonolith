@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { ArrowLeftIcon, PackageIcon, PlusIcon, XIcon } from "lucide-react";
 
@@ -142,22 +142,20 @@ export function CollectionFormLayout({
 
   const [pickedProducts, setPickedProducts] = useState<PickedItem[]>(initialProducts ?? []);
   const [productsModified, setProductsModified] = useState(false);
-  const productsModifiedRef = useRef(false);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [addPickerOpen, setAddPickerOpen] = useState(false);
 
   // Sync from API when initialProducts changes (e.g. after quick-add refetch),
   // but only while the user hasn't locally edited the replace list.
-  useEffect(() => {
-    if (!productsModifiedRef.current) {
+  const [prevInitialProducts, setPrevInitialProducts] = useState(initialProducts);
+  if (prevInitialProducts !== initialProducts) {
+    setPrevInitialProducts(initialProducts);
+    if (!productsModified) {
       setPickedProducts(initialProducts ?? []);
     }
-    // productsModifiedRef is a ref — intentionally not in deps
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialProducts]);
+  }
 
   function markModified() {
-    productsModifiedRef.current = true;
     setProductsModified(true);
   }
 
