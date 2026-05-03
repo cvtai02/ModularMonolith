@@ -23,9 +23,10 @@ Client contract: [ContentClient](../../../clients/shared/api/clients/content.ts)
 - [Delete](BlogPostController.cs#L97)
 
 ### BlogPostCollection
-- [GetPublicByKey](BlogPostCollectionController.cs#L21)
-- [GetAdmin](BlogPostCollectionController.cs#L31)
-- [GetAdminById](BlogPostCollectionController.cs#L38)
-- [Create](BlogPostCollectionController.cs#L48)
-- [Update](BlogPostCollectionController.cs#L58)
-- [Delete](BlogPostCollectionController.cs#L69)
+- [GetPublicByKey](BlogPostCollectionController.cs#L22)
+- [GetAdmin](BlogPostCollectionController.cs#L32)
+- [GetAdminBlogPostsByCollection](BlogPostCollectionController.cs#L39) - admin grouped blog post list by collection
+- [GetAdminById](BlogPostCollectionController.cs#L46)
+- [Create](BlogPostCollectionController.cs#L56)
+- [Update](BlogPostCollectionController.cs#L66)
+- [Delete](BlogPostCollectionController.cs#L77)

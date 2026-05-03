@@ -18,6 +18,8 @@ import type {
   GetAllResponse,
   GetAdminBlogPostByIdResponse,
   GetPresignedUploadBulkUrlRequest,
+  ListAdminBlogPostsByCollectionQuery,
+  ListAdminBlogPostsByCollectionResponse,
   ListBlogPostCollectionsQuery,
   ListBlogPostCollectionsResponse,
   ListAdminBlogPostsQuery,
@@ -154,6 +156,16 @@ export class ContentClient implements IContentClient {
       `/api/Content/blog-post-collections/admin${this.toQueryString(query)}`,
       undefined,
       "Admin blog post collections response was empty.",
+    );
+  }
+
+  async listAdminBlogPostsByCollection(
+    query?: ListAdminBlogPostsByCollectionQuery,
+  ): Promise<ListAdminBlogPostsByCollectionResponse> {
+    return this.requestJson<ListAdminBlogPostsByCollectionResponse>(
+      `/api/Content/blog-post-collections/admin/blog-posts${this.toQueryString(query)}`,
+      undefined,
+      "Admin blog posts by collection response was empty.",
     );
   }
 

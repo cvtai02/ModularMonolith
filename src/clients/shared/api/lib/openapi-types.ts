@@ -893,6 +893,51 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/Content/blog-post-collections/admin/blog-posts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    PageNumber?: components["schemas"]["System.Int32"];
+                    PageSize?: components["schemas"]["System.Int32"];
+                    Search?: components["schemas"]["System.String"];
+                    Status?: components["schemas"]["System.Nullable`1[[Content.Core.Entities.BlogPostStatus, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+                    IsPublic?: components["schemas"]["System.Nullable`1[[System.Boolean, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
+                    SortBy?: components["schemas"]["System.String"];
+                    SortDirection?: components["schemas"]["System.String"];
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["SharedKernel.DTOs.PaginatedList`1[[Content.DTOs.BlogPostCollections.AdminBlogPostCollectionGroupResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+                        "application/json": components["schemas"]["SharedKernel.DTOs.PaginatedList`1[[Content.DTOs.BlogPostCollections.AdminBlogPostCollectionGroupResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+                        "text/json": components["schemas"]["SharedKernel.DTOs.PaginatedList`1[[Content.DTOs.BlogPostCollections.AdminBlogPostCollectionGroupResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Content/blog-post-collections/admin/{id}": {
         parameters: {
             query?: never;
@@ -1760,6 +1805,114 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/Order/orders/admin": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    PageNumber?: components["schemas"]["System.Int32"];
+                    PageSize?: components["schemas"]["System.Int32"];
+                    Status?: components["schemas"]["System.Nullable`1[[Order.Core.Entities.OrderStatus, Order, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+                    Search?: components["schemas"]["System.String"];
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["SharedKernel.DTOs.PaginatedList`1[[Order.DTOs.Orders.OrderSummaryResponse, Order, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+                        "application/json": components["schemas"]["SharedKernel.DTOs.PaginatedList`1[[Order.DTOs.Orders.OrderSummaryResponse, Order, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+                        "text/json": components["schemas"]["SharedKernel.DTOs.PaginatedList`1[[Order.DTOs.Orders.OrderSummaryResponse, Order, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["Order.DTOs.Orders.AdminCreateOrderRequest"];
+                    "text/json": components["schemas"]["Order.DTOs.Orders.AdminCreateOrderRequest"];
+                    "application/*+json": components["schemas"]["Order.DTOs.Orders.AdminCreateOrderRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["Order.DTOs.Orders.OrderResponse"];
+                        "application/json": components["schemas"]["Order.DTOs.Orders.OrderResponse"];
+                        "text/json": components["schemas"]["Order.DTOs.Orders.OrderResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Order/orders/admin/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: components["schemas"]["System.Int32"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["Order.DTOs.Orders.OrderResponse"];
+                        "application/json": components["schemas"]["Order.DTOs.Orders.OrderResponse"];
+                        "text/json": components["schemas"]["Order.DTOs.Orders.OrderResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/Order/orders/{id}": {
         parameters: {
             query?: never;
@@ -2527,6 +2680,16 @@ export interface components {
         };
         /** @enum {unknown} */
         "Content.Core.Entities.BlogPostStatus": "Draft" | "Published" | "Archived";
+        "Content.DTOs.BlogPostCollections.AdminBlogPostCollectionGroupResponse": {
+            collectionId: null | components["schemas"]["System.Nullable`1[[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
+            key: components["schemas"]["System.String"];
+            title: components["schemas"]["System.String"];
+            description: components["schemas"]["System.String"];
+            isPublic: components["schemas"]["System.Boolean"];
+            isUngrouped: components["schemas"]["System.Boolean"];
+            itemCount: components["schemas"]["System.Int32"];
+            items: components["schemas"]["System.Collections.Generic.List`1[[Content.DTOs.BlogPosts.BlogPostSummaryResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+        };
         "Content.DTOs.BlogPostCollections.BlogPostCollectionResponse": {
             id: components["schemas"]["System.Int32"];
             key: components["schemas"]["System.String"];
@@ -2775,6 +2938,12 @@ export interface components {
         };
         /** @enum {unknown} */
         "Order.Core.Entities.OrderStatus": "Draft" | "PendingInventory" | "Placed" | "Paid" | "Rejected" | "Cancelled" | "Shipped";
+        "Order.DTOs.Orders.AdminCreateOrderRequest": {
+            customerProfileId?: components["schemas"]["System.Int32"];
+            currencyCode?: null | components["schemas"]["System.String"];
+            shippingAddress: components["schemas"]["SharedKernel.DTOs.Address"];
+            items?: components["schemas"]["System.Collections.Generic.List`1[[Order.DTOs.Orders.CreateOrderItemRequest, Order, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+        };
         "Order.DTOs.Orders.CreateOrderItemRequest": {
             variantId: components["schemas"]["System.Int32"];
             quantity: components["schemas"]["System.Int32"];
@@ -3094,6 +3263,14 @@ export interface components {
             hasPreviousPage: components["schemas"]["System.Boolean"];
             hasNextPage: components["schemas"]["System.Boolean"];
         };
+        "SharedKernel.DTOs.PaginatedList`1[[Content.DTOs.BlogPostCollections.AdminBlogPostCollectionGroupResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": {
+            items: components["schemas"]["System.Collections.Generic.List`1[[Content.DTOs.BlogPostCollections.AdminBlogPostCollectionGroupResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+            pageNumber: components["schemas"]["System.Int32"];
+            totalPages: components["schemas"]["System.Int32"];
+            totalCount: components["schemas"]["System.Int32"];
+            hasPreviousPage: components["schemas"]["System.Boolean"];
+            hasNextPage: components["schemas"]["System.Boolean"];
+        };
         "SharedKernel.DTOs.PaginatedList`1[[Content.DTOs.BlogPostCollections.BlogPostCollectionSummaryResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": {
             items: components["schemas"]["System.Collections.Generic.List`1[[Content.DTOs.BlogPostCollections.BlogPostCollectionSummaryResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
             pageNumber: components["schemas"]["System.Int32"];
@@ -3162,6 +3339,7 @@ export interface components {
         "System.Collections.Generic.IReadOnlyList`1[[Payment.DTOs.PaymentMethodResponse, Payment, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["Payment.DTOs.PaymentMethodResponse"][];
         "System.Collections.Generic.List`1[[Account.DTOs.AccountAddresses.AccountAddressResponse, Account, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["Account.DTOs.AccountAddresses.AccountAddressResponse"][];
         "System.Collections.Generic.List`1[[Account.DTOs.AccountProfiles.AccountProfileResponse, Account, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["Account.DTOs.AccountProfiles.AccountProfileResponse"][];
+        "System.Collections.Generic.List`1[[Content.DTOs.BlogPostCollections.AdminBlogPostCollectionGroupResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["Content.DTOs.BlogPostCollections.AdminBlogPostCollectionGroupResponse"][];
         "System.Collections.Generic.List`1[[Content.DTOs.BlogPostCollections.BlogPostCollectionSummaryResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["Content.DTOs.BlogPostCollections.BlogPostCollectionSummaryResponse"][];
         "System.Collections.Generic.List`1[[Content.DTOs.BlogPosts.BlogPostSummaryResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["Content.DTOs.BlogPosts.BlogPostSummaryResponse"][];
         "System.Collections.Generic.List`1[[Content.DTOs.FileObjects.ConfirmUploadFileRequest, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["Content.DTOs.FileObjects.ConfirmUploadFileRequest"][];

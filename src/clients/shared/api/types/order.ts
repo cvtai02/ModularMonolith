@@ -20,3 +20,12 @@ export type CreateOrderResponse = JsonResponse<CreateOrderOperation>;
 export type GetOrderParams = PathParams<GetOrderOperation>;
 // 200 OK
 export type OrderResponse = JsonResponse<GetOrderOperation>;
+
+export type AdminCreateOrderRequest = CreateOrderRequest & {
+    customerProfileId: number;
+};
+
+export type AdminCreateOrderResponse = CreateOrderResponse;
+export type ListAdminOrdersQuery = ListOrdersQuery;
+export type ListAdminOrdersResponse = ListOrdersResponse;
+export type GetAdminOrderByIdResponse = OrderResponse;

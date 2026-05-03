@@ -28,6 +28,7 @@ public class OrderModule(IHostApplicationBuilder b) : Module(b)
     protected override void RegisterUsecases()
     {
         Services.AddScoped<CreateOrder>();
+        Services.AddScoped<AdminCreateOrder>();
         Services.AddScoped<GetOrderById>();
         Services.AddScoped<ListOrders>();
         Services.AddScoped<OrderRealtimeNotifier>();

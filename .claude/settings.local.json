@@ -33,7 +33,8 @@
       "Read(src/clients/shared/api/path-type-helppers.ts)",
       "Read(src/clients/shared/api/clients/**)",
       "Read(src/clients/shared/api/types/**)",
-      "Read(src/clients/shared/api/lib/**)"
+      "Read(src/clients/shared/api/lib/**)",
+      "Write(src/clients/shared/api/contracts/**)"
     ]
   }
 }

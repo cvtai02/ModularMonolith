@@ -30,6 +30,7 @@ description: Implement/Update API endpoints.
    - Add or update DTOs under `src/Modules/<ModuleName>/DTOs/**`.
    - Add or update use cases/controllers under `src/Modules/<ModuleName>/Api/**` using the module's existing style.
    - Register use cases in `src/Modules/<ModuleName>/<ModuleName>Module.cs` or the module registration file already used by that module.
+   - move the backend-plan to requirements/done after implementation.
 3. Update `src/Modules/<ModuleName>/Api/api.md` with endpoint summaries only:
    - route and method
    - auth requirement
@@ -49,7 +50,7 @@ description: Implement/Update API endpoints.
    - Keep these handoffs focused on API behavior and frontend UX.
    - Mention the API client contract file path and the client methods should be used.
    - Tell Claude to move the file to `requirements/frontend-handoff/done/` after implementation.
-   - Do not edit files already under a `done/` folder. If completed plan or handoff behavior changes later, add a separate `<feature>-update-note.md` file beside the relevant active folder instead.
+   - Do not edit files already under a `done/` folder.
 
 # Migrations
 - If entity/schema changes require a migration, do not run migration commands.

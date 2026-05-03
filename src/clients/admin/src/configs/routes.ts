@@ -24,6 +24,11 @@ export const ROUTES = {
   contentMenus: "/content/menus",
   contentBlogs: "/content/blogs",
   contentMetaobjects: "/content/metaobjects",
+  contentBlogNew: "/content/blogs/new",
+  contentBlogEdit: (id: number | string) => `/content/blogs/${id}/edit`,
+  contentBlogCollections: "/content/blog-collections",
+  contentBlogCollectionNew: "/content/blog-collections/new",
+  contentBlogCollectionEdit: (id: number | string) => `/content/blog-collections/${id}/edit`,
 
   // Customers
   customers: "/customers",
@@ -44,6 +49,8 @@ export const ROUTES = {
 
   // Orders & Settings
   orders: "/orders",
+  orderDetail: (id: number | string) => `/orders/${id}`,
+  orderCreate: "/orders/new",
   settings: "/settings",
 
   // Legacy — kept to avoid breaking existing references

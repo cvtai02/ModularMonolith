@@ -22,7 +22,15 @@ const Inventory = LazyPage(() => import("@/pages/products/inventory"));
 const Collections = LazyPage(() => import("@/pages/collections"));
 const AddCollection = LazyPage(() => import("@/pages/collections/add"));
 const EditCollection = LazyPage(() => import("@/pages/collections/edit"));
-const Customers = LazyPage(() => import("@/pages/customers"));
+const BlogPostCollections = LazyPage(() => import("@/pages/content/blog-post-collections"));
+const AddBlogPostCollection = LazyPage(() => import("@/pages/content/blog-post-collections/add"));
+const EditBlogPostCollection = LazyPage(() => import("@/pages/content/blog-post-collections/edit"));
+const AdminBlogsPage = LazyPage(() => import("@/pages/content/blogs"));
+const AddBlogPostPage = LazyPage(() => import("@/pages/content/blogs/add"));
+const EditBlogPostPage = LazyPage(() => import("@/pages/content/blogs/edit"));
+const Orders = LazyPage(() => import("@/pages/orders"));
+const OrderDetail = LazyPage(() => import("@/pages/orders/detail"));
+const AdminCreateOrder = LazyPage(() => import("@/pages/orders/create"));
 // const Promotions = LazyPage(() => import("@/pages/promotions"));
 // const Reviews = LazyPage(() => import("@/pages/reviews"));
 // const Settings = LazyPage(() => import("@/pages/settings"));
@@ -45,8 +53,16 @@ const AppRoutes: ReactNode =
         <Route path={ROUTES.collectionNew} element={<AddCollection />} errorElement={<ErrorPage />} />
         <Route path="/products/collections/:id/edit" element={<EditCollection />} errorElement={<ErrorPage />} />
         <Route path={ROUTES.contentFiles} element={<ContentFilesPage />} errorElement={<ErrorPage />} />
-        {/* <Route path={ROUTES.orders} element={<Orders />} /> */}
-        <Route path={ROUTES.customers} element={<Customers />} errorElement={<ErrorPage />} />
+        <Route path={ROUTES.contentBlogCollections} element={<BlogPostCollections />} errorElement={<ErrorPage />} />
+        <Route path={ROUTES.contentBlogCollectionNew} element={<AddBlogPostCollection />} errorElement={<ErrorPage />} />
+        <Route path="/content/blog-collections/:id/edit" element={<EditBlogPostCollection />} errorElement={<ErrorPage />} />
+        <Route path={ROUTES.contentBlogs} element={<AdminBlogsPage />} errorElement={<ErrorPage />} />
+        <Route path={ROUTES.contentBlogNew} element={<AddBlogPostPage />} errorElement={<ErrorPage />} />
+        <Route path="/content/blogs/:id/edit" element={<EditBlogPostPage />} errorElement={<ErrorPage />} />
+        <Route path={ROUTES.orders} element={<Orders />} errorElement={<ErrorPage />} />
+        <Route path="/orders/new" element={<AdminCreateOrder />} errorElement={<ErrorPage />} />
+        <Route path="/orders/:id" element={<OrderDetail />} errorElement={<ErrorPage />} />
+        {/* <Route path={ROUTES.customers} element={<Customers />} errorElement={<ErrorPage />} /> */}
         {/* <Route path={ROUTES.promotions} element={<Promotions />} /> */}
         {/* <Route path={ROUTES.reviews} element={<Reviews />} /> */}
         {/* <Route path={ROUTES.settings} element={<Settings />} /> */}

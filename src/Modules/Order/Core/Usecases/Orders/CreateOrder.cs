@@ -17,6 +17,12 @@ public class CreateOrder(
     private const int MaxLineCount = 50;
 
     public async Task<OrderResponse> ExecuteAsync(CreateOrderRequest request, CancellationToken ct)
+        => await ExecuteForCustomerAsync(request, user.Id, ct);
+
+    public async Task<OrderResponse> ExecuteForCustomerAsync(
+        CreateOrderRequest request,
+        string? customerId,
+        CancellationToken ct)
     {
         if (request is null)
             throw new ValidationException("Validation failed", new Dictionary<string, string[]>
@@ -36,7 +42,7 @@ public class CreateOrder(
 
         var order = new Entities.Order
         {
-            CustomerId = string.IsNullOrWhiteSpace(user.Id) ? null : user.Id
+            CustomerId = string.IsNullOrWhiteSpace(customerId) ? null : customerId.Trim()
         };
         order.SetCode(GenerateOrderCode());
         order.SetCurrency(currencyCode);

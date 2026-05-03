@@ -12,6 +12,7 @@ namespace Content.Api;
 public class BlogPostCollectionController(
     GetPublicBlogPostCollectionByKey getPublicBlogPostCollectionByKey,
     ListAdminBlogPostCollections listAdminBlogPostCollections,
+    ListAdminBlogPostsByCollection listAdminBlogPostsByCollection,
     GetAdminBlogPostCollectionById getAdminBlogPostCollectionById,
     CreateBlogPostCollection createBlogPostCollection,
     UpdateBlogPostCollection updateBlogPostCollection,
@@ -32,6 +33,13 @@ public class BlogPostCollectionController(
         [FromQuery] ListBlogPostCollectionsRequest request,
         CancellationToken cancellationToken)
         => Ok(await listAdminBlogPostCollections.ExecuteAsync(request, cancellationToken));
+
+    [Authorize(Policy = Policies.TenantAdminUp)]
+    [HttpGet("admin/blog-posts")]
+    public async Task<ActionResult<PaginatedList<AdminBlogPostCollectionGroupResponse>>> GetAdminBlogPostsByCollection(
+        [FromQuery] ListAdminBlogPostsByCollectionRequest request,
+        CancellationToken cancellationToken)
+        => Ok(await listAdminBlogPostsByCollection.ExecuteAsync(request, cancellationToken));
 
     [Authorize(Policy = Policies.TenantAdminUp)]
     [HttpGet("admin/{id:int}")]

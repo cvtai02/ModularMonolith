@@ -39,6 +39,7 @@ public class ContentModule(IHostApplicationBuilder b) : Module(b)
         Services.AddScoped<DeleteBlogPost>();
         Services.AddScoped<GetPublicBlogPostCollectionByKey>();
         Services.AddScoped<ListAdminBlogPostCollections>();
+        Services.AddScoped<ListAdminBlogPostsByCollection>();
         Services.AddScoped<GetAdminBlogPostCollectionById>();
         Services.AddScoped<CreateBlogPostCollection>();
         Services.AddScoped<UpdateBlogPostCollection>();

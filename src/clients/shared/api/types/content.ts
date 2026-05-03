@@ -166,6 +166,30 @@ export type ListBlogPostCollectionsQuery = {
 export type ListBlogPostCollectionsResponse =
     PaginatedList<BlogPostCollectionSummaryResponse>;
 
+export type ListAdminBlogPostsByCollectionQuery = {
+    pageNumber?: number;
+    pageSize?: number;
+    search?: string | null;
+    status?: "Draft" | "Published" | "Archived" | null;
+    isPublic?: boolean | null;
+    sortBy?: string | null;
+    sortDirection?: string | null;
+};
+
+export type AdminBlogPostCollectionGroupResponse = {
+    collectionId?: number | null;
+    key: string;
+    title: string;
+    description: string;
+    isPublic: boolean;
+    isUngrouped: boolean;
+    itemCount: number;
+    items: BlogPostSummary[];
+};
+
+export type ListAdminBlogPostsByCollectionResponse =
+    PaginatedList<AdminBlogPostCollectionGroupResponse>;
+
 export type CreateBlogPostCollectionRequest = {
     key: string;
     title: string;

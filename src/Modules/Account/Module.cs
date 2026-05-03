@@ -1,7 +1,9 @@
 using Account.Api.Hubs;
 using Account.Core.EventHandlers;
+using Account.Core.Services;
 using Account.Core.Usecases;
 using Intermediary.Events.Order;
+using Intermediary.Ordering;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -37,6 +39,7 @@ public class AccountModule(IHostApplicationBuilder b) : Module(b)
         Services.AddScoped<ListAdminAccountProfiles>();
         Services.AddScoped<GetAdminAccountProfileById>();
         Services.AddScoped<UpdateAdminAccountProfile>();
+        Services.AddScoped<IOrderCustomerLookup, OrderCustomerLookup>();
         Services.AddScoped<IEventHandler<AdminOrderPlaced>, AdminOrderPlacedHandler>();
     }
 

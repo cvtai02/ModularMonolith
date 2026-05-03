@@ -1,5 +1,11 @@
 # Blog Post Collections Frontend Handoff
 
+## Completion Summary
+
+Implemented admin UI at `/content/blog-collections`. Added list page with search and public/private filter, create/edit form with key field (read-only on edit), optional description, public/private switch, and ordered blog post picker with up/down reorder arrows. Delete confirmation dialog included. Nav entry added under Content sidebar group. Handoff doc moved here on 2026-05-03.
+
+---
+
 Claude owns the admin frontend implementation for this feature.
 
 ## Goal

@@ -16,6 +16,8 @@ import type {
   GetAllResponse,
   GetAdminBlogPostByIdResponse,
   GetPresignedUploadBulkUrlRequest,
+  ListAdminBlogPostsByCollectionQuery,
+  ListAdminBlogPostsByCollectionResponse,
   ListBlogPostCollectionsQuery,
   ListBlogPostCollectionsResponse,
   ListAdminBlogPostsQuery,
@@ -91,6 +93,13 @@ export interface IContentClient {
   // Query: src/Modules/Content/DTOs/BlogPostCollections/ListBlogPostCollectionsRequest.cs
   // Item response: src/Modules/Content/DTOs/BlogPostCollections/BlogPostCollectionSummaryResponse.cs
   listAdminBlogPostCollections(query?: ListBlogPostCollectionsQuery): Promise<ListBlogPostCollectionsResponse>;
+
+  // Contract method: listAdminBlogPostsByCollection. Admin grouped blog overview by collection.
+  // Query: src/Modules/Content/DTOs/BlogPostCollections/ListAdminBlogPostsByCollectionRequest.cs
+  // Item response: src/Modules/Content/DTOs/BlogPostCollections/AdminBlogPostCollectionGroupResponse.cs
+  listAdminBlogPostsByCollection(
+    query?: ListAdminBlogPostsByCollectionQuery,
+  ): Promise<ListAdminBlogPostsByCollectionResponse>;
 
   // Contract method: getAdminBlogPostCollectionById. Admin collection detail.
   // Response: src/Modules/Content/DTOs/BlogPostCollections/BlogPostCollectionResponse.cs

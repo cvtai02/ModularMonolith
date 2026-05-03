@@ -11,9 +11,9 @@ public static class Policies
 
    internal static readonly Dictionary<string, Action<AuthorizationPolicyBuilder>> Configurations = new()
    {
-      [AdminOnly] = policy => policy.RequireRole(Roles.TenantAdmin),
-      [TenantAdminUp] = policy => policy.RequireRole(Roles.TenantAdmin, Roles.TenantAdmin),
-      [TenantModeratorUp] = policy => policy.RequireRole(Roles.TenantAdmin, Roles.TenantAdmin, Roles.TenantModerator),
+      [AdminOnly] = policy => policy.RequireRole(Roles.SystemAdmin),
+      [TenantAdminUp] = policy => policy.RequireRole(Roles.SystemAdmin, Roles.TenantAdmin),
+      [TenantModeratorUp] = policy => policy.RequireRole(Roles.SystemAdmin, Roles.TenantAdmin, Roles.TenantModerator),
       [AuthenticatedUserUp] = policy => policy.RequireAuthenticatedUser(),
    };
 }
