@@ -32,6 +32,8 @@ export const ROUTES = {
 
   // Customers
   customers: "/customers",
+  customerNew: "/customers/new",
+  customerDetail: (id: number | string) => `/customers/${id}`,
 
   // Marketing
   marketing: "/marketing",

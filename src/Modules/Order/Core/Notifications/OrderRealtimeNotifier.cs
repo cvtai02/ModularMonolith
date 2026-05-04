@@ -5,9 +5,9 @@ namespace Order.Core.Notifications;
 
 public class OrderRealtimeNotifier(IHubContext<OrderHub> orderHubContext)
 {
-    public Task NotifyOrderPlacedAsync(Entities.Order order, int reservationId, CancellationToken ct)
+    public async Task NotifyOrderPlacedAsync(Entities.Order order, int reservationId, CancellationToken ct)
     {
-        var message = new OrderPlacedNotification
+        var placedMessage = new OrderPlacedNotification
         {
             OrderId = order.Id,
             OrderCode = order.Code,
@@ -15,8 +15,69 @@ public class OrderRealtimeNotifier(IHubContext<OrderHub> orderHubContext)
             Status = order.Status.ToString()
         };
 
-        return orderHubContext.Clients
+        await orderHubContext.Clients
             .Group(OrderRealtimeGroups.Order(order.Id))
-            .SendAsync("OrderPlaced", message, ct);
+            .SendAsync("OrderPlaced", placedMessage, ct);
+
+        await NotifyOrderChangedAsync(
+            order,
+            "OrderPlaced",
+            reservationId,
+            null,
+            ct);
+    }
+
+    public Task NotifyOrderRejectedAsync(Entities.Order order, CancellationToken ct)
+        => NotifyOrderRejectedAsync(order, order.InventoryReservationId, ct);
+
+    public Task NotifyOrderRejectedAsync(Entities.Order order, int? reservationId, CancellationToken ct)
+        => NotifyOrderChangedAsync(
+            order,
+            "OrderRejected",
+            reservationId,
+            order.RejectionReason,
+            ct);
+
+    public Task NotifyOrderPaidAsync(Entities.Order order, CancellationToken ct)
+        => NotifyOrderChangedAsync(
+            order,
+            "OrderPaid",
+            order.InventoryReservationId,
+            null,
+            ct);
+
+    private Task NotifyOrderChangedAsync(
+        Entities.Order order,
+        string type,
+        int? reservationId,
+        string? rejectionReason,
+        CancellationToken ct)
+    {
+        var message = new OrderNotification
+        {
+            Type = type,
+            OrderId = order.Id,
+            OrderCode = order.Code,
+            Status = order.Status.ToString(),
+            ReservationId = reservationId,
+            RejectionReason = rejectionReason,
+            OccurredAt = DateTimeOffset.UtcNow
+        };
+
+        var sends = new List<Task>
+        {
+            orderHubContext.Clients
+                .Group(OrderRealtimeGroups.Order(order.Id))
+                .SendAsync("OrderNotification", message, ct)
+        };
+
+        if (!string.IsNullOrWhiteSpace(order.CustomerId))
+        {
+            sends.Add(orderHubContext.Clients
+                .Group(OrderRealtimeGroups.Customer(order.CustomerId))
+                .SendAsync("OrderNotification", message, ct));
+        }
+
+        return Task.WhenAll(sends);
     }
 }

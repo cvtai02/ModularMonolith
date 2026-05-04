@@ -1,10 +1,13 @@
 using Intermediary.Events.Inventory;
 using Microsoft.EntityFrameworkCore;
+using Order.Core.Notifications;
 using SharedKernel.Abstractions.Contracts;
 
 namespace Order.Core.EventHandlers;
 
-public class ReservationRejectedHandler(OrderDbContext db) : IEventHandler<ReservationRejected>
+public class ReservationRejectedHandler(
+    OrderDbContext db,
+    OrderRealtimeNotifier realtimeNotifier) : IEventHandler<ReservationRejected>
 {
     public async Task Handle(ReservationRejected @event, CancellationToken ct = default)
     {
@@ -15,6 +18,8 @@ public class ReservationRejectedHandler(OrderDbContext db) : IEventHandler<Reser
         order.SetRejectionReason(BuildReason(@event.Errors));
         order.SetStatus(Entities.OrderStatus.Rejected);
         await db.SaveChangesAsync(ct);
+
+        await realtimeNotifier.NotifyOrderRejectedAsync(order, ct);
     }
 
     private static string BuildReason(IReadOnlyDictionary<string, string[]> errors)

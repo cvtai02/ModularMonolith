@@ -735,7 +735,34 @@ export interface paths {
             };
         };
         put?: never;
-        post?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["Account.DTOs.AccountProfiles.AdminCreateAccountProfileRequest"];
+                    "text/json": components["schemas"]["Account.DTOs.AccountProfiles.AdminCreateAccountProfileRequest"];
+                    "application/*+json": components["schemas"]["Account.DTOs.AccountProfiles.AdminCreateAccountProfileRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["Account.DTOs.AccountProfiles.AccountProfileResponse"];
+                        "application/json": components["schemas"]["Account.DTOs.AccountProfiles.AccountProfileResponse"];
+                        "text/json": components["schemas"]["Account.DTOs.AccountProfiles.AccountProfileResponse"];
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -2664,6 +2691,14 @@ export interface components {
             lastModified: components["schemas"]["System.DateTimeOffset"];
             addresses: components["schemas"]["System.Collections.Generic.List`1[[Account.DTOs.AccountAddresses.AccountAddressResponse, Account, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
         };
+        "Account.DTOs.AccountProfiles.AdminCreateAccountProfileRequest": {
+            identityUserId: null | components["schemas"]["System.String"];
+            status: null | components["schemas"]["System.Nullable`1[[Account.Core.Entities.AccountStatus, Account, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+            displayName: null | components["schemas"]["System.String"];
+            email: null | components["schemas"]["System.String"];
+            phoneNumber: null | components["schemas"]["System.String"];
+            avatarUrl: null | components["schemas"]["System.String"];
+        };
         "Account.DTOs.AccountProfiles.AdminUpdateAccountProfileRequest": {
             type: null | components["schemas"]["System.Nullable`1[[Account.Core.Entities.AccountType, Account, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
             status: null | components["schemas"]["System.Nullable`1[[Account.Core.Entities.AccountStatus, Account, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
@@ -2729,7 +2764,7 @@ export interface components {
             slug: components["schemas"]["System.String"];
             content: components["schemas"]["System.String"];
             summary: components["schemas"]["System.String"];
-            imageUrl: components["schemas"]["System.String"];
+            imageKey: components["schemas"]["System.String"];
             status: components["schemas"]["Content.Core.Entities.BlogPostStatus"];
             publishedAt: null | components["schemas"]["System.Nullable`1[[System.DateTimeOffset, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
             created: components["schemas"]["System.DateTimeOffset"];
@@ -2740,7 +2775,7 @@ export interface components {
             title: components["schemas"]["System.String"];
             slug: components["schemas"]["System.String"];
             summary: components["schemas"]["System.String"];
-            imageUrl: components["schemas"]["System.String"];
+            imageKey: components["schemas"]["System.String"];
             status: components["schemas"]["Content.Core.Entities.BlogPostStatus"];
             publishedAt: null | components["schemas"]["System.Nullable`1[[System.DateTimeOffset, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
             created: components["schemas"]["System.DateTimeOffset"];
@@ -2750,13 +2785,13 @@ export interface components {
             title: components["schemas"]["System.String"];
             content: components["schemas"]["System.String"];
             summary: null | components["schemas"]["System.String"];
-            imageUrl: null | components["schemas"]["System.String"];
+            imageKey: null | components["schemas"]["System.String"];
         };
         "Content.DTOs.BlogPosts.UpdateBlogPostRequest": {
             title: components["schemas"]["System.String"];
             content: components["schemas"]["System.String"];
             summary: null | components["schemas"]["System.String"];
-            imageUrl: null | components["schemas"]["System.String"];
+            imageKey: null | components["schemas"]["System.String"];
         };
         "Content.DTOs.FileObjects.ConfirmUploadFileRequest": {
             uploadId: components["schemas"]["System.String"];

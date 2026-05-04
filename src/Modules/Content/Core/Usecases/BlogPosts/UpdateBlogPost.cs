@@ -26,7 +26,7 @@ public class UpdateBlogPost(ContentDbContext db, BlogPostSlugGenerator slugGener
         post.Title = title;
         post.Content = BlogPostValidation.NormalizeRequired(request.Content);
         post.Summary = BlogPostValidation.NormalizeOptional(request.Summary);
-        post.ImageUrl = BlogPostValidation.NormalizeOptional(request.ImageUrl);
+        post.ImageKey = BlogPostValidation.NormalizeOptional(request.ImageKey);
 
         if (shouldRegenerateSlug)
         {

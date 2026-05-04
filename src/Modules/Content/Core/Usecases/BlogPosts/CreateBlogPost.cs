@@ -16,7 +16,7 @@ public class CreateBlogPost(ContentDbContext db, BlogPostSlugGenerator slugGener
             Slug = await slugGenerator.GenerateUniqueAsync(title, null, ct),
             Content = BlogPostValidation.NormalizeRequired(request.Content),
             Summary = BlogPostValidation.NormalizeOptional(request.Summary),
-            ImageUrl = BlogPostValidation.NormalizeOptional(request.ImageUrl),
+            ImageKey = BlogPostValidation.NormalizeOptional(request.ImageKey),
             Status = BlogPostStatus.Draft
         };
 

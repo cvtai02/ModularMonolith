@@ -25,8 +25,6 @@ type DeleteOperation =
 
 type ListPublishedBlogPostsOperation =
     Operation<"/api/Content/blog-posts", "get">;
-type CreateBlogPostOperation =
-    Operation<"/api/Content/blog-posts", "post">;
 type GetPublishedBlogPostBySlugOperation =
     Operation<"/api/Content/blog-posts/{slug}", "get">;
 type UpdateBlogPostOperation =
@@ -69,63 +67,74 @@ export type ListPublishedBlogPostsQuery =
     QueryParams<ListPublishedBlogPostsOperation>;
 // 200 OK
 export type ListPublishedBlogPostsResponse =
-    JsonResponse<ListPublishedBlogPostsOperation>;
+    PaginatedList<BlogPostSummary>;
 
 export type GetPublishedBlogPostBySlugParams =
     PathParams<GetPublishedBlogPostBySlugOperation>;
 // 200 OK
 export type BlogPostResponse =
-    JsonResponse<GetPublishedBlogPostBySlugOperation>;
+    BlogPostDetail;
 
 export type ListAdminBlogPostsQuery =
     QueryParams<ListAdminBlogPostsOperation>;
 // 200 OK
 export type ListAdminBlogPostsResponse =
-    JsonResponse<ListAdminBlogPostsOperation>;
+    PaginatedList<BlogPostSummary>;
 
 export type GetAdminBlogPostByIdParams =
     PathParams<GetAdminBlogPostByIdOperation>;
 // 200 OK
 export type GetAdminBlogPostByIdResponse =
-    JsonResponse<GetAdminBlogPostByIdOperation>;
+    BlogPostDetail;
 
 export type CreateBlogPostRequest =
-    JsonRequestBody<CreateBlogPostOperation>;
+    SaveBlogPostRequest;
 // 201 Created
 export type CreateBlogPostResponse =
-    JsonResponse<CreateBlogPostOperation>;
+    BlogPostDetail;
 
 export type UpdateBlogPostParams =
     PathParams<UpdateBlogPostOperation>;
 export type UpdateBlogPostRequest =
-    JsonRequestBody<UpdateBlogPostOperation>;
+    SaveBlogPostRequest;
 // 200 OK
 export type UpdateBlogPostResponse =
-    JsonResponse<UpdateBlogPostOperation>;
+    BlogPostDetail;
 
 export type PublishBlogPostParams =
     PathParams<PublishBlogPostOperation>;
 // 200 OK
 export type PublishBlogPostResponse =
-    JsonResponse<PublishBlogPostOperation>;
+    BlogPostDetail;
 
 export type ArchiveBlogPostParams =
     PathParams<ArchiveBlogPostOperation>;
 // 200 OK
 export type ArchiveBlogPostResponse =
-    JsonResponse<ArchiveBlogPostOperation>;
+    BlogPostDetail;
 
 export type DeleteBlogPostParams =
     PathParams<DeleteBlogPostOperation>;
 // No content
 export type DeleteBlogPostResponse = void;
 
+export type SaveBlogPostRequest = {
+    title: string;
+    content: string;
+    summary?: string | null;
+    imageKey?: string | null;
+};
+
+export type BlogPostDetail = BlogPostSummary & {
+    content: string;
+};
+
 export type BlogPostSummary = {
     id: number;
     title: string;
     slug: string;
     summary: string;
-    imageUrl: string;
+    imageKey: string;
     status: "Draft" | "Published" | "Archived";
     publishedAt?: string | null;
     created: string;

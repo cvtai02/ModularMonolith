@@ -9,7 +9,7 @@ public class BlogPostResponse
     public string Slug { get; set; } = string.Empty;
     public string Content { get; set; } = string.Empty;
     public string Summary { get; set; } = string.Empty;
-    public string ImageUrl { get; set; } = string.Empty;
+    public string ImageKey { get; set; } = string.Empty;
     public BlogPostStatus Status { get; set; }
     public DateTimeOffset? PublishedAt { get; set; }
     public DateTimeOffset Created { get; set; }

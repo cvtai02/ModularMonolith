@@ -22,7 +22,7 @@ export default function AddBlogPostPage() {
       title: values.title,
       content: values.content,
       summary: values.summary || undefined,
-      imageUrl: values.imageUrl || undefined,
+      imageKey: values.imageKey || undefined,
     });
     toast.success("Blog post created");
     await queryClient.invalidateQueries({ queryKey: ["admin-blogs-by-collection"] });

@@ -1,7 +1,9 @@
 import type {
   AccountProfileResponse,
+  AdminCreateAccountProfileRequest,
   AdminUpdateAccountProfileRequest,
   CreateAccountAddressResponse,
+  CreateAdminAccountProfileResponse,
   DeleteAccountAddressResponse,
   GetAdminAccountProfileByIdResponse,
   ListAccountAddressesResponse,
@@ -44,6 +46,11 @@ export interface IAccountClient {
   // Item response: src/Modules/Account/DTOs/AccountProfiles/AccountProfileResponse.cs
   // Wrapper response is generated in src/clients/shared/api/types/account.ts.
   listAdminProfiles(query?: ListAdminAccountProfilesQuery): Promise<ListAdminAccountProfilesResponse>;
+
+  // Contract method: createAdminProfile. Creates a customer profile for admin workflows.
+  // Request: src/Modules/Account/DTOs/AccountProfiles/AdminCreateAccountProfileRequest.cs
+  // Response: src/Modules/Account/DTOs/AccountProfiles/AccountProfileResponse.cs
+  createAdminProfile(input: AdminCreateAccountProfileRequest): Promise<CreateAdminAccountProfileResponse>;
 
   // Response: src/Modules/Account/DTOs/AccountProfiles/AccountProfileResponse.cs
   getAdminProfileById(id: number): Promise<GetAdminAccountProfileByIdResponse>;

@@ -16,9 +16,10 @@ Client contract: [AccountClient](../../../clients/shared/api/clients/account.ts)
 - [Delete](AccountAddressController.cs#L40)
 
 ### Tenant Admin Profiles
-- [GetAll](AccountProfileController.cs#L49)
-- [GetById](AccountProfileController.cs#L55)
-- [Update](AccountProfileController.cs#L64)
+- [Create](AccountProfileController.cs#L51) - auth: `TenantAdminUp`. DTOs: [AdminCreateAccountProfileRequest](../DTOs/AccountProfiles/AdminCreateAccountProfileRequest.cs), [AccountProfileResponse](../DTOs/AccountProfiles/AccountProfileResponse.cs). Creates a customer profile.
+- [GetAll](AccountProfileController.cs#L60)
+- [GetById](AccountProfileController.cs#L66)
+- [Update](AccountProfileController.cs#L75)
 
 ### Admin Notifications
 - Hub: `/hubs/notifications`

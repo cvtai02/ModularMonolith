@@ -30,4 +30,27 @@ public class OrderHub(OrderDbContext db) : Hub
 
     public Task LeaveOrder(int orderId)
         => Groups.RemoveFromGroupAsync(Context.ConnectionId, OrderRealtimeGroups.Order(orderId), Context.ConnectionAborted);
+
+    public Task JoinMyOrders()
+    {
+        var userId = GetAuthenticatedUserId();
+        return Groups.AddToGroupAsync(Context.ConnectionId, OrderRealtimeGroups.Customer(userId), Context.ConnectionAborted);
+    }
+
+    public Task LeaveMyOrders()
+    {
+        var userId = GetAuthenticatedUserId();
+        return Groups.RemoveFromGroupAsync(Context.ConnectionId, OrderRealtimeGroups.Customer(userId), Context.ConnectionAborted);
+    }
+
+    private string GetAuthenticatedUserId()
+    {
+        var userId = Context.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            throw new HubException("Order notifications are not available.");
+        }
+
+        return userId;
+    }
 }

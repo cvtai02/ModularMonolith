@@ -42,10 +42,20 @@ public class AccountProfileController(
 [Authorize(Policy = Policies.TenantAdminUp)]
 [Route($"api/{ModuleConstants.Key}/admin/profiles")]
 public class AdminAccountProfileController(
+    CreateAdminAccountProfile createAdminAccountProfile,
     ListAdminAccountProfiles listAdminAccountProfiles,
     GetAdminAccountProfileById getAdminAccountProfileById,
     UpdateAdminAccountProfile updateAdminAccountProfile) : ControllerBase
 {
+    [HttpPost]
+    public async Task<ActionResult<AccountProfileResponse>> Create(
+        [FromBody] AdminCreateAccountProfileRequest request,
+        CancellationToken cancellationToken)
+    {
+        var result = await createAdminAccountProfile.ExecuteAsync(request, cancellationToken);
+        return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
+    }
+
     [HttpGet]
     public async Task<ActionResult<PaginatedList<AccountProfileResponse>>> GetAll(
         [FromQuery] ListAccountProfilesRequest request,

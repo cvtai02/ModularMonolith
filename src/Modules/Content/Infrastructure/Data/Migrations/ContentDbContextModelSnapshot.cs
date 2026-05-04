@@ -41,7 +41,7 @@ namespace Content.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("ImageUrl")
+                    b.Property<string>("ImageKey")
                         .IsRequired()
                         .HasColumnType("text");
 

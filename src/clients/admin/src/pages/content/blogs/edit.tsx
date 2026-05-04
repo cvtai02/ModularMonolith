@@ -25,7 +25,7 @@ export default function EditBlogPostPage() {
   });
 
   const { mutateAsync: updatePost, isPending: isSaving } = useMutation({
-    mutationFn: ({ id, input }: { id: number; input: { title: string; content: string; summary?: string | null; imageUrl?: string | null } }) =>
+    mutationFn: ({ id, input }: { id: number; input: { title: string; content: string; summary?: string | null; imageKey?: string | null } }) =>
       contentClient.updateBlogPost(id, input),
   });
 
@@ -53,7 +53,7 @@ export default function EditBlogPostPage() {
         title: values.title,
         content: values.content,
         summary: values.summary || undefined,
-        imageUrl: values.imageUrl || undefined,
+        imageKey: values.imageKey || undefined,
       },
     });
     toast.success("Blog post saved");
@@ -122,7 +122,7 @@ export default function EditBlogPostPage() {
         title: post.title,
         content: post.content ?? "",
         summary: post.summary ?? "",
-        imageUrl: post.imageUrl ?? "",
+        imageKey: post.imageKey ?? "",
       }}
       onDiscard={() => navigate(ROUTES.contentBlogs)}
       onSubmit={handleSubmit}

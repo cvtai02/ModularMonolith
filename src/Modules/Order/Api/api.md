@@ -12,3 +12,7 @@ Client contract: [OrderClient](../../../clients/shared/api/clients/order.ts), [I
 - `GET /api/Order/orders/admin/{id}` - auth: `TenantAdminUp`. DTOs: [OrderResponse](../DTOs/Orders/OrderResponse.cs). Gets admin order detail.
 - `GET /api/Order/orders/{id}` - auth: none currently. DTOs: [OrderResponse](../DTOs/Orders/OrderResponse.cs). Gets order detail by id.
 - `GET /api/Order/orders` - auth: none currently. DTOs: [ListOrdersRequest](../DTOs/Orders/ListOrdersRequest.cs), [OrderSummaryResponse](../DTOs/Orders/OrderSummaryResponse.cs). Lists orders.
+
+### Realtime Order Notifications
+- Hub `/hubs/orders` - auth: authenticated user. Methods: `JoinOrder(orderId)`, `LeaveOrder(orderId)`, `JoinMyOrders()`, `LeaveMyOrders()`.
+- Server events: `OrderPlaced` for existing order-specific placed payloads, `OrderNotification` for placed/rejected/paid order lifecycle notifications.

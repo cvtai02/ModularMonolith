@@ -16,8 +16,8 @@ Client contract: [ContentClient](../../../clients/shared/api/clients/content.ts)
 - [GetBySlug](BlogPostController.cs#L29)
 - [GetAdmin](BlogPostController.cs#L39)
 - [GetAdminById](BlogPostController.cs#L46)
-- [Create](BlogPostController.cs#L56)
-- [Update](BlogPostController.cs#L66)
+- [Create](BlogPostController.cs#L56) - accepts markdown content and optional image key
+- [Update](BlogPostController.cs#L66) - accepts markdown content and optional image key
 - [Publish](BlogPostController.cs#L77)
 - [Archive](BlogPostController.cs#L87)
 - [Delete](BlogPostController.cs#L97)

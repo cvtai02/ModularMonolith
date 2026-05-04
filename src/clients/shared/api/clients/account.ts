@@ -2,8 +2,10 @@ import createFetchClient, { type Client } from "openapi-fetch";
 import type { paths } from "../lib/openapi-types";
 import type {
   AccountProfileResponse,
+  AdminCreateAccountProfileRequest,
   AdminUpdateAccountProfileRequest,
   CreateAccountAddressResponse,
+  CreateAdminAccountProfileResponse,
   DeleteAccountAddressResponse,
   GetAdminAccountProfileByIdResponse,
   ListAccountAddressesResponse,
@@ -24,8 +26,12 @@ type OpenApiClient = Client<paths>;
 
 export class AccountClient implements IAccountClient {
   private readonly client: OpenApiClient;
+  private readonly fetch: Fetch;
+  private readonly apiBaseUrl: string;
 
   constructor(fetch: Fetch, apiBaseUrl: string) {
+    this.fetch = fetch;
+    this.apiBaseUrl = apiBaseUrl.replace(/\/$/, "");
     this.client = createFetchClient<paths>({ baseUrl: apiBaseUrl, fetch });
   }
 
@@ -78,6 +84,18 @@ export class AccountClient implements IAccountClient {
     return requireData(data, "Admin account profiles response was empty.");
   }
 
+  async createAdminProfile(input: AdminCreateAccountProfileRequest): Promise<CreateAdminAccountProfileResponse> {
+    return this.requestJson<CreateAdminAccountProfileResponse>(
+      "/api/Account/admin/profiles",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(input),
+      },
+      "Create admin account profile response was empty.",
+    );
+  }
+
   async getAdminProfileById(id: number): Promise<GetAdminAccountProfileByIdResponse> {
     const { data, error } = await this.client.GET("/api/Account/admin/profiles/{id}", {
       params: { path: { id } },
@@ -96,5 +114,28 @@ export class AccountClient implements IAccountClient {
     });
     if (error) throw error;
     return requireData(data, "Update admin account profile response was empty.");
+  }
+
+  private async requestJson<T>(path: string, init: RequestInit | undefined, emptyMessage: string): Promise<T> {
+    const response = await this.fetch(`${this.apiBaseUrl}${path}`, init);
+    if (!response.ok) {
+      throw await this.readError(response);
+    }
+
+    if (response.status === 204) {
+      return undefined as T;
+    }
+
+    const data = await response.json() as T | undefined;
+    return requireData(data, emptyMessage);
+  }
+
+  private async readError(response: Response): Promise<unknown> {
+    const contentType = response.headers.get("content-type") ?? "";
+    if (contentType.includes("application/json")) {
+      return await response.json();
+    }
+
+    return new Error(await response.text());
   }
 }

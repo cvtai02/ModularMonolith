@@ -1,10 +1,13 @@
 using Intermediary.Events.Payment;
 using Microsoft.EntityFrameworkCore;
+using Order.Core.Notifications;
 using SharedKernel.Abstractions.Contracts;
 
 namespace Order.Core.EventHandlers;
 
-public class PaymentSucceededHandler(OrderDbContext db) : IEventHandler<PaymentSucceeded>
+public class PaymentSucceededHandler(
+    OrderDbContext db,
+    OrderRealtimeNotifier realtimeNotifier) : IEventHandler<PaymentSucceeded>
 {
     public async Task Handle(PaymentSucceeded @event, CancellationToken ct = default)
     {
@@ -14,5 +17,7 @@ public class PaymentSucceededHandler(OrderDbContext db) : IEventHandler<PaymentS
 
         order.SetStatus(Entities.OrderStatus.Paid);
         await db.SaveChangesAsync(ct);
+
+        await realtimeNotifier.NotifyOrderPaidAsync(order, ct);
     }
 }

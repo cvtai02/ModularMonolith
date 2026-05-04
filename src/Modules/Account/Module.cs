@@ -36,6 +36,7 @@ public class AccountModule(IHostApplicationBuilder b) : Module(b)
         Services.AddScoped<CreateMyAccountAddress>();
         Services.AddScoped<UpdateMyAccountAddress>();
         Services.AddScoped<DeleteMyAccountAddress>();
+        Services.AddScoped<CreateAdminAccountProfile>();
         Services.AddScoped<ListAdminAccountProfiles>();
         Services.AddScoped<GetAdminAccountProfileById>();
         Services.AddScoped<UpdateAdminAccountProfile>();

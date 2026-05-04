@@ -1,6 +1,22 @@
-import { type ReactNode, useState } from "react";
-import { useForm } from "react-hook-form";
-import { ArrowLeftIcon, EyeIcon, PencilIcon } from "lucide-react";
+import { type ReactNode, useRef, useState } from "react";
+import ReactMarkdown from "react-markdown";
+import type { Components } from "react-markdown";
+import { Controller, useForm } from "react-hook-form";
+import {
+  ArrowLeftIcon,
+  Bold,
+  Code,
+  EyeIcon,
+  Heading1,
+  Heading2,
+  ImageIcon,
+  Italic,
+  Link,
+  List,
+  ListOrdered,
+  PencilIcon,
+  Strikethrough,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
@@ -8,6 +24,15 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Textarea } from "@/components/ui/textarea";
+import { SingleImagePickerField } from "@/components/admin/image-picker-field";
+import { resolveMediaUrl } from "@/lib/media";
+
+const markdownComponents: Components = {
+  img({ src, alt, ...props }) {
+    const resolved = resolveMediaUrl(src ?? "");
+    return <img src={resolved} alt={alt} {...props} />;
+  },
+};
 import { applyValidationErrors } from "@/lib/form-error";
 import { cn } from "@/lib/utils";
 
@@ -17,7 +42,7 @@ export type BlogPostFormValues = {
   title: string;
   content: string;
   summary: string;
-  imageUrl: string;
+  imageKey: string;
 };
 
 interface Props {
@@ -32,8 +57,6 @@ interface Props {
 }
 
 // ─── Markdown preview ─────────────────────────────────────────────────────────
-// Renders a basic styled view of raw markdown text.
-// Integrate a proper parser (e.g. marked, react-markdown) for full HTML rendering.
 
 function MarkdownPreview({ content }: { content: string }) {
   if (!content.trim()) {
@@ -42,11 +65,36 @@ function MarkdownPreview({ content }: { content: string }) {
     );
   }
   return (
-    <pre className="text-sm leading-relaxed whitespace-pre-wrap font-sans text-foreground">
-      {content}
-    </pre>
+    <div className="prose prose-sm max-w-none dark:prose-invert">
+      <ReactMarkdown components={markdownComponents}>{content}</ReactMarkdown>
+    </div>
   );
 }
+
+// ─── Toolbar ─────────────────────────────────────────────────────────────────
+
+type WrapAction = { type: "wrap"; prefix: string; suffix: string; placeholder: string };
+type LineAction = { type: "line"; prefix: string };
+type ToolbarItem =
+  | { icon: React.ElementType; label: string; action: WrapAction | LineAction }
+  | "sep";
+
+const TOOLBAR: ToolbarItem[] = [
+  { icon: Bold, label: "Bold", action: { type: "wrap", prefix: "**", suffix: "**", placeholder: "bold text" } },
+  { icon: Italic, label: "Italic", action: { type: "wrap", prefix: "*", suffix: "*", placeholder: "italic text" } },
+  { icon: Strikethrough, label: "Strikethrough", action: { type: "wrap", prefix: "~~", suffix: "~~", placeholder: "strikethrough" } },
+  "sep",
+  { icon: Heading1, label: "Heading 1", action: { type: "line", prefix: "# " } },
+  { icon: Heading2, label: "Heading 2", action: { type: "line", prefix: "## " } },
+  "sep",
+  { icon: List, label: "Bullet list", action: { type: "line", prefix: "- " } },
+  { icon: ListOrdered, label: "Numbered list", action: { type: "line", prefix: "1. " } },
+  "sep",
+  { icon: Link, label: "Link", action: { type: "wrap", prefix: "[", suffix: "](url)", placeholder: "link text" } },
+  { icon: ImageIcon, label: "Image", action: { type: "wrap", prefix: "![", suffix: "](url)", placeholder: "alt text" } },
+  "sep",
+  { icon: Code, label: "Inline code", action: { type: "wrap", prefix: "`", suffix: "`", placeholder: "code" } },
+];
 
 // ─── Layout ───────────────────────────────────────────────────────────────────
 
@@ -62,20 +110,59 @@ export function BlogPostFormLayout({
   const {
     register,
     handleSubmit,
+    setValue,
     setError,
+    control,
     formState: { errors },
   } = useForm<BlogPostFormValues>({
     defaultValues: {
       title: "",
       content: "",
       summary: "",
-      imageUrl: "",
+      imageKey: "",
       ...defaultValues,
     },
   });
 
   const [contentTab, setContentTab] = useState<"write" | "preview">("write");
   const [contentPreview, setContentPreview] = useState(defaultValues?.content ?? "");
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const { ref: registerRef, ...contentRest } = register("content");
+
+  function applyToolbarAction(action: WrapAction | LineAction) {
+    const el = textareaRef.current;
+    if (!el) return;
+
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
+    const value = el.value;
+
+    let newValue: string;
+    let newStart: number;
+    let newEnd: number;
+
+    if (action.type === "wrap") {
+      const selected = value.slice(start, end) || action.placeholder;
+      newValue = value.slice(0, start) + action.prefix + selected + action.suffix + value.slice(end);
+      newStart = start + action.prefix.length;
+      newEnd = newStart + selected.length;
+    } else {
+      const lineStart = value.lastIndexOf("\n", start - 1) + 1;
+      newValue = value.slice(0, lineStart) + action.prefix + value.slice(lineStart);
+      newStart = start + action.prefix.length;
+      newEnd = newStart;
+    }
+
+    el.value = newValue;
+    setValue("content", newValue, { shouldDirty: true });
+    setContentPreview(newValue);
+
+    requestAnimationFrame(() => {
+      el.focus();
+      el.setSelectionRange(newStart, newEnd);
+    });
+  }
 
   const doSubmit = handleSubmit(async (values) => {
     try {
@@ -140,11 +227,13 @@ export function BlogPostFormLayout({
             </Field>
 
             <Field>
-              <FieldLabel>Image URL</FieldLabel>
-              <Input
-                {...register("imageUrl")}
-                placeholder="https://…"
-                type="url"
+              <FieldLabel>Image</FieldLabel>
+              <Controller
+                control={control}
+                name="imageKey"
+                render={({ field }) => (
+                  <SingleImagePickerField value={field.value} onChange={field.onChange} />
+                )}
               />
             </Field>
           </FieldGroup>
@@ -184,14 +273,39 @@ export function BlogPostFormLayout({
             </div>
           </div>
 
+          {/* Toolbar — write mode only */}
+          {contentTab === "write" && (
+            <div className="flex flex-wrap items-center gap-0.5 border-b bg-muted/30 px-2 py-1.5">
+              {TOOLBAR.map((item, i) =>
+                item === "sep" ? (
+                  <div key={i} className="mx-1 h-4 w-px bg-border" />
+                ) : (
+                  <button
+                    key={item.label}
+                    type="button"
+                    title={item.label}
+                    onClick={() => applyToolbarAction(item.action)}
+                    className="flex h-7 w-7 items-center justify-center rounded text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                  >
+                    <item.icon className="size-3.5" />
+                  </button>
+                )
+              )}
+            </div>
+          )}
+
           {contentTab === "write" ? (
             <div className="p-4">
               <textarea
-                {...register("content")}
+                {...contentRest}
+                ref={(el) => {
+                  textareaRef.current = el;
+                  registerRef(el);
+                }}
                 placeholder="Write your post in Markdown…"
                 rows={24}
                 onChange={(e) => {
-                  register("content").onChange(e);
+                  contentRest.onChange(e);
                   setContentPreview(e.target.value);
                 }}
                 className="w-full resize-y rounded-md border bg-transparent px-3 py-2 font-mono text-sm leading-relaxed placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"

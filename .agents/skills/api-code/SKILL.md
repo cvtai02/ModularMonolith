@@ -25,7 +25,6 @@ description: Implement/Update API endpoints.
 1. Create or update an abstract backend plan under `requirements/backend-plan/` before implementation.
    - Keep the plan focused on goals, API capability, affected module boundaries, validation behavior, and handoff impact.
    - Do not write detailed implementation steps, internal code notes, or frontend UI instructions in the backend plan.
-   - After create plan. Stop for reviewing.
 2. Implement APIs:
    - Add or update DTOs under `src/Modules/<ModuleName>/DTOs/**`.
    - Add or update use cases/controllers under `src/Modules/<ModuleName>/Api/**` using the module's existing style.

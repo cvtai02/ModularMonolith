@@ -31,6 +31,9 @@ const EditBlogPostPage = LazyPage(() => import("@/pages/content/blogs/edit"));
 const Orders = LazyPage(() => import("@/pages/orders"));
 const OrderDetail = LazyPage(() => import("@/pages/orders/detail"));
 const AdminCreateOrder = LazyPage(() => import("@/pages/orders/create"));
+const Customers = LazyPage(() => import("@/pages/customers"));
+const AddCustomer = LazyPage(() => import("@/pages/customers/add"));
+const CustomerDetail = LazyPage(() => import("@/pages/customers/detail"));
 // const Promotions = LazyPage(() => import("@/pages/promotions"));
 // const Reviews = LazyPage(() => import("@/pages/reviews"));
 // const Settings = LazyPage(() => import("@/pages/settings"));
@@ -62,7 +65,9 @@ const AppRoutes: ReactNode =
         <Route path={ROUTES.orders} element={<Orders />} errorElement={<ErrorPage />} />
         <Route path="/orders/new" element={<AdminCreateOrder />} errorElement={<ErrorPage />} />
         <Route path="/orders/:id" element={<OrderDetail />} errorElement={<ErrorPage />} />
-        {/* <Route path={ROUTES.customers} element={<Customers />} errorElement={<ErrorPage />} /> */}
+        <Route path={ROUTES.customers} element={<Customers />} errorElement={<ErrorPage />} />
+        <Route path={ROUTES.customerNew} element={<AddCustomer />} errorElement={<ErrorPage />} />
+        <Route path="/customers/:id" element={<CustomerDetail />} errorElement={<ErrorPage />} />
         {/* <Route path={ROUTES.promotions} element={<Promotions />} /> */}
         {/* <Route path={ROUTES.reviews} element={<Reviews />} /> */}
         {/* <Route path={ROUTES.settings} element={<Settings />} /> */}

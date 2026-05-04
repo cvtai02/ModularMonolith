@@ -68,6 +68,13 @@ export type ListAdminAccountProfilesQuery =
 // 200 OK
 export type ListAdminAccountProfilesResponse =
     JsonResponse<ListAdminAccountProfilesOperation>;
+export type AdminCreateAccountProfileRequest = UpdateAccountProfileRequest & {
+    identityUserId?: string | null;
+    status?: AccountStatus | null;
+};
+// 201 Created
+export type CreateAdminAccountProfileResponse =
+    AccountProfileResponse;
 export type GetAdminAccountProfileByIdParams =
     PathParams<GetAdminAccountProfileByIdOperation>;
 // 200 OK
