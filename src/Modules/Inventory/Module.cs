@@ -4,8 +4,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Inventory.Core.Usecases.Inventory;
-using SharedKernel.Abstractions.Contracts;
-using SharedKernel.Abstractions.Services;
 
 namespace Inventory;
 
@@ -28,13 +26,10 @@ public class InventoryModule(IHostApplicationBuilder b) : Module(b)
     {
         Services.AddScoped<InitializeProductInventory>();
         Services.AddScoped<ImportVariantInventory>();
-        Services.AddScoped<IEventHandler<OrderSubmitted>, OrderSubmittedHandler>();
-        Services.AddScoped<IEventHandler<OrderPlaced>, OrderPlacedHandler>();
     }
 
     public override void Run(WebApplication app)
     {
-        var eventBus = app.Services.GetRequiredService<IEventBus>();
     }
 }
 

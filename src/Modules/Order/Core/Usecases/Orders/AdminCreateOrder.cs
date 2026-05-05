@@ -18,6 +18,11 @@ public class AdminCreateOrder(
             });
         }
 
+        if (request.CustomerProfileId is null)
+        {
+            return await createOrder.ExecuteForCustomerAsync(request, null, ct);
+        }
+
         if (request.CustomerProfileId <= 0)
         {
             throw new ValidationException("Validation failed", new Dictionary<string, string[]>
@@ -26,7 +31,7 @@ public class AdminCreateOrder(
             });
         }
 
-        var customer = await customerLookup.GetCustomerForOrderAsync(request.CustomerProfileId, ct);
+        var customer = await customerLookup.GetCustomerForOrderAsync(request.CustomerProfileId.Value, ct);
         if (customer is null)
         {
             throw new ValidationException("Validation failed", new Dictionary<string, string[]>

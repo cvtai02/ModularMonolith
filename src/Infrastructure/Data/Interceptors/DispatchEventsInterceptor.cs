@@ -1,8 +1,7 @@
-using MediatR;
+using Infrastructure.EventBus;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using SharedKernel.Abstractions.Contracts;
-using SharedKernel.Abstractions.Services;
 
 namespace Infrastructure.Data.Interceptors;
 
@@ -15,22 +14,22 @@ public class DispatchEventsInterceptor : SaveChangesInterceptor
         _eventBus = eventbus;
     }
 
-    public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
+    public override int SavedChanges(SaveChangesCompletedEventData eventData, int result)
     {
         DispatchDomainEvents(eventData.Context).GetAwaiter().GetResult();
-
-        return base.SavingChanges(eventData, result);
-
+        return base.SavedChanges(eventData, result);
     }
 
-    public override async ValueTask<InterceptionResult<int>> SavingChangesAsync(DbContextEventData eventData, InterceptionResult<int> result, CancellationToken cancellationToken = default)
+    public override async ValueTask<int> SavedChangesAsync(
+        SaveChangesCompletedEventData eventData,
+        int result,
+        CancellationToken cancellationToken = default)
     {
-        await DispatchDomainEvents(eventData.Context);
-
-        return await base.SavingChangesAsync(eventData, result, cancellationToken);
+        await DispatchDomainEvents(eventData.Context, cancellationToken);
+        return await base.SavedChangesAsync(eventData, result, cancellationToken);
     }
 
-    public async Task DispatchDomainEvents(DbContext? context)
+    public async Task DispatchDomainEvents(DbContext? context, CancellationToken cancellationToken = default)
     {
         if (context == null) return;
 
@@ -46,6 +45,6 @@ public class DispatchEventsInterceptor : SaveChangesInterceptor
         entities.ToList().ForEach(e => e.Events.Clear());
 
         foreach (var domainEvent in domainEvents)
-            await _eventBus.Publish(domainEvent);
+            await _eventBus.Publish(domainEvent, cancellationToken);
     }
 }

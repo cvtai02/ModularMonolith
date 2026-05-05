@@ -3,11 +3,10 @@ using Intermediary.Events.Order;
 using Inventory.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel.Abstractions.Contracts;
-using SharedKernel.Abstractions.Services;
 
 namespace Inventory.Core.EventHandlers;
 
-public class OrderSubmittedHandler(InventoryDbContext db, IEventBus eventBus) : IEventHandler<OrderSubmitted>
+public class OrderSubmittedHandler(InventoryDbContext db) : IIntegrationEventHandler<OrderSubmitted>
 {
     private static readonly TimeSpan ReservationTtl = TimeSpan.FromMinutes(15);
 
@@ -15,7 +14,7 @@ public class OrderSubmittedHandler(InventoryDbContext db, IEventBus eventBus) : 
     {
         if (@event.Items.Count == 0)
         {
-            await PublishRejected(@event.OrderId, new Dictionary<string, string[]>
+            await Reject(@event.OrderId, new Dictionary<string, string[]>
             {
                 ["items"] = ["Order has no items to reserve."]
             }, ct);
@@ -31,25 +30,45 @@ public class OrderSubmittedHandler(InventoryDbContext db, IEventBus eventBus) : 
         var errors = Validate(@event, inventories);
         if (errors.Count > 0)
         {
-            await PublishRejected(@event.OrderId, errors, ct);
+            await Reject(@event.OrderId, errors, ct);
             return;
         }
 
         var expiresAt = DateTimeOffset.UtcNow.Add(ReservationTtl);
+        var reservation = new Reservation
+        {
+            OrderId = @event.OrderId,
+            Status = ReservationStatus.Active,
+            ExpiresAt = expiresAt,
+            ReservationLines = @event.Items
+                .Select(x => new ReservationLine
+                {
+                    VariantId = x.VariantId,
+                    Quantity = x.Quantity
+                })
+                .ToList()
+        };
+
+        reservation.Events.Add(new InventoryReserved
+        {
+            OrderId = @event.OrderId,
+            ReservationId = reservation.Id,
+            ExpiresAt = expiresAt,
+            Items = @event.Items
+                .Select(x => new InventoryReservationItem
+                {
+                    VariantId = x.VariantId,
+                    Quantity = x.Quantity
+                })
+                .ToList()
+        });
+        db.Reservations.Add(reservation);
+
         foreach (var item in @event.Items)
         {
             var inventory = inventories[item.VariantId];
             if (inventory.TrackInventory)
                 inventory.Tracking.Reserved += item.Quantity;
-
-            db.Reservations.Add(new Reservation
-            {
-                VariantId = item.VariantId,
-                OrderId = @event.OrderId,
-                Quantity = item.Quantity,
-                Status = ReservationStatus.Active,
-                ExpiresAt = expiresAt
-            });
 
             db.Transactions.Add(new Transaction
             {
@@ -62,26 +81,6 @@ public class OrderSubmittedHandler(InventoryDbContext db, IEventBus eventBus) : 
         }
 
         await db.SaveChangesAsync(ct);
-
-        var reservationId = await db.Reservations
-            .Where(x => x.OrderId == @event.OrderId && x.Status == ReservationStatus.Active)
-            .OrderBy(x => x.Id)
-            .Select(x => x.Id)
-            .FirstAsync(ct);
-
-        await eventBus.Publish(new InventoryReserved
-        {
-            OrderId = @event.OrderId,
-            ReservationId = reservationId,
-            ExpiresAt = expiresAt,
-            Items = @event.Items
-                .Select(x => new InventoryReservationItem
-                {
-                    VariantId = x.VariantId,
-                    Quantity = x.Quantity
-                })
-                .ToList()
-        }, ct);
     }
 
     private static Dictionary<string, string[]> Validate(
@@ -121,13 +120,24 @@ public class OrderSubmittedHandler(InventoryDbContext db, IEventBus eventBus) : 
         return errors;
     }
 
-    private Task PublishRejected(
+    private async Task Reject(
         int orderId,
         IReadOnlyDictionary<string, string[]> errors,
-        CancellationToken ct) =>
-        eventBus.Publish(new ReservationRejected
+        CancellationToken ct)
+    {
+        var reservation = new Reservation
+        {
+            OrderId = orderId,
+            Status = ReservationStatus.Released,
+            ExpiresAt = DateTimeOffset.UtcNow
+        };
+        reservation.Events.Add(new ReservationRejected
         {
             OrderId = orderId,
             Errors = errors
-        }, ct);
+        });
+
+        db.Reservations.Add(reservation);
+        await db.SaveChangesAsync(ct);
+    }
 }

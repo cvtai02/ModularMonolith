@@ -94,7 +94,10 @@ export default function OrderDetailPage() {
               </div>
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
                 <LabeledValue label="Order code" value={<code className="font-mono">{order.code}</code>} />
-                <LabeledValue label="Customer ID" value={order.customerId} />
+                <LabeledValue
+                  label="Customer"
+                  value={order.customerId ?? <span className="italic text-muted-foreground">Guest</span>}
+                />
                 <LabeledValue
                   label="Total"
                   value={

@@ -9,6 +9,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using SharedKernel.Abstractions.Factories;
 using SharedKernel.Abstractions.Services;
 
@@ -57,10 +58,9 @@ public static class InfrastructureInjection
             services.AddScoped<IFileManager, CloudflareR2>();
 
             // EventBus
-            services.AddSingleton<IMediator, Mediator>();
-            services.AddSingleton<MediatREventBus>();
-            services.AddSingleton<RabbitMQ>();
-            services.AddSingleton<IEventBus, MediatREventBus>(); // change to RabbitMq for scale and consistency
+            services.AddScoped<IPublisher, Mediator>();
+            services.AddScoped<MediatREventBus>();
+            services.AddScoped<IEventBus, MediatREventBus>(); // change to RabbitMq for scale and consistency
 
             //Cache
             services.AddMemoryCache();

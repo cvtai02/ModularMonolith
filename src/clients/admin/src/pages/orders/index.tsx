@@ -185,7 +185,7 @@ export default function OrdersPage() {
                       )}
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">
-                      {order.customerId ?? <span className="italic opacity-40">—</span>}
+                      {order.customerId ?? <span className="italic opacity-40">Guest</span>}
                     </TableCell>
                     <TableCell>
                       <OrderStatusBadge status={order.status} />

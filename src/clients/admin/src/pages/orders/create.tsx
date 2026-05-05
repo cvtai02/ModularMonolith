@@ -117,10 +117,6 @@ export default function AdminCreateOrderPage() {
   const estimatedTotal = orderItems.reduce((s, i) => s + i.unitPrice * i.quantity, 0);
 
   const doSubmit = handleSubmit(async (addressValues) => {
-    if (!customer) {
-      toast.error("Please select a customer.");
-      return;
-    }
     if (orderItems.length === 0) {
       toast.error("Please add at least one product.");
       return;
@@ -128,18 +124,18 @@ export default function AdminCreateOrderPage() {
 
     try {
       const result = await createOrder({
-        customerProfileId: customer.id,
+        customerProfileId: customer?.id ?? null,
         shippingAddress: {
           ownerName: addressValues.ownerName,
           type: addressValues.type,
           phoneNumber: addressValues.phoneNumber,
           email: addressValues.email,
           country: addressValues.country,
-          state: addressValues.state || undefined,
-          city: addressValues.city || undefined,
-          postalCode: addressValues.postalCode || undefined,
+          state: addressValues.state || null,
+          city: addressValues.city || null,
+          postalCode: addressValues.postalCode || null,
           line1: addressValues.line1,
-          line2: addressValues.line2 || undefined,
+          line2: addressValues.line2 || null,
         },
         items: orderItems.map((i) => ({
           variantId: i.variantId,
@@ -175,7 +171,7 @@ export default function AdminCreateOrderPage() {
         <Separator orientation="vertical" className="h-5" />
         <div className="flex items-center gap-2">
           <ClipboardListIcon className="size-4 text-muted-foreground" />
-          <h1 className="text-sm font-semibold">Place Order for Customer</h1>
+          <h1 className="text-sm font-semibold">Place Order</h1>
         </div>
         <div className="ml-auto flex items-center gap-2">
           <Button variant="ghost" size="sm" type="button" onClick={() => navigate(ROUTES.orders)}>
@@ -193,16 +189,28 @@ export default function AdminCreateOrderPage() {
         {/* Customer section */}
         <div className="rounded-xl border bg-card p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold">Customer *</h2>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => setCustomerPickerOpen(true)}
-            >
-              <UserIcon className="size-3.5" />
-              {customer ? "Change" : "Select customer"}
-            </Button>
+            <h2 className="text-sm font-semibold">Customer</h2>
+            <div className="flex items-center gap-2">
+              {customer && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setCustomer(null)}
+                >
+                  Remove
+                </Button>
+              )}
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setCustomerPickerOpen(true)}
+              >
+                <UserIcon className="size-3.5" />
+                {customer ? "Change" : "Select customer"}
+              </Button>
+            </div>
           </div>
           {customer ? (
             <div className="flex items-center gap-3 rounded-lg border px-4 py-3">
@@ -217,14 +225,20 @@ export default function AdminCreateOrderPage() {
               </div>
             </div>
           ) : (
-            <button
-              type="button"
-              onClick={() => setCustomerPickerOpen(true)}
-              className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed border-muted-foreground/25 px-4 py-5 text-sm text-muted-foreground transition-colors hover:border-muted-foreground/40 hover:bg-muted/20"
-            >
-              <UserIcon className="size-4" />
-              Search and select a customer…
-            </button>
+            <div className="flex items-center gap-3 rounded-lg border border-dashed px-4 py-3 text-muted-foreground">
+              <UserIcon className="size-4 shrink-0 opacity-40" />
+              <div className="min-w-0 flex-1">
+                <p className="text-sm">Guest order</p>
+                <p className="text-xs opacity-60">No customer — order will be unassigned</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setCustomerPickerOpen(true)}
+                className="shrink-0 text-xs underline underline-offset-2 hover:text-foreground transition-colors"
+              >
+                Select customer
+              </button>
+            </div>
           )}
         </div>
 

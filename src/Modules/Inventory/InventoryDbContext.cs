@@ -15,5 +15,6 @@ public class InventoryDbContext : TenancyDbContext
     public DbSet<VariantTracking> VariantTrackings => Set<VariantTracking>();
     public DbSet<Batch> Batches => Set<Batch>();
     public DbSet<Reservation> Reservations => Set<Reservation>();
+    public DbSet<ReservationLine> ReservationLines => Set<ReservationLine>();
     public DbSet<Transaction> Transactions => Set<Transaction>();
 }

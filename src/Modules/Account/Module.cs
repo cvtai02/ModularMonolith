@@ -41,7 +41,7 @@ public class AccountModule(IHostApplicationBuilder b) : Module(b)
         Services.AddScoped<GetAdminAccountProfileById>();
         Services.AddScoped<UpdateAdminAccountProfile>();
         Services.AddScoped<IOrderCustomerLookup, OrderCustomerLookup>();
-        Services.AddScoped<IEventHandler<AdminOrderPlaced>, AdminOrderPlacedHandler>();
+        Services.AddScoped<IIntegrationEventHandler<AdminOrderPlaced>, AdminOrderPlacedHandler>();
     }
 
     public override void Run(WebApplication app)

@@ -22,7 +22,7 @@ export type GetOrderParams = PathParams<GetOrderOperation>;
 export type OrderResponse = JsonResponse<GetOrderOperation>;
 
 export type AdminCreateOrderRequest = CreateOrderRequest & {
-    customerProfileId: number;
+    customerProfileId?: number | null;
 };
 
 export type AdminCreateOrderResponse = CreateOrderResponse;

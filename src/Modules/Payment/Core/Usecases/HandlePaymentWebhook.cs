@@ -3,14 +3,12 @@ using Microsoft.EntityFrameworkCore;
 using Payment.DTOs;
 using Payment.Core.Entities;
 using Payment.Core.Strategies;
-using SharedKernel.Abstractions.Services;
 using SharedKernel.Exceptions;
 
 namespace Payment.Core.Usecases;
 
 public class HandlePaymentWebhook(
     PaymentDbContext db,
-    IEventBus eventBus,
     PaymentMethodStrategyResolver strategyResolver)
 {
     public async Task<PaymentTransactionResponse?> ExecuteAsync(
@@ -71,9 +69,7 @@ public class HandlePaymentWebhook(
         transaction.Status = PaymentStatus.Succeeded;
         transaction.PaidAt = paidAt;
         transaction.FailureReason = null;
-        await db.SaveChangesAsync(ct);
-
-        await eventBus.Publish(new PaymentSucceeded
+        transaction.Events.Add(new PaymentSucceeded
         {
             OrderId = transaction.OrderId,
             OrderCode = transaction.OrderCode,
@@ -83,16 +79,16 @@ public class HandlePaymentWebhook(
             Amount = transaction.Amount,
             CurrencyCode = transaction.CurrencyCode,
             PaidAt = paidAt
-        }, ct);
+        });
+        await db.SaveChangesAsync(ct);
     }
 
     private async Task MarkFailed(PaymentTransaction transaction, string? failureReason, CancellationToken ct)
     {
         transaction.Status = PaymentStatus.Failed;
         transaction.FailureReason = NormalizeFailureReason(failureReason);
+        transaction.Events.Add(ToFailedEvent(transaction));
         await db.SaveChangesAsync(ct);
-
-        await eventBus.Publish(ToFailedEvent(transaction), ct);
     }
 
     private async Task MarkCancelled(PaymentTransaction transaction, string? failureReason, CancellationToken ct)
@@ -100,9 +96,8 @@ public class HandlePaymentWebhook(
         transaction.Status = PaymentStatus.Cancelled;
         transaction.CancelledAt = DateTimeOffset.UtcNow;
         transaction.FailureReason = NormalizeFailureReason(failureReason) ?? "Payment was cancelled.";
+        transaction.Events.Add(ToFailedEvent(transaction));
         await db.SaveChangesAsync(ct);
-
-        await eventBus.Publish(ToFailedEvent(transaction), ct);
     }
 
     private static PaymentFailed ToFailedEvent(PaymentTransaction transaction) => new()

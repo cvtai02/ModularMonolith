@@ -7,7 +7,7 @@ namespace Order.Core.EventHandlers;
 
 public class ReservationRejectedHandler(
     OrderDbContext db,
-    OrderRealtimeNotifier realtimeNotifier) : IEventHandler<ReservationRejected>
+    OrderRealtimeNotifier realtimeNotifier) : IIntegrationEventHandler<ReservationRejected>
 {
     public async Task Handle(ReservationRejected @event, CancellationToken ct = default)
     {

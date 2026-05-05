@@ -19,7 +19,6 @@ Codex may read and edit `src/clients/shared/` only when backend contract work re
 ## Planning Requests
 
 - When the user asks for a plan, create or update a descriptive plan file under `requirements/` before doing any implementation or other work.
-- The plan file should be committed as a reviewable artifact for the user before execution begins.
 
 ## .NET Build And Run Safety
 - Dont run or build anything with dotnet. you will break my computer.
@@ -32,6 +31,7 @@ Codex must not read, edit, move, delete, format, lint, test, or generate files i
 - `src/clients/admin/`
 - any future folder under `src/clients/` except `src/clients/shared/`
 - `src/clients/shared/api/lib`
+- `requirements/*/done`
 
 If backend work needs a frontend change, Codex should document the required change for Claude instead of editing frontend files.
 

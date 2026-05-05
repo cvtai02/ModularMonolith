@@ -2,55 +2,54 @@ using Intermediary.Events.Inventory;
 using Intermediary.Events.Order;
 using Inventory.Core.Entities;
 using Microsoft.EntityFrameworkCore;
-using SharedKernel.Abstractions.Contracts;
-using SharedKernel.Abstractions.Services;
 
 namespace Inventory.Core.EventHandlers;
 
-public class OrderPlacedHandler(InventoryDbContext db, IEventBus eventBus) : IEventHandler<OrderPlaced>
+public class OrderPlacedHandler(InventoryDbContext db) : IIntegrationEventHandler<OrderPlaced>
 {
     public async Task Handle(OrderPlaced @event, CancellationToken ct = default)
     {
-        var reservations = await db.Reservations
-            .Include(x => x.Variant).ThenInclude(x => x.Tracking)
-            .Where(x => x.OrderId == @event.OrderId && x.Status == ReservationStatus.Active)
-            .ToListAsync(ct);
+        var reservation = await db.Reservations
+            .Include(x => x.ReservationLines)
+                .ThenInclude(x => x.Variant)
+                .ThenInclude(x => x.Tracking)
+            .FirstOrDefaultAsync(x => x.OrderId == @event.OrderId && x.Status == ReservationStatus.Active, ct);
 
-        if (reservations.Count == 0)
+        if (reservation is null)
             return;
 
-        foreach (var reservation in reservations)
+        foreach (var line in reservation.ReservationLines)
         {
-            if (reservation.Variant.TrackInventory)
+            if (line.Variant.TrackInventory)
             {
-                reservation.Variant.Tracking.OnHand -= reservation.Quantity;
-                reservation.Variant.Tracking.Reserved -= reservation.Quantity;
+                line.Variant.Tracking.OnHand -= line.Quantity;
+                line.Variant.Tracking.Reserved -= line.Quantity;
             }
 
-            reservation.Status = ReservationStatus.Confirmed;
             db.Transactions.Add(new Transaction
             {
-                VariantId = reservation.VariantId,
+                VariantId = line.VariantId,
                 Type = TransactionType.Out,
-                Quantity = reservation.Quantity,
+                Quantity = line.Quantity,
                 ReferenceId = @event.OrderId.ToString(),
                 Note = $"Committed for order {@event.OrderCode}"
             });
         }
 
-        await db.SaveChangesAsync(ct);
-
-        await eventBus.Publish(new ReservationCommited
+        reservation.Status = ReservationStatus.Confirmed;
+        reservation.Events.Add(new ReservationCommited
         {
             OrderId = @event.OrderId,
-            ReservationId = @event.ReservationId,
-            Items = reservations
+            ReservationId = reservation.Id,
+            Items = reservation.ReservationLines
                 .Select(x => new InventoryReservationItem
                 {
                     VariantId = x.VariantId,
                     Quantity = x.Quantity
                 })
                 .ToList()
-        }, ct);
+        });
+
+        await db.SaveChangesAsync(ct);
     }
 }

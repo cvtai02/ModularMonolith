@@ -2974,7 +2974,7 @@ export interface components {
         /** @enum {unknown} */
         "Order.Core.Entities.OrderStatus": "Draft" | "PendingInventory" | "Placed" | "Paid" | "Rejected" | "Cancelled" | "Shipped";
         "Order.DTOs.Orders.AdminCreateOrderRequest": {
-            customerProfileId?: components["schemas"]["System.Int32"];
+            customerProfileId?: null | components["schemas"]["System.Nullable`1[[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
             currencyCode?: null | components["schemas"]["System.String"];
             shippingAddress: components["schemas"]["SharedKernel.DTOs.Address"];
             items?: components["schemas"]["System.Collections.Generic.List`1[[Order.DTOs.Orders.CreateOrderItemRequest, Order, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];

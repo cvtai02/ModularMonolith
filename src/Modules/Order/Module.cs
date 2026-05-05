@@ -32,11 +32,11 @@ public class OrderModule(IHostApplicationBuilder b) : Module(b)
         Services.AddScoped<GetOrderById>();
         Services.AddScoped<ListOrders>();
         Services.AddScoped<OrderRealtimeNotifier>();
-        Services.AddScoped<IEventHandler<InventoryReserved>, InventoryReservedHandler>();
-        Services.AddScoped<IEventHandler<ReservationRejected>, ReservationRejectedHandler>();
-        Services.AddScoped<IEventHandler<ReservationCommited>, ReservationCommitedHandler>();
-        Services.AddScoped<IEventHandler<ReservationExpired>, ReservationExpiredHandler>();
-        Services.AddScoped<IEventHandler<PaymentSucceeded>, PaymentSucceededHandler>();
+        Services.AddScoped<IIntegrationEventHandler<InventoryReserved>, InventoryReservedHandler>();
+        Services.AddScoped<IIntegrationEventHandler<ReservationRejected>, ReservationRejectedHandler>();
+        Services.AddScoped<IIntegrationEventHandler<ReservationCommited>, ReservationCommitedHandler>();
+        Services.AddScoped<IIntegrationEventHandler<ReservationExpired>, ReservationExpiredHandler>();
+        Services.AddScoped<IIntegrationEventHandler<PaymentSucceeded>, PaymentSucceededHandler>();
     }
 
     public override void Run(WebApplication app)

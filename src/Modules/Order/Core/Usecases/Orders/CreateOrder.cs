@@ -11,8 +11,7 @@ namespace Order.Core.Usecases.Orders;
 public class CreateOrder(
     OrderDbContext db,
     IOrderProductLookup productLookup,
-    IUser user,
-    IEventBus eventBus)
+    IUser user)
 {
     private const int MaxLineCount = 50;
 
@@ -64,23 +63,22 @@ public class CreateOrder(
 
         order.SetStatus(Entities.OrderStatus.PendingInventory);
         db.Orders.Add(order);
-        await db.SaveChangesAsync(ct);
-
-        var response = OrderMapper.ToResponse(order);
-        await eventBus.Publish(new OrderSubmitted
+        order.Events.Add(new OrderSubmitted
         {
             OrderId = order.Id,
             OrderCode = order.Code,
             CurrencyCode = order.CurrencyCode,
             Items = order.Lines
-                .Select(x => new OrderSubmittedItem
+            .Select(x => new OrderSubmittedItem
                 {
                     VariantId = x.VariantId,
                     Quantity = x.Quantity
                 })
                 .ToList()
-        }, ct);
+        });
+        await db.SaveChangesAsync(ct);
 
+        var response = OrderMapper.ToResponse(order);
         return response;
     }
 

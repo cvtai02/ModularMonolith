@@ -1,5 +1,4 @@
 using SharedKernel.Abstractions.Contracts;
-using SharedKernel.Abstractions.Services;
 
 namespace Infrastructure.EventBus;
 
@@ -10,10 +9,4 @@ public class RabbitMQ : IEventBus
         throw new NotImplementedException();
     }
 
-    public void Subscribe<T, TH>()
-        where T : IntegrationEvent
-        where TH : IEventHandler<T>
-    {
-        throw new NotImplementedException();
-    }
 }

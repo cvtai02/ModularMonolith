@@ -6,7 +6,7 @@ using SharedKernel.Abstractions.Contracts;
 
 namespace Account.Core.EventHandlers;
 
-public class AdminOrderPlacedHandler(IHubContext<NotificationHub> hubContext) : IEventHandler<AdminOrderPlaced>
+public class AdminOrderPlacedHandler(IHubContext<NotificationHub> hubContext) : IIntegrationEventHandler<AdminOrderPlaced>
 {
     public Task Handle(AdminOrderPlaced @event, CancellationToken ct = default)
     {

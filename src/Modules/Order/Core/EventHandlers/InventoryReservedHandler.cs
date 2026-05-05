@@ -2,15 +2,12 @@ using Intermediary.Events.Inventory;
 using Intermediary.Events.Order;
 using Microsoft.EntityFrameworkCore;
 using Order.Core.Notifications;
-using SharedKernel.Abstractions.Contracts;
-using SharedKernel.Abstractions.Services;
 
 namespace Order.Core.EventHandlers;
 
 public class InventoryReservedHandler(
     OrderDbContext db,
-    IEventBus eventBus,
-    OrderRealtimeNotifier realtimeNotifier) : IEventHandler<InventoryReserved>
+    OrderRealtimeNotifier realtimeNotifier) : IIntegrationEventHandler<InventoryReserved>
 {
     public async Task Handle(InventoryReserved @event, CancellationToken ct = default)
     {
@@ -20,17 +17,13 @@ public class InventoryReservedHandler(
 
         order.SetInventoryReservation(@event.ReservationId);
         order.SetStatus(Entities.OrderStatus.Placed);
-        await db.SaveChangesAsync(ct);
-
-        await realtimeNotifier.NotifyOrderPlacedAsync(order, @event.ReservationId, ct);
-        await eventBus.Publish(new OrderPlaced
+        order.Events.Add(new OrderPlaced
         {
             OrderId = order.Id,
             OrderCode = order.Code,
             ReservationId = @event.ReservationId
-        }, ct);
-
-        await eventBus.Publish(new AdminOrderPlaced
+        });
+        order.Events.Add(new AdminOrderPlaced
         {
             OrderId = order.Id,
             OrderCode = order.Code,
@@ -40,6 +33,10 @@ public class InventoryReservedHandler(
             ReservationId = @event.ReservationId,
             Status = order.Status.ToString(),
             CreatedAt = DateTimeOffset.UtcNow
-        }, ct);
+        });
+
+        await db.SaveChangesAsync(ct);
+
+        await realtimeNotifier.NotifyOrderPlacedAsync(order, @event.ReservationId, ct);
     }
 }

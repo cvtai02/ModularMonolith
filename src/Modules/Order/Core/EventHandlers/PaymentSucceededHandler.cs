@@ -7,7 +7,7 @@ namespace Order.Core.EventHandlers;
 
 public class PaymentSucceededHandler(
     OrderDbContext db,
-    OrderRealtimeNotifier realtimeNotifier) : IEventHandler<PaymentSucceeded>
+    OrderRealtimeNotifier realtimeNotifier) : IIntegrationEventHandler<PaymentSucceeded>
 {
     public async Task Handle(PaymentSucceeded @event, CancellationToken ct = default)
     {

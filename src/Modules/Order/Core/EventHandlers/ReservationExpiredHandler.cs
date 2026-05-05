@@ -7,7 +7,7 @@ namespace Order.Core.EventHandlers;
 
 public class ReservationExpiredHandler(
     OrderDbContext db,
-    OrderRealtimeNotifier realtimeNotifier) : IEventHandler<ReservationExpired>
+    OrderRealtimeNotifier realtimeNotifier) : IIntegrationEventHandler<ReservationExpired>
 {
     public async Task Handle(ReservationExpired @event, CancellationToken ct = default)
     {

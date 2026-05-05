@@ -3,7 +3,7 @@ using SharedKernel.Abstractions.Contracts;
 
 namespace Order.Core.EventHandlers;
 
-public class ReservationCommitedHandler : IEventHandler<ReservationCommited>
+public class ReservationCommitedHandler : IIntegrationEventHandler<ReservationCommited>
 {
     public Task Handle(ReservationCommited @event, CancellationToken ct = default) => Task.CompletedTask;
 }

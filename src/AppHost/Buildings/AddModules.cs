@@ -1,8 +1,3 @@
-using Content;
-using Identity;
-using ProductCatalog;
-using Module = SharedKernel.Abstractions.Contracts.Module;
-
 namespace AppHost.Buildings;
 
 public  static partial class HostBuilderExtension
@@ -31,7 +26,8 @@ public  static partial class HostBuilderExtension
             //     .Where(t => typeof(BaseModule).IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract)
             //     .ToList();
 
-            foreach (var module in ModuleList.Get(builder))
+            var modules = ModuleList.Get(builder);
+            foreach (var module in modules)
             {
                 builder.Services.AddSingleton(module);
                 module.RegisterModule();
