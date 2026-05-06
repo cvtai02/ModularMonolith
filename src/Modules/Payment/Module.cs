@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Payment.Core.Strategies;
-using Payment.Core.Usecases;
 using Payment.Infrastructure.PaymentMethods;
 
 namespace Payment;
@@ -18,11 +17,6 @@ public class PaymentModule(IHostApplicationBuilder b) : Module(b)
     protected override void RegisterUsecases()
     {
         Services.AddScoped<IPaymentMethodStrategy, CashOnDeliveryPaymentMethodStrategy>();
-        Services.AddScoped<PaymentMethodStrategyResolver>();
-        Services.AddScoped<ListPaymentMethods>();
-        Services.AddScoped<CreateOrderCheckout>();
-        Services.AddScoped<GetPaymentTransactionById>();
-        Services.AddScoped<HandlePaymentWebhook>();
     }
 }
 

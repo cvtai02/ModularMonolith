@@ -3,6 +3,7 @@ using SharedKernel.Exceptions;
 
 namespace ProductCatalog.Core.Usecases.Collections;
 
+[UsecaseInject]
 public class DeleteCollection(ProductCatalogDbContext db)
 {
     public async Task<bool> ExecuteAsync(int id, CancellationToken ct)

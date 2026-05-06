@@ -11,6 +11,6 @@ public class OrderSubmitted : IntegrationEvent
 
 public class OrderSubmittedItem
 {
-    public int VariantId { get; init; }
+    public string VariantId { get; init; } = string.Empty;
     public int Quantity { get; init; }
 }

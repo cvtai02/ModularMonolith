@@ -7,12 +7,12 @@ import { useProductCatalogClient } from "@/components/containers/api-client-prov
 import { ROUTES } from "@/configs/routes";
 
 import type { FormValues, OptionEntry, Variant, VariantOverride } from "./components/types";
-import { buildVariantsPayload, getFilledValues, uid } from "./components/helpers";
+import { buildVariantsPayload, uid } from "./components/helpers";
 import { ProductFormLayout } from "./components/ProductFormLayout";
 
 export default function EditProductPage() {
   const { id } = useParams<{ id: string }>();
-  const productId = Number(id);
+  const productId = id!;
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const productCatalogClient = useProductCatalogClient();
@@ -30,6 +30,7 @@ export default function EditProductPage() {
 
   const { mutateAsync: updateProduct, isPending } = useMutation({
     mutationFn: productCatalogClient.updateProduct.bind(productCatalogClient, productId),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["product", productId] }),
   });
 
   const defaultValues = useMemo((): Partial<FormValues> | undefined => {
@@ -64,11 +65,16 @@ export default function EditProductPage() {
     if (!product) return undefined;
     return (product.options ?? [])
       .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0))
-      .map((opt) => ({
-        localId: uid(),
-        name: opt.name ?? "",
-        inputValues: [...(opt.values ?? []), ""],
-      }));
+      .map((opt) => {
+        const values = opt.values ?? [];
+        return {
+          localId: uid(),
+          name: opt.name ?? "",
+          values,
+          pending: "",
+          initialValueCount: values.length,
+        };
+      });
   }, [product]);
 
   const initialVariantOverrides = useMemo((): Record<string, VariantOverride> | undefined => {
@@ -84,6 +90,7 @@ export default function EditProductPage() {
         })
         .join("|");
       overrides[localId] = {
+        id: variant.id ?? undefined,
         useProductPrice: variant.useProductPricing ?? true,
         price: !variant.useProductPricing && variant.price ? String(variant.price) : "",
         compareAtPrice: !variant.useProductPricing && variant.compareAtPrice ? String(variant.compareAtPrice) : "",
@@ -108,9 +115,7 @@ export default function EditProductPage() {
   const handleSubmit = async (values: FormValues, options: OptionEntry[], variants: Variant[], statusOverride?: string) => {
     const finalStatus = statusOverride ?? values.status;
     const hasVariants = variants.length > 0;
-    const activeOptions = options.filter(
-      (o) => o.name.trim() && getFilledValues(o.inputValues).length > 0
-    );
+    const activeOptions = options.filter((o) => o.name.trim() && o.values.length > 0);
 
     await updateProduct({
       name: values.name,
@@ -135,14 +140,15 @@ export default function EditProductPage() {
       options: activeOptions.map((opt, displayOrder) => ({
         name: opt.name,
         displayOrder,
-        values: getFilledValues(opt.inputValues),
+        values: opt.values,
       })),
-      variants: buildVariantsPayload(variants, hasVariants),
+      // Edit page only sends variants the backend already knows about. New combos
+      // derived from newly-added option values are skipped — backend creates them.
+      variants: buildVariantsPayload(variants, hasVariants, { existingOnly: true }),
     });
 
     toast.success("Product updated!");
     await queryClient.invalidateQueries({ queryKey: ["products"] });
-    queryClient.invalidateQueries({ queryKey: ["product", productId] });
     navigate(ROUTES.productDetail(productId));
   };
 
@@ -162,6 +168,7 @@ export default function EditProductPage() {
       defaultValues={defaultValues}
       initialOptions={initialOptions}
       initialVariantOverrides={initialVariantOverrides}
+      canAddOption={false}
       onDiscard={() => navigate(ROUTES.products)}
       onSubmit={handleSubmit}
     />

@@ -4,6 +4,7 @@ using SharedKernel.Abstractions.Services;
 
 namespace ProductCatalog.Core.Usecases.Collections;
 
+[UsecaseInject]
 public class GetCollectionById(ProductCatalogDbContext db, IFileManager fm)
 {
     public async Task<CollectionDetailResponse?> ExecuteAsync(int id, CancellationToken ct)

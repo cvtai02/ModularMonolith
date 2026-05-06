@@ -5,6 +5,7 @@ using SharedKernel.DTOs;
 
 namespace Account.Core.Usecases;
 
+[UsecaseInject]
 public class ListAdminAccountProfiles(AccountDbContext db)
 {
     public async Task<PaginatedList<AccountProfileResponse>> ExecuteAsync(

@@ -5,7 +5,7 @@ namespace ProductCatalog.Core.Entities;
 public class ProductShipping : AuditableEntity
 {
     [Key]
-    public int ProductId { get; set; }
+    public string ProductId { get; set; } = string.Empty;
     public float Weight { get; private set; }   // in kg
     public float Width { get; private set; }    // in cm
     public float Height { get; private set; }   // in cm

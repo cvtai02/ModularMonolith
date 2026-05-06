@@ -7,6 +7,7 @@ using SharedKernel.Extensions;
 
 namespace ProductCatalog.Core.Usecases.Categories;
 
+[UsecaseInject]
 public class CreateCategory(ProductCatalogDbContext db, IFileManager fm)
 {
     public async Task<CategoryResponse> ExecuteAsync(CreateCategoryRequest request, CancellationToken ct)

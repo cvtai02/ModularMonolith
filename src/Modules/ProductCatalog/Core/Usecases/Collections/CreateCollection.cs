@@ -7,6 +7,7 @@ using SharedKernel.Extensions;
 
 namespace ProductCatalog.Core.Usecases.Collections;
 
+[UsecaseInject]
 public class CreateCollection(ProductCatalogDbContext db, IFileManager fm)
 {
     public async Task<CollectionResponse> ExecuteAsync(CreateCollectionRequest request, CancellationToken ct)
@@ -24,18 +25,19 @@ public class CreateCollection(ProductCatalogDbContext db, IFileManager fm)
 
         var productIdErrors = new List<string>();
         var productIds = request.ProductIds
-            .Where(x => x > 0)
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Select(x => x.Trim())
             .Distinct()
             .ToList();
         var invalidProductIds = request.ProductIds
-            .Where(x => x <= 0)
+            .Where(string.IsNullOrWhiteSpace)
             .Distinct()
             .ToList();
         if (invalidProductIds.Count > 0)
-            productIdErrors.Add($"Product ids must be greater than zero: {string.Join(", ", invalidProductIds)}.");
+            productIdErrors.Add("Product ids are required.");
 
         var existingProductIds = productIds.Count == 0
-            ? new List<int>()
+            ? new List<string>()
             : await db.Products
                 .Where(x => productIds.Contains(x.Id))
                 .Select(x => x.Id)

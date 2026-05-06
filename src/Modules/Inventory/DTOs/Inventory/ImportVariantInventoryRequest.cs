@@ -16,7 +16,7 @@ public class ImportVariantInventoryRequest
 public class ImportVariantInventoryRowRequest
 {
     [Required]
-    public int VariantId { get; set; }
+    public string VariantId { get; set; } = string.Empty;
 
     [Range(0, int.MaxValue)]
     public int Quantity { get; set; }

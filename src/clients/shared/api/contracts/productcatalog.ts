@@ -35,7 +35,7 @@ export interface IProductCatalogClient {
   listProduct(query?: ListProductsQuery): Promise<ListProductsResponse>;
 
   // Response: src/Modules/ProductCatalog/DTOs/Products/ProductResponse.cs
-  getProduct(id: number): Promise<ProductResponse>;
+  getProduct(id: string): Promise<ProductResponse>;
 
   // Request: src/Modules/ProductCatalog/DTOs/Products/CreateProductRequest.cs
   // Nested variant request: src/Modules/ProductCatalog/DTOs/Products/CreateVariantRequest.cs
@@ -45,7 +45,7 @@ export interface IProductCatalogClient {
   // Request: src/Modules/ProductCatalog/DTOs/Products/UpdateProductRequest.cs
   // Nested variant request: src/Modules/ProductCatalog/DTOs/Products/CreateVariantRequest.cs
   // Response: src/Modules/ProductCatalog/DTOs/Products/ProductResponse.cs
-  updateProduct(id: number, input: UpdateProductRequest): Promise<UpdateProductResponse>;
+  updateProduct(id: string, input: UpdateProductRequest): Promise<UpdateProductResponse>;
 
   // Query alias is generated in src/clients/shared/api/types/productcatalog.ts.
   // Item response: src/Modules/ProductCatalog/DTOs/Categories/CategoryResponse.cs

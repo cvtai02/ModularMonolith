@@ -26,7 +26,7 @@ type RowError = {
 };
 
 type ImportRowResult = {
-  variantId: number;
+  variantId: string;
   status: string;
   previousQuantity?: number | null;
   newQuantity?: number | null;
@@ -89,8 +89,8 @@ function ImportSummary({
                   ) : (
                     <XCircleIcon className="size-4 text-destructive shrink-0" />
                   )}
-                  <span className="font-medium tabular-nums w-20 shrink-0">
-                    Variant #{row.variantId}
+                  <span className="font-mono text-xs w-32 shrink-0 truncate" title={row.variantId}>
+                    {row.variantId}
                   </span>
                   {row.previousQuantity != null && row.newQuantity != null && (
                     <span className="text-muted-foreground">
@@ -154,15 +154,15 @@ export function ImportInventoryDialog({ open, onClose, inventoryClient, onSucces
 
   function validate() {
     const errors: Record<number, RowError> = {};
-    const seenVariantIds = new Set<number>();
+    const seenVariantIds = new Set<string>();
 
     for (const row of rows) {
       const err: RowError = {};
-      const vid = parseInt(row.variantId, 10);
+      const vid = row.variantId.trim();
       const qty = parseInt(row.quantity, 10);
 
-      if (!row.variantId.trim() || isNaN(vid) || vid <= 0) {
-        err.variantId = "Must be a positive integer";
+      if (!vid) {
+        err.variantId = "Required";
       } else if (seenVariantIds.has(vid)) {
         err.variantId = "Duplicate variant ID";
       } else {
@@ -189,7 +189,7 @@ export function ImportInventoryDialog({ open, onClose, inventoryClient, onSucces
         referenceId: referenceId.trim() || undefined,
         note: note.trim() || undefined,
         rows: rows.map((r) => ({
-          variantId: parseInt(r.variantId, 10),
+          variantId: r.variantId.trim(),
           quantity: parseInt(r.quantity, 10),
         })),
       };
@@ -261,11 +261,10 @@ export function ImportInventoryDialog({ open, onClose, inventoryClient, onSucces
                     <div key={row.id} className="grid grid-cols-[1fr_1fr_auto] items-start gap-0">
                       <div className="px-3 py-2">
                         <input
-                          type="number"
-                          min={1}
+                          type="text"
                           value={row.variantId}
                           onChange={(e) => updateRow(row.id, "variantId", e.target.value)}
-                          placeholder="e.g. 42"
+                          placeholder="e.g. size-red-xl"
                           className={`w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground ${err?.variantId ? "text-destructive" : ""}`}
                         />
                         {err?.variantId && (

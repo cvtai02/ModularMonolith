@@ -12,7 +12,7 @@ using Order;
 namespace Order.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(OrderDbContext))]
-    [Migration("20260506112926_Init")]
+    [Migration("20260506153254_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -110,8 +110,9 @@ namespace Order.Infrastructure.Data.Migrations
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
 
-                    b.Property<int>("ProductId")
-                        .HasColumnType("integer");
+                    b.Property<string>("ProductId")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("ProductName")
                         .IsRequired()
@@ -132,8 +133,9 @@ namespace Order.Infrastructure.Data.Migrations
                         .HasPrecision(18, 2)
                         .HasColumnType("numeric(18,2)");
 
-                    b.Property<int>("VariantId")
-                        .HasColumnType("integer");
+                    b.Property<string>("VariantId")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("VariantName")
                         .IsRequired()

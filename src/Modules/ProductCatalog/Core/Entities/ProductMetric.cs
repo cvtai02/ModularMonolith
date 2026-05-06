@@ -5,7 +5,7 @@ namespace ProductCatalog.Core.Entities;
 public class ProductMetric : Entity
 {
     [Key]
-    public int ProductId { get; set; }
+    public string ProductId { get; set; } = string.Empty;
 
     // Analytics
     public float RatingAvg { get; set; }

@@ -2,6 +2,7 @@ namespace ProductCatalog.DTOs.Products;
 
 public class CreateVariantRequest
 {
+    public string? Id { get; set; }
     public bool UseProductPricing { get; set; } = true;
     public decimal? Price { get; set; }
     public decimal? CompareAtPrice { get; set; }

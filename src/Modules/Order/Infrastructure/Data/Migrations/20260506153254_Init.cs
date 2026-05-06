@@ -51,8 +51,8 @@ namespace Order.Infrastructure.Data.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     OrderCode = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    ProductId = table.Column<int>(type: "integer", nullable: false),
-                    VariantId = table.Column<int>(type: "integer", nullable: false),
+                    ProductId = table.Column<string>(type: "text", nullable: false),
+                    VariantId = table.Column<string>(type: "text", nullable: false),
                     ProductName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
                     VariantName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
                     ImageUrl = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),

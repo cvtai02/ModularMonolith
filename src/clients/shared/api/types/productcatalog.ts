@@ -57,13 +57,13 @@ export type ListCollectionsQuery = QueryParams<ListCollectionsOperation>;
 type ListCollectionsResponseBody = JsonResponse<ListCollectionsOperation>;
 type CreateCollectionRequestBody = JsonRequestBody<CreateCollectionOperation>;
 export type CreateCollectionRequest = CreateCollectionRequestBody & {
-    productIds?: number[] | null;
+    productIds?: string[] | null;
 };
 export type GetCollectionParams = PathParams<GetCollectionOperation>;
 // 200 OK
 export type CollectionResponse = JsonResponse<CreateCollectionOperation>;
 export type CollectionProductResponse = {
-    productId: number;
+    productId: string;
     name: string;
     slug: string;
     imageUrl: string;
@@ -83,7 +83,7 @@ export type AddCollectionProductsParams = {
     id: number;
 };
 export type AddCollectionProductsRequest = {
-    productIds: number[];
+    productIds: string[];
 };
 // 200 OK
 export type AddCollectionProductsResponse = CollectionResponse;
@@ -91,7 +91,7 @@ export type UpdateCollectionParams = PathParams<UpdateCollectionOperation>;
 type UpdateCollectionRequestBody = JsonRequestBody<UpdateCollectionOperation>;
 export type UpdateCollectionRequest = UpdateCollectionRequestBody & {
     title?: string | null;
-    productIds?: number[] | null;
+    productIds?: string[] | null;
 };
 // 200 OK
 export type UpdateCollectionResponse = JsonResponse<UpdateCollectionOperation>;
@@ -104,13 +104,21 @@ export type ListProductsQuery = QueryParams<ListProductsOperation>;
 export type ListProductsResponse = JsonResponse<ListProductsOperation>;
 export type CreateProductRequest = JsonRequestBody<CreateProductOperation>;
 // 200 OK
-export type CreateProductResponse = JsonResponse<CreateProductOperation>;
-export type GetProductParams = PathParams<GetProductOperation>;
+export type CreateProductResponse = ProductResponse;
+export type GetProductParams = { id: string };
 // 200 OK
-export type ProductResponse = JsonResponse<GetProductOperation>;
-export type UpdateProductParams = PathParams<UpdateProductOperation>;
+type GeneratedProductResponse = JsonResponse<GetProductOperation>;
+type GeneratedVariantResponse = GeneratedProductResponse extends { variants?: Array<infer TVariant> } ? TVariant : never;
+export type VariantResponse = Omit<GeneratedVariantResponse, "id"> & {
+    id: string;
+};
+export type ProductResponse = Omit<GeneratedProductResponse, "id" | "variants"> & {
+    id: string;
+    variants: VariantResponse[];
+};
+export type UpdateProductParams = { id: string };
 // PUT uses the backend UpdateProductRequest DTO. It currently has the same
 // full-replace shape as CreateProductRequest.
 export type UpdateProductRequest = CreateProductRequest;
 // 200 OK
-export type UpdateProductResponse = JsonResponse<UpdateProductOperation>;
+export type UpdateProductResponse = ProductResponse;

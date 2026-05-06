@@ -6,6 +6,7 @@ using SharedKernel.Exceptions;
 
 namespace ProductCatalog.Core.Usecases.Collections;
 
+[UsecaseInject]
 public class AddProductsToCollection(ProductCatalogDbContext db, IFileManager fm)
 {
     public async Task<CollectionResponse?> ExecuteAsync(int id, AddCollectionProductsRequest request, CancellationToken ct)
@@ -21,18 +22,19 @@ public class AddProductsToCollection(ProductCatalogDbContext db, IFileManager fm
             productIdErrors.Add("At least one product id is required.");
 
         var productIds = request.ProductIds
-            .Where(x => x > 0)
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Select(x => x.Trim())
             .Distinct()
             .ToList();
         var invalidProductIds = request.ProductIds
-            .Where(x => x <= 0)
+            .Where(string.IsNullOrWhiteSpace)
             .Distinct()
             .ToList();
         if (invalidProductIds.Count > 0)
-            productIdErrors.Add($"Product ids must be greater than zero: {string.Join(", ", invalidProductIds)}.");
+            productIdErrors.Add("Product ids are required.");
 
         var existingProductIds = productIds.Count == 0
-            ? new List<int>()
+            ? new List<string>()
             : await db.Products
                 .Where(x => productIds.Contains(x.Id))
                 .Select(x => x.Id)

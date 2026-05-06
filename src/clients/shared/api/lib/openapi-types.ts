@@ -1689,7 +1689,7 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    productId: components["schemas"]["System.Int32"];
+                    productId: components["schemas"]["System.String"];
                 };
                 cookie?: never;
             };
@@ -2584,7 +2584,7 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    id: components["schemas"]["System.Int32"];
+                    id: components["schemas"]["System.String"];
                 };
                 cookie?: never;
             };
@@ -2608,7 +2608,7 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    id: components["schemas"]["System.Int32"];
+                    id: components["schemas"]["System.String"];
                 };
                 cookie?: never;
             };
@@ -2869,11 +2869,11 @@ export interface components {
             rows: components["schemas"]["System.Collections.Generic.List`1[[Inventory.DTOs.Inventory.ImportVariantInventoryRowResponse, Inventory, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
         };
         "Inventory.DTOs.Inventory.ImportVariantInventoryRowRequest": {
-            variantId: components["schemas"]["System.Int32"];
+            variantId: components["schemas"]["System.String"];
             quantity?: components["schemas"]["System.Int32"];
         };
         "Inventory.DTOs.Inventory.ImportVariantInventoryRowResponse": {
-            variantId: components["schemas"]["System.Int32"];
+            variantId: components["schemas"]["System.String"];
             status: components["schemas"]["System.String"];
             message: components["schemas"]["System.String"];
             previousQuantity: components["schemas"]["System.Int32"];
@@ -2886,14 +2886,14 @@ export interface components {
             variants: components["schemas"]["System.Collections.Generic.List`1[[Inventory.DTOs.Inventory.VariantInventoryConfig, Inventory, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
         };
         "Inventory.DTOs.Inventory.InitializeProductInventoryResponse": {
-            productId: components["schemas"]["System.Int32"];
+            productId: components["schemas"]["System.String"];
             trackInventory: components["schemas"]["System.Boolean"];
             allowBackorder: components["schemas"]["System.Boolean"];
             lowStockThreshold: components["schemas"]["System.Int32"];
             variants: components["schemas"]["System.Collections.Generic.List`1[[Inventory.DTOs.Inventory.VariantInventoryResponse, Inventory, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
         };
         "Inventory.DTOs.Inventory.VariantInventoryConfig": {
-            variantId: components["schemas"]["System.Int32"];
+            variantId: components["schemas"]["System.String"];
             useProductInventory?: components["schemas"]["System.Boolean"];
             trackInventory?: components["schemas"]["System.Boolean"];
             allowBackorder?: components["schemas"]["System.Boolean"];
@@ -2901,7 +2901,7 @@ export interface components {
             quantity?: components["schemas"]["System.Int32"];
         };
         "Inventory.DTOs.Inventory.VariantInventoryResponse": {
-            variantId: components["schemas"]["System.Int32"];
+            variantId: components["schemas"]["System.String"];
             useProductInventory: components["schemas"]["System.Boolean"];
             trackInventory: components["schemas"]["System.Boolean"];
             allowBackorder: components["schemas"]["System.Boolean"];
@@ -2980,7 +2980,7 @@ export interface components {
             items?: components["schemas"]["System.Collections.Generic.List`1[[Order.DTOs.Orders.CreateOrderItemRequest, Order, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
         };
         "Order.DTOs.Orders.CreateOrderItemRequest": {
-            variantId: components["schemas"]["System.Int32"];
+            variantId: components["schemas"]["System.String"];
             quantity: components["schemas"]["System.Int32"];
         };
         "Order.DTOs.Orders.CreateOrderRequest": {
@@ -2990,8 +2990,8 @@ export interface components {
         };
         "Order.DTOs.Orders.OrderLineResponse": {
             id: components["schemas"]["System.Int32"];
-            productId: components["schemas"]["System.Int32"];
-            variantId: components["schemas"]["System.Int32"];
+            productId: components["schemas"]["System.String"];
+            variantId: components["schemas"]["System.String"];
             productName: components["schemas"]["System.String"];
             variantName: components["schemas"]["System.String"];
             imageUrl: components["schemas"]["System.String"];
@@ -3083,7 +3083,7 @@ export interface components {
             slug: components["schemas"]["System.String"];
         };
         "ProductCatalog.DTOs.Collections.AddCollectionProductsRequest": {
-            productIds: components["schemas"]["System.Collections.Generic.List`1[[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
+            productIds: components["schemas"]["System.Collections.Generic.List`1[[System.String, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
         };
         "ProductCatalog.DTOs.Collections.CollectionDetailResponse": {
             products: components["schemas"]["System.Collections.Generic.List`1[[ProductCatalog.DTOs.Collections.CollectionProductResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
@@ -3095,7 +3095,7 @@ export interface components {
             productCount: components["schemas"]["System.Int32"];
         };
         "ProductCatalog.DTOs.Collections.CollectionProductResponse": {
-            productId: components["schemas"]["System.Int32"];
+            productId: components["schemas"]["System.String"];
             name: components["schemas"]["System.String"];
             slug: components["schemas"]["System.String"];
             imageUrl: components["schemas"]["System.String"];
@@ -3117,14 +3117,14 @@ export interface components {
             description?: components["schemas"]["System.String"];
             slug?: components["schemas"]["System.String"];
             imageKey?: null | components["schemas"]["System.String"];
-            productIds?: components["schemas"]["System.Collections.Generic.List`1[[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
+            productIds?: components["schemas"]["System.Collections.Generic.List`1[[System.String, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
         };
         "ProductCatalog.DTOs.Collections.UpdateCollectionRequest": {
             title: null | components["schemas"]["System.String"];
             description: components["schemas"]["System.String"];
             slug: components["schemas"]["System.String"];
             imageKey: null | components["schemas"]["System.String"];
-            productIds: null | components["schemas"]["System.Collections.Generic.List`1[[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
+            productIds: null | components["schemas"]["System.Collections.Generic.List`1[[System.String, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
         };
         "ProductCatalog.DTOs.Products.CreateProductMediaRequest": {
             url: components["schemas"]["System.String"];
@@ -3137,6 +3137,7 @@ export interface components {
             values?: components["schemas"]["System.Collections.Generic.List`1[[System.String, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
         };
         "ProductCatalog.DTOs.Products.CreateProductRequest": {
+            id?: null | components["schemas"]["System.String"];
             name: components["schemas"]["System.String"];
             description?: components["schemas"]["System.String"];
             categoryId: components["schemas"]["System.Int32"];
@@ -3162,6 +3163,7 @@ export interface components {
             variants?: components["schemas"]["System.Collections.Generic.List`1[[ProductCatalog.DTOs.Products.CreateVariantRequest, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
         };
         "ProductCatalog.DTOs.Products.CreateVariantRequest": {
+            id: null | components["schemas"]["System.String"];
             useProductPricing: components["schemas"]["System.Boolean"];
             price: null | components["schemas"]["System.Nullable`1[[System.Decimal, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
             compareAtPrice: null | components["schemas"]["System.Nullable`1[[System.Decimal, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
@@ -3194,7 +3196,7 @@ export interface components {
             displayOrder: components["schemas"]["System.Single"];
         };
         "ProductCatalog.DTOs.Products.ProductResponse": {
-            id: components["schemas"]["System.Int32"];
+            id: components["schemas"]["System.String"];
             name: components["schemas"]["System.String"];
             description: components["schemas"]["System.String"];
             categoryId: components["schemas"]["System.Int32"];
@@ -3223,6 +3225,7 @@ export interface components {
             variants: components["schemas"]["System.Collections.Generic.List`1[[ProductCatalog.DTOs.Products.VariantResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
         };
         "ProductCatalog.DTOs.Products.UpdateProductRequest": {
+            id?: null | components["schemas"]["System.String"];
             name: components["schemas"]["System.String"];
             description?: components["schemas"]["System.String"];
             categoryId: components["schemas"]["System.Int32"];
@@ -3253,7 +3256,7 @@ export interface components {
             value: components["schemas"]["System.String"];
         };
         "ProductCatalog.DTOs.Products.VariantResponse": {
-            id: components["schemas"]["System.Int32"];
+            id: components["schemas"]["System.String"];
             useProductPricing: components["schemas"]["System.Boolean"];
             useProductShipping: components["schemas"]["System.Boolean"];
             price: components["schemas"]["System.Decimal"];

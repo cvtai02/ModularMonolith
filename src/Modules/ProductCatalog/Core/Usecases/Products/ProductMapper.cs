@@ -1,6 +1,5 @@
 using ProductCatalog.DTOs.Products;
 using ProductCatalog.Core.Entities;
-using Inventory.Core.Entities;
 using SharedKernel.Abstractions.Services;
 
 namespace ProductCatalog.Core.Usecases.Products;
@@ -9,19 +8,14 @@ internal static class ProductMapper
 {
     internal static ProductResponse ToResponse(
         Product product,
-        IFileManager fileManager,
-        ProductInventory? productInventory = null,
-        IReadOnlyDictionary<int, VariantInventory>? variantInventories = null)
+        IFileManager fileManager)
     {
-        variantInventories ??= new Dictionary<int, VariantInventory>();
         var variants = product.Variants
             .OrderBy(x => x.Id)
-            .Select(x => MapVariantToResponse(x, variantInventories))
+            .Select(MapVariantToResponse)
             .ToList();
         var primaryVariant = product.Variants.OrderBy(x => x.Id).FirstOrDefault();
         var primaryVariantShipping = primaryVariant?.ShippingInfo;
-        var stock = variantInventories.Values.Sum(x => x.Tracking?.OnHand ?? 0);
-        var reserved = variantInventories.Values.Sum(x => x.Tracking?.Reserved ?? 0);
 
         return new ProductResponse
         {
@@ -40,12 +34,12 @@ internal static class ProductMapper
             CompareAtPrice = primaryVariant?.CompareAtPrice ?? product.CompareAtPrice,
             CostPrice = primaryVariant?.CostPrice ?? product.CostPrice,
             ChargeTax = primaryVariant?.ChargeTax ?? product.ChargeTax,
-            Stock = variantInventories.Count > 0 ? stock : product.Metric?.Stock ?? 0,
+            Stock = product.Metric?.Stock ?? 0,
             TrackInventory = primaryVariant?.TrackInventory ?? product.TrackInventory,
-            LowStockThreshold = productInventory?.LowStockThreshold ?? 0,
-            AllowBackorder = productInventory?.AllowBackorder ?? primaryVariant?.AllowBackorder ?? product.AllowBackorder,
+            LowStockThreshold = 0,
+            AllowBackorder = primaryVariant?.AllowBackorder ?? product.AllowBackorder,
             Sold = product.Metric?.Sold ?? 0,
-            Reserved = reserved,
+            Reserved = 0,
             PhysicalProduct = product.ShippingInfo?.Physical ?? primaryVariantShipping?.Physical ?? false,
             Weight = product.ShippingInfo?.Weight ?? primaryVariantShipping?.Weight ?? 0,
             Width = product.ShippingInfo?.Width ?? primaryVariantShipping?.Width ?? 0,
@@ -75,11 +69,8 @@ internal static class ProductMapper
         };
     }
 
-    private static VariantResponse MapVariantToResponse(
-        Variant variant,
-        IReadOnlyDictionary<int, VariantInventory> variantInventories)
+    private static VariantResponse MapVariantToResponse(Variant variant)
     {
-        variantInventories.TryGetValue(variant.Id, out var inventory);
         return new()
     {
         Id = variant.Id,
@@ -90,12 +81,12 @@ internal static class ProductMapper
         CostPrice = variant.CostPrice,
         ChargeTax = variant.ChargeTax,
         ImageUrl = variant.ImageKey ?? string.Empty,
-        Stock = inventory?.Tracking?.OnHand ?? variant.Metric?.Stock ?? 0,
+        Stock = variant.Metric?.Stock ?? 0,
         Sold = variant.Metric?.Sold ?? 0,
-        Reserved = inventory?.Tracking?.Reserved ?? 0,
-        TrackInventory = inventory?.TrackInventory ?? variant.TrackInventory,
-        LowStockThreshold = inventory?.LowStockThreshold ?? 0,
-        AllowBackorder = inventory?.AllowBackorder ?? variant.AllowBackorder,
+        Reserved = 0,
+        TrackInventory = variant.TrackInventory,
+        LowStockThreshold = 0,
+        AllowBackorder = variant.AllowBackorder,
         PhysicalProduct = variant.ShippingInfo?.Physical ?? false,
         Weight = variant.ShippingInfo?.Weight ?? 0,
         Width = variant.ShippingInfo?.Width ?? 0,

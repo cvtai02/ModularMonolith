@@ -5,6 +5,7 @@ using SharedKernel.Exceptions;
 
 namespace Inventory.Core.Usecases.Inventory;
 
+[UsecaseInject]
 public class ImportVariantInventory(InventoryDbContext db)
 {
     public async Task<ImportVariantInventoryResponse> ExecuteAsync(
@@ -100,12 +101,12 @@ public class ImportVariantInventory(InventoryDbContext db)
             errors[nameof(request.Note)] = ["Note cannot exceed 1000 characters."];
 
         var invalidVariantIds = request.Rows
-            .Where(x => x.VariantId <= 0)
+            .Where(x => string.IsNullOrWhiteSpace(x.VariantId))
             .Select(x => x.VariantId)
             .Distinct()
             .ToList();
         if (invalidVariantIds.Count > 0)
-            rowErrors.Add($"Variant ids must be greater than zero: {string.Join(", ", invalidVariantIds)}.");
+            rowErrors.Add($"Variant ids are required: {string.Join(", ", invalidVariantIds)}.");
 
         var negativeQuantityVariantIds = request.Rows
             .Where(x => x.Quantity < 0)

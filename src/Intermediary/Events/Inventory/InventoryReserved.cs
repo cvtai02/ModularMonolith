@@ -12,6 +12,6 @@ public class InventoryReserved : IntegrationEvent
 
 public class InventoryReservationItem
 {
-    public int VariantId { get; init; }
+    public string VariantId { get; init; } = string.Empty;
     public int Quantity { get; init; }
 }

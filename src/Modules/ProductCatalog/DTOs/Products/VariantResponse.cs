@@ -2,7 +2,7 @@ namespace ProductCatalog.DTOs.Products;
 
 public class VariantResponse
 {
-    public int Id { get; set; }
+    public string Id { get; set; } = string.Empty;
     public bool UseProductPricing { get; set; }
     public bool UseProductShipping { get; set; }
     public decimal Price { get; set; }

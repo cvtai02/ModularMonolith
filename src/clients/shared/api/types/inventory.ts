@@ -22,7 +22,7 @@ export type ImportVariantInventoryRequest = {
 };
 
 export type ImportVariantInventoryRowRequest = {
-    variantId: number;
+    variantId: string;
     quantity: number;
 };
 
@@ -35,7 +35,7 @@ export type ImportVariantInventoryResponse = {
 };
 
 export type ImportVariantInventoryRowResponse = {
-    variantId: number;
+    variantId: string;
     status: string;
     message: string;
     previousQuantity: number;

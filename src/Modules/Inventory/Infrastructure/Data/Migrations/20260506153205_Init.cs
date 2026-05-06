@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Inventory.Infrastructure.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,8 +16,7 @@ namespace Inventory.Infrastructure.Data.Migrations
                 name: "ProductInventories",
                 columns: table => new
                 {
-                    ProductId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    ProductId = table.Column<string>(type: "text", nullable: false),
                     TrackInventory = table.Column<bool>(type: "boolean", nullable: false),
                     AllowBackorder = table.Column<bool>(type: "boolean", nullable: false),
                     LowStockThreshold = table.Column<int>(type: "integer", nullable: false),
@@ -34,11 +33,31 @@ namespace Inventory.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Reservations",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    OrderCode = table.Column<string>(type: "text", nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    ExpiresAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    TenantId = table.Column<int>(type: "integer", nullable: false),
+                    Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    CreatedBy = table.Column<string>(type: "text", nullable: false),
+                    LastModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    ModifiedBy = table.Column<string>(type: "text", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Reservations", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "VariantInventories",
                 columns: table => new
                 {
-                    VariantId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    VariantId = table.Column<string>(type: "text", nullable: false),
                     UseProductInventory = table.Column<bool>(type: "boolean", nullable: false),
                     TrackInventory = table.Column<bool>(type: "boolean", nullable: false),
                     LowStockThreshold = table.Column<int>(type: "integer", nullable: false),
@@ -61,7 +80,7 @@ namespace Inventory.Infrastructure.Data.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    VariantId = table.Column<int>(type: "integer", nullable: false),
+                    VariantId = table.Column<string>(type: "text", nullable: false),
                     Quantity = table.Column<int>(type: "integer", nullable: false),
                     ExpiryDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     TenantId = table.Column<int>(type: "integer", nullable: false),
@@ -83,28 +102,27 @@ namespace Inventory.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Reservations",
+                name: "ReservationLines",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    VariantId = table.Column<int>(type: "integer", nullable: false),
-                    OrderId = table.Column<int>(type: "integer", nullable: false),
+                    ReservationId = table.Column<int>(type: "integer", nullable: false),
+                    VariantId = table.Column<string>(type: "text", nullable: false),
                     Quantity = table.Column<int>(type: "integer", nullable: false),
-                    Status = table.Column<int>(type: "integer", nullable: false),
-                    ExpiresAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    TenantId = table.Column<int>(type: "integer", nullable: false),
-                    Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    CreatedBy = table.Column<string>(type: "text", nullable: false),
-                    LastModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    ModifiedBy = table.Column<string>(type: "text", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
+                    TenantId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Reservations", x => x.Id);
+                    table.PrimaryKey("PK_ReservationLines", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Reservations_VariantInventories_VariantId",
+                        name: "FK_ReservationLines_Reservations_ReservationId",
+                        column: x => x.ReservationId,
+                        principalTable: "Reservations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ReservationLines_VariantInventories_VariantId",
                         column: x => x.VariantId,
                         principalTable: "VariantInventories",
                         principalColumn: "VariantId",
@@ -117,7 +135,7 @@ namespace Inventory.Infrastructure.Data.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    VariantId = table.Column<int>(type: "integer", nullable: false),
+                    VariantId = table.Column<string>(type: "text", nullable: false),
                     Type = table.Column<int>(type: "integer", nullable: false),
                     Quantity = table.Column<int>(type: "integer", nullable: false),
                     ReferenceId = table.Column<string>(type: "text", nullable: true),
@@ -144,10 +162,10 @@ namespace Inventory.Infrastructure.Data.Migrations
                 name: "VariantTrackings",
                 columns: table => new
                 {
-                    VariantId = table.Column<int>(type: "integer", nullable: false),
+                    VariantId = table.Column<string>(type: "text", nullable: false),
                     OnHand = table.Column<int>(type: "integer", nullable: false),
                     Reserved = table.Column<int>(type: "integer", nullable: false),
-                    Version = table.Column<byte[]>(type: "bytea", rowVersion: true, nullable: false),
+                    Version = table.Column<byte[]>(type: "bytea", nullable: false),
                     TenantId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -177,14 +195,24 @@ namespace Inventory.Infrastructure.Data.Migrations
                 column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Reservations_TenantId",
-                table: "Reservations",
+                name: "IX_ReservationLines_ReservationId",
+                table: "ReservationLines",
+                column: "ReservationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ReservationLines_TenantId",
+                table: "ReservationLines",
                 column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Reservations_VariantId",
-                table: "Reservations",
+                name: "IX_ReservationLines_VariantId",
+                table: "ReservationLines",
                 column: "VariantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reservations_TenantId",
+                table: "Reservations",
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Transactions_TenantId",
@@ -217,13 +245,16 @@ namespace Inventory.Infrastructure.Data.Migrations
                 name: "ProductInventories");
 
             migrationBuilder.DropTable(
-                name: "Reservations");
+                name: "ReservationLines");
 
             migrationBuilder.DropTable(
                 name: "Transactions");
 
             migrationBuilder.DropTable(
                 name: "VariantTrackings");
+
+            migrationBuilder.DropTable(
+                name: "Reservations");
 
             migrationBuilder.DropTable(
                 name: "VariantInventories");

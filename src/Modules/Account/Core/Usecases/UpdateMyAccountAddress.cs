@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Account.Core.Usecases;
 
+[UsecaseInject]
 public class UpdateMyAccountAddress(AccountProfileResolver resolver, AccountDbContext db)
 {
     public async Task<AccountAddressResponse?> ExecuteAsync(

@@ -5,6 +5,7 @@ using SharedKernel.Exceptions;
 
 namespace Account.Core.Usecases;
 
+[UsecaseInject]
 public class CreateAdminAccountProfile(AccountDbContext db)
 {
     public async Task<AccountProfileResponse> ExecuteAsync(

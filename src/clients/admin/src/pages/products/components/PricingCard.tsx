@@ -1,5 +1,10 @@
 import { Controller } from "react-hook-form";
-import type { Control, UseFormRegister } from "react-hook-form";
+import type { Control, FieldErrors, UseFormGetValues, UseFormRegister } from "react-hook-form";
+
+import {
+  validateNonNegativeNumber,
+  validateRequiredNonNegativeNumber,
+} from "./helpers";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -26,21 +31,43 @@ import { currencies } from "@shared/api/contracts/common-types";
 type Props = {
   register: UseFormRegister<FormValues>;
   control: Control<FormValues>;
+  errors: FieldErrors<FormValues>;
   watchPrice: string;
   watchCostPrice: string;
   selectedVariant: Variant | null;
   onUpdateVariant: (localId: string, update: Partial<VariantOverride>) => void;
+  getProductValues: UseFormGetValues<FormValues>;
 };
 
 export function PricingCard({
   register,
   control,
+  errors,
   watchPrice,
   watchCostPrice,
   selectedVariant,
   onUpdateVariant,
+  getProductValues,
 }: Props) {
   const useVariantPricing = selectedVariant !== null && !selectedVariant.useProductPrice;
+
+  function handleToggleUseProductPrice(useProduct: boolean) {
+    if (!selectedVariant) return;
+    if (useProduct) {
+      onUpdateVariant(selectedVariant.localId, { useProductPrice: true });
+    } else {
+      // Going inherit → override: seed variant with current product values
+      // so the inputs keep showing what the user just saw.
+      const v = getProductValues();
+      onUpdateVariant(selectedVariant.localId, {
+        useProductPrice: false,
+        price: v.price ?? "",
+        compareAtPrice: v.compareAtPrice ?? "",
+        costPrice: v.costPrice ?? "",
+        chargeTax: v.chargeTax ?? false,
+      });
+    }
+  }
 
   const effectivePrice = useVariantPricing
     ? parseFloat(selectedVariant.price) || 0
@@ -64,7 +91,7 @@ export function PricingCard({
               </div>
               <Switch
                 checked={selectedVariant.useProductPrice}
-                onCheckedChange={(v) => onUpdateVariant(selectedVariant.localId, { useProductPrice: v })}
+                onCheckedChange={handleToggleUseProductPrice}
               />
             </div>
           )}
@@ -74,6 +101,7 @@ export function PricingCard({
             <div className="flex gap-2">
               {useVariantPricing ? (
                 <Input
+                  key="price-override"
                   type="number"
                   min="0"
                   step="1000"
@@ -84,10 +112,13 @@ export function PricingCard({
                 />
               ) : (
                 <Input
+                  key="price-inherit"
                   type="number"
                   min="0"
                   step="1000"
-                  {...register("price")}
+                  {...register("price", {
+                    validate: validateRequiredNonNegativeNumber("Price"),
+                  })}
                   disabled={!!selectedVariant?.useProductPrice}
                   placeholder="0"
                   className="flex-1"
@@ -119,12 +150,16 @@ export function PricingCard({
                 }}
               />
             </div>
+            {!useVariantPricing && errors.price && (
+              <p className="text-xs text-destructive">{errors.price.message}</p>
+            )}
           </Field>
 
           <Field>
             <FieldLabel>Compare-at price</FieldLabel>
             {useVariantPricing ? (
               <Input
+                key="compare-override"
                 type="number"
                 min="0"
                 step="1000"
@@ -134,13 +169,31 @@ export function PricingCard({
               />
             ) : (
               <Input
+                key="compare-inherit"
                 type="number"
                 min="0"
                 step="1000"
-                {...register("compareAtPrice")}
+                {...register("compareAtPrice", {
+                  validate: (v, formValues) => {
+                    if (v === "" || v === null || v === undefined) return true;
+                    const n = Number(v);
+                    if (Number.isNaN(n)) return "Compare-at price must be a number";
+                    if (n < 0) return "Compare-at price must be 0 or greater";
+                    if (n > 0 && formValues.price) {
+                      const price = Number(formValues.price);
+                      if (!Number.isNaN(price) && n < price) {
+                        return "Compare-at price must be ≥ regular price";
+                      }
+                    }
+                    return true;
+                  },
+                })}
                 disabled={!!selectedVariant?.useProductPrice}
                 placeholder="0"
               />
+            )}
+            {!useVariantPricing && errors.compareAtPrice && (
+              <p className="text-xs text-destructive">{errors.compareAtPrice.message}</p>
             )}
           </Field>
 
@@ -172,6 +225,7 @@ export function PricingCard({
             <FieldLabel>Cost per item</FieldLabel>
             {useVariantPricing ? (
               <Input
+                key="cost-override"
                 type="number"
                 min="0"
                 step="1000"
@@ -181,13 +235,19 @@ export function PricingCard({
               />
             ) : (
               <Input
+                key="cost-inherit"
                 type="number"
                 min="0"
                 step="1000"
-                {...register("costPrice")}
+                {...register("costPrice", {
+                  validate: validateNonNegativeNumber("Cost"),
+                })}
                 disabled={!!selectedVariant?.useProductPrice}
                 placeholder="0"
               />
+            )}
+            {!useVariantPricing && errors.costPrice && (
+              <p className="text-xs text-destructive">{errors.costPrice.message}</p>
             )}
             <FieldDescription>Customers won't see this</FieldDescription>
           </Field>

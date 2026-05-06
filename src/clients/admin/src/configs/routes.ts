@@ -9,8 +9,8 @@ export const ROUTES = {
   // Products
   products: "/products",
   productNew: "/products/new",
-  productDetail: (id: number | string) => `/products/${id}`,
-  productEdit: (id: number | string) => `/products/${id}/edit`,
+  productDetail: (id: string) => `/products/${id}`,
+  productEdit: (id: string) => `/products/${id}/edit`,
   productCategory: "/products/category",
   productCollections: "/products/collections",
   collectionNew: "/products/collections/new",

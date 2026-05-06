@@ -5,7 +5,7 @@ namespace ProductCatalog.DTOs.Products;
 
 public class ProductResponse
 {
-    public int Id { get; set; }
+    public string Id { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public int CategoryId { get; set; }

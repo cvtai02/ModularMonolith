@@ -4,6 +4,7 @@ using SharedKernel.Exceptions;
 
 namespace Order.Core.Usecases.Orders;
 
+[UsecaseInject]
 public class AdminCreateOrder(
     IOrderCustomerLookup customerLookup,
     CreateOrder createOrder)

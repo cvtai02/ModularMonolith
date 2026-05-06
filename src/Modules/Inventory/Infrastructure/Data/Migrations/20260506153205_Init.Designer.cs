@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Inventory.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(InventoryDbContext))]
-    [Migration("20260501141512_FixVariantTrackingVersion")]
-    partial class FixVariantTrackingVersion
+    [Migration("20260506153205_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -58,8 +58,9 @@ namespace Inventory.Infrastructure.Data.Migrations
                     b.Property<int>("TenantId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("VariantId")
-                        .HasColumnType("integer");
+                    b.Property<string>("VariantId")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -72,11 +73,8 @@ namespace Inventory.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Inventory.Core.Entities.ProductInventory", b =>
                 {
-                    b.Property<int>("ProductId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ProductId"));
+                    b.Property<string>("ProductId")
+                        .HasColumnType("text");
 
                     b.Property<bool>("AllowBackorder")
                         .HasColumnType("boolean");
@@ -140,11 +138,9 @@ namespace Inventory.Infrastructure.Data.Migrations
                     b.Property<string>("ModifiedBy")
                         .HasColumnType("text");
 
-                    b.Property<int>("OrderId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("integer");
+                    b.Property<string>("OrderCode")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
@@ -152,16 +148,43 @@ namespace Inventory.Infrastructure.Data.Migrations
                     b.Property<int>("TenantId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("VariantId")
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("Reservations");
+                });
+
+            modelBuilder.Entity("Inventory.Core.Entities.ReservationLine", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ReservationId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TenantId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("VariantId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("ReservationId");
 
                     b.HasIndex("TenantId");
 
                     b.HasIndex("VariantId");
 
-                    b.ToTable("Reservations");
+                    b.ToTable("ReservationLines");
                 });
 
             modelBuilder.Entity("Inventory.Core.Entities.Transaction", b =>
@@ -203,8 +226,9 @@ namespace Inventory.Infrastructure.Data.Migrations
                     b.Property<int>("Type")
                         .HasColumnType("integer");
 
-                    b.Property<int>("VariantId")
-                        .HasColumnType("integer");
+                    b.Property<string>("VariantId")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -217,11 +241,8 @@ namespace Inventory.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Inventory.Core.Entities.VariantInventory", b =>
                 {
-                    b.Property<int>("VariantId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("VariantId"));
+                    b.Property<string>("VariantId")
+                        .HasColumnType("text");
 
                     b.Property<bool>("AllowBackorder")
                         .HasColumnType("boolean");
@@ -263,8 +284,8 @@ namespace Inventory.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Inventory.Core.Entities.VariantTracking", b =>
                 {
-                    b.Property<int>("VariantId")
-                        .HasColumnType("integer");
+                    b.Property<string>("VariantId")
+                        .HasColumnType("text");
 
                     b.Property<int>("OnHand")
                         .HasColumnType("integer");
@@ -297,13 +318,21 @@ namespace Inventory.Infrastructure.Data.Migrations
                     b.Navigation("Variant");
                 });
 
-            modelBuilder.Entity("Inventory.Core.Entities.Reservation", b =>
+            modelBuilder.Entity("Inventory.Core.Entities.ReservationLine", b =>
                 {
+                    b.HasOne("Inventory.Core.Entities.Reservation", "Reservation")
+                        .WithMany("ReservationLines")
+                        .HasForeignKey("ReservationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Inventory.Core.Entities.VariantInventory", "Variant")
                         .WithMany()
                         .HasForeignKey("VariantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Reservation");
 
                     b.Navigation("Variant");
                 });
@@ -328,6 +357,11 @@ namespace Inventory.Infrastructure.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Variant");
+                });
+
+            modelBuilder.Entity("Inventory.Core.Entities.Reservation", b =>
+                {
+                    b.Navigation("ReservationLines");
                 });
 
             modelBuilder.Entity("Inventory.Core.Entities.VariantInventory", b =>

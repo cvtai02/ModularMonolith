@@ -18,8 +18,8 @@ public class OrderResponse
 public class OrderLineResponse
 {
     public int Id { get; set; }
-    public int ProductId { get; set; }
-    public int VariantId { get; set; }
+    public string ProductId { get; set; } = string.Empty;
+    public string VariantId { get; set; } = string.Empty;
     public string ProductName { get; set; } = string.Empty;
     public string VariantName { get; set; } = string.Empty;
     public string ImageUrl { get; set; } = string.Empty;

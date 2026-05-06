@@ -8,7 +8,7 @@ namespace ProductCatalog.Core.Services;
 public class OrderProductLookup(ProductCatalogDbContext db, IFileManager fileManager) : IOrderProductLookup
 {
     public async Task<IReadOnlyCollection<OrderProductVariantInfo>> GetVariantsForOrderAsync(
-        IReadOnlyCollection<int> variantIds,
+        IReadOnlyCollection<string> variantIds,
         CancellationToken cancellationToken = default)
     {
         if (variantIds.Count == 0)

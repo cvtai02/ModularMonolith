@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Content.Core.Usecases.BlogPosts;
 
+[UsecaseInject]
 public class UpdateBlogPost(ContentDbContext db, BlogPostSlugGenerator slugGenerator)
 {
     public async Task<BlogPostResponse?> ExecuteAsync(int id, UpdateBlogPostRequest request, CancellationToken ct)

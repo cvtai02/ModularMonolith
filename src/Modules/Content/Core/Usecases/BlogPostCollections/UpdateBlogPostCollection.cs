@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Content.Core.Usecases.BlogPostCollections;
 
+[UsecaseInject]
 public class UpdateBlogPostCollection(ContentDbContext db)
 {
     public async Task<BlogPostCollectionResponse?> ExecuteAsync(

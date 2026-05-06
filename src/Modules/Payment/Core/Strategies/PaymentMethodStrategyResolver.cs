@@ -3,6 +3,7 @@ using SharedKernel.Exceptions;
 
 namespace Payment.Core.Strategies;
 
+[UsecaseInject]
 public class PaymentMethodStrategyResolver(IEnumerable<IPaymentMethodStrategy> strategies)
 {
     private readonly IReadOnlyList<IPaymentMethodStrategy> _strategies = strategies.ToList();

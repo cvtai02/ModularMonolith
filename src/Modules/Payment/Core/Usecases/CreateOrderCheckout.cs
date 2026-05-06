@@ -9,6 +9,7 @@ using SharedKernel.Exceptions;
 
 namespace Payment.Core.Usecases;
 
+[UsecaseInject]
 public class CreateOrderCheckout(
     PaymentDbContext paymentDb,
     OrderDbContext orderDb,

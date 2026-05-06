@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ArrowLeftIcon } from "lucide-react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -10,7 +11,7 @@ import { applyValidationErrors } from "@/lib/form-error";
 
 import { DEFAULT_FORM_VALUES, DEFAULT_VARIANT_OVERRIDE } from "./types";
 import type { FormValues, OptionEntry, Variant, VariantOverride } from "./types";
-import { deriveVariants, getFilledValues, uid } from "./helpers";
+import { deriveVariants, uid, validateOptions, validateVariantNumerics } from "./helpers";
 import { GeneralSection } from "./GeneralSection";
 import { OptionsSection } from "./OptionsSection";
 import { VariantsSection } from "./VariantsSection";
@@ -25,12 +26,19 @@ type Props = {
   defaultValues?: Partial<FormValues>;
   initialOptions?: OptionEntry[];
   initialVariantOverrides?: Record<string, VariantOverride>;
+  showCustomIdField?: boolean;
+  // When false, hides the "Add option" button (e.g. on the edit page where backend
+  // disallows adding new option names to an existing product).
+  canAddOption?: boolean;
   onDiscard: () => void;
   onSubmit: (values: FormValues, options: OptionEntry[], variants: Variant[], statusOverride?: string) => Promise<void>;
 };
 
 const FIELD_MAP: Partial<Record<string, keyof FormValues>> = {
   PhysicalProduct: "isPhysical",
+  // Backend slug is generated from the product name, so map slug errors back to it.
+  slug: "name",
+  Slug: "name",
 };
 
 export function ProductFormLayout({
@@ -40,6 +48,8 @@ export function ProductFormLayout({
   defaultValues,
   initialOptions,
   initialVariantOverrides,
+  showCustomIdField,
+  canAddOption = true,
   onDiscard,
   onSubmit,
 }: Props) {
@@ -50,8 +60,9 @@ export function ProductFormLayout({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const { register, control, handleSubmit, watch, setError, formState: { errors } } = useForm<FormValues>({
+  const { register, control, handleSubmit, watch, getValues, setError, formState: { errors, isValid } } = useForm<FormValues>({
     defaultValues: { ...DEFAULT_FORM_VALUES, ...defaultValues },
+    mode: "onChange",
   });
 
   const watchPrice = watch("price");
@@ -71,8 +82,26 @@ export function ProductFormLayout({
   const showInventory = selectedIds.size <= 1;
 
   const activeOptionCount = options.filter(
-    (o) => o.name.trim() && getFilledValues(o.inputValues).length > 0
+    (o) => o.name.trim() && o.values.length > 0
   ).length;
+
+  // Track duplicate option names so the UI can highlight them inline.
+  const duplicateNameIds = useMemo(() => {
+    const ids = new Set<string>();
+    const seen = new Map<string, string>(); // lower-name → first localId
+    for (const opt of options) {
+      const key = opt.name.trim().toLowerCase();
+      if (!key) continue;
+      const existing = seen.get(key);
+      if (existing) {
+        ids.add(existing);
+        ids.add(opt.localId);
+      } else {
+        seen.set(key, opt.localId);
+      }
+    }
+    return ids;
+  }, [options]);
 
   const variantGroups = useMemo(() => {
     if (activeOptionCount < 2) return null;
@@ -95,7 +124,10 @@ export function ProductFormLayout({
 
   // ── Options handlers ──
   const addOption = useCallback(() => {
-    setOptions((p) => [...p, { localId: uid(), name: "", inputValues: [""] }]);
+    setOptions((p) => [
+      ...p,
+      { localId: uid(), name: "", values: [], pending: "", initialValueCount: 0 },
+    ]);
   }, []);
 
   const removeOption = useCallback((id: string) => {
@@ -106,25 +138,33 @@ export function ProductFormLayout({
     setOptions((p) => p.map((o) => (o.localId === id ? { ...o, name } : o)));
   }, []);
 
-  const handleValueChange = useCallback((optId: string, idx: number, val: string) => {
+  const updatePending = useCallback((optId: string, val: string) => {
+    setOptions((p) => p.map((o) => (o.localId === optId ? { ...o, pending: val } : o)));
+  }, []);
+
+  const commitPending = useCallback((optId: string) => {
     setOptions((p) =>
       p.map((opt) => {
         if (opt.localId !== optId) return opt;
-        const vals = opt.inputValues.map((v, i) => (i === idx ? val : v));
-        if (idx === vals.length - 1 && val.trim()) vals.push("");
-        return { ...opt, inputValues: vals };
+        const trimmed = opt.pending.trim();
+        if (!trimmed) return { ...opt, pending: "" };
+        const lower = trimmed.toLowerCase();
+        // Skip duplicates (case-insensitive). UI flags them; clearing pending here
+        // keeps state consistent if the commit fires from blur after the user typed a dup.
+        if (opt.values.some((v) => v.trim().toLowerCase() === lower)) {
+          return { ...opt, pending: "" };
+        }
+        return { ...opt, values: [...opt.values, trimmed], pending: "" };
       })
     );
   }, []);
 
-  const handleValueBlur = useCallback((optId: string, idx: number) => {
+  const removeValue = useCallback((optId: string, idx: number) => {
     setOptions((p) =>
       p.map((opt) => {
         if (opt.localId !== optId) return opt;
-        let vals = [...opt.inputValues];
-        if (!vals[idx]?.trim() && vals.length > 1) vals = vals.filter((_, i) => i !== idx);
-        if (!vals.length || vals[vals.length - 1].trim()) vals.push("");
-        return { ...opt, inputValues: vals };
+        if (idx < opt.initialValueCount) return opt; // can't remove backend-original values
+        return { ...opt, values: opt.values.filter((_, i) => i !== idx) };
       })
     );
   }, []);
@@ -160,10 +200,47 @@ export function ProductFormLayout({
 
   // ── Submit ──
   const doSubmit = async (values: FormValues, statusOverride?: string) => {
+    // Auto-commit any pending value the user typed but didn't blur yet.
+    const flushed: OptionEntry[] = options.map((opt) => {
+      const trimmed = opt.pending.trim();
+      if (!trimmed) return { ...opt, pending: "" };
+      const lower = trimmed.toLowerCase();
+      if (opt.values.some((v) => v.trim().toLowerCase() === lower)) {
+        return { ...opt, pending: "" };
+      }
+      return { ...opt, values: [...opt.values, trimmed], pending: "" };
+    });
+
+    const validationErr = validateOptions(flushed);
+    if (validationErr) {
+      if (validationErr.kind === "duplicate-name") {
+        toast.error(`Option "${validationErr.name}" is duplicated. Option names must be unique.`);
+      } else {
+        toast.error(`Value "${validationErr.value}" appears twice in option "${validationErr.optionName}".`);
+      }
+      return;
+    }
+
+    if (flushed !== options) setOptions(flushed);
+
+    // Re-derive variants from the flushed options so a just-committed value is included.
+    const flushedVariants = deriveVariants(flushed, variantOverrides);
+
+    const variantErr = validateVariantNumerics(flushedVariants);
+    if (variantErr) {
+      toast.error(`Variant "${variantErr.variantLabel}": ${variantErr.message}.`);
+      return;
+    }
+
     try {
-      await onSubmit(values, options, variants, statusOverride);
+      await onSubmit(values, flushed, flushedVariants, statusOverride);
     } catch (err) {
-      if (!applyValidationErrors(err, setError, FIELD_MAP)) throw err;
+      if (!applyValidationErrors(err, setError, FIELD_MAP)) {
+        // Show the raw message for section-level errors (e.g. "options", "variants")
+        // that don't bind to a single field.
+        const message = err instanceof Error ? err.message : "Save failed.";
+        toast.error(message);
+      }
     }
   };
 
@@ -185,10 +262,10 @@ export function ProductFormLayout({
           <Button variant="ghost" size="sm" type="button" onClick={onDiscard}>
             Discard
           </Button>
-          <Button variant="outline" size="sm" type="button" disabled={isPending} onClick={handleSaveDraft}>
+          <Button variant="outline" size="sm" type="button" disabled={isPending || !isValid} onClick={handleSaveDraft}>
             Save draft
           </Button>
-          <Button size="sm" type="button" disabled={isPending} onClick={handleSave}>
+          <Button size="sm" type="button" disabled={isPending || !isValid} onClick={handleSave}>
             {isPending ? "Saving…" : "Save"}
           </Button>
         </div>
@@ -197,13 +274,28 @@ export function ProductFormLayout({
       <div className="grid grid-cols-1 gap-6 p-6 lg:grid-cols-[1fr_360px]">
         <div className="flex flex-col gap-4">
           <GeneralSection register={register} control={control} errors={errors} categories={categories} />
+          {showCustomIdField && (
+            <div className="rounded-xl border bg-card p-5 flex flex-col gap-2">
+              <label className="text-sm font-medium">Product ID (optional)</label>
+              <input
+                {...register("customId")}
+                maxLength={64}
+                placeholder="Leave blank to auto-generate"
+                className="rounded-md border bg-background px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-ring w-full"
+              />
+              <p className="text-xs text-muted-foreground">Stable string identifier — max 64 characters. Must be unique.</p>
+            </div>
+          )}
           <OptionsSection
             options={options}
+            canAddOption={canAddOption}
             onAdd={addOption}
-            onRemove={removeOption}
+            onRemoveOption={removeOption}
             onNameChange={updateOptionName}
-            onValueChange={handleValueChange}
-            onValueBlur={handleValueBlur}
+            onPendingChange={updatePending}
+            onCommitPending={commitPending}
+            onRemoveValue={removeValue}
+            duplicateNameIds={duplicateNameIds}
           />
           <VariantsSection
             variants={variants}
@@ -220,26 +312,32 @@ export function ProductFormLayout({
           <PricingCard
             register={register}
             control={control}
+            errors={errors}
             watchPrice={watchPrice}
             watchCostPrice={watchCostPrice}
             selectedVariant={selectedVariant}
             onUpdateVariant={updateVariant}
+            getProductValues={getValues}
           />
           {showInventory && (
             <InventoryCard
               register={register}
               control={control}
+              errors={errors}
               watchTrackInventory={watchTrackInventory}
               selectedVariant={selectedVariant}
               onUpdateVariant={updateVariant}
+              getProductValues={getValues}
             />
           )}
           <ShippingCard
             register={register}
             control={control}
+            errors={errors}
             selectedVariant={selectedVariant}
             onUpdateVariant={updateVariant}
             watchIsPhysical={watchIsPhysical}
+            getProductValues={getValues}
           />
         </div>
       </div>

@@ -3,10 +3,15 @@ import type { CurrencyCode } from "@shared/api/contracts/common-types";
 export type OptionEntry = {
   localId: string;
   name: string;
-  inputValues: string[];
+  values: string[];           // committed values
+  pending: string;            // current "add value" input, committed on Enter / Blur
+  initialValueCount: number;  // values[0..initialValueCount-1] came from backend (chips, not removable)
 };
 
 export type VariantOverride = {
+  // Backend variant id (carried through on edit so the update payload can target
+  // the existing variant). Undefined for variants generated from new option values.
+  id?: string;
   useProductPrice: boolean;
   price: string;
   compareAtPrice: string;
@@ -32,6 +37,7 @@ export type Variant = VariantOverride & {
 };
 
 export type FormValues = {
+  customId: string;
   name: string;
   categoryId: number;
   description: string;
@@ -54,6 +60,7 @@ export type FormValues = {
 };
 
 export const DEFAULT_FORM_VALUES: FormValues = {
+  customId: "",
   name: "",
   categoryId: 0,
   description: "",

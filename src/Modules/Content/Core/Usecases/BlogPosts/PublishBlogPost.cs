@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Content.Core.Usecases.BlogPosts;
 
+[UsecaseInject]
 public class PublishBlogPost(ContentDbContext db)
 {
     public async Task<BlogPostResponse?> ExecuteAsync(int id, CancellationToken ct)

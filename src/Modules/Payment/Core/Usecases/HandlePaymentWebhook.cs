@@ -7,6 +7,7 @@ using SharedKernel.Exceptions;
 
 namespace Payment.Core.Usecases;
 
+[UsecaseInject]
 public class HandlePaymentWebhook(
     PaymentDbContext db,
     PaymentMethodStrategyResolver strategyResolver)

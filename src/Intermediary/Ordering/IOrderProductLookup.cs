@@ -3,15 +3,15 @@ namespace Intermediary.Ordering;
 public interface IOrderProductLookup
 {
     Task<IReadOnlyCollection<OrderProductVariantInfo>> GetVariantsForOrderAsync(
-        IReadOnlyCollection<int> variantIds,
+        IReadOnlyCollection<string> variantIds,
         CancellationToken cancellationToken = default);
 }
 
 public sealed record OrderProductVariantInfo(
-    int ProductId,
+    string ProductId,
     string ProductName,
     bool IsProductActive,
-    int VariantId,
+    string VariantId,
     string VariantName,
     string? ImageUrl,
     decimal UnitPrice,

@@ -53,4 +53,4 @@ description: Implement/Update API endpoints.
 
 # Migrations
 - If entity/schema changes require a migration, do not run migration commands.
-- At the end of the task, provide a migration handoff .md in requirements/migrations that include commands to run for migrations.
+- At the end of the task, provide a migration handoff .md in requirements/migrations that only include commands to run for migrations.

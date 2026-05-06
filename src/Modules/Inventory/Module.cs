@@ -1,9 +1,5 @@
-using Intermediary.Events.Order;
-using Inventory.Core.EventHandlers;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Inventory.Core.Usecases.Inventory;
 
 namespace Inventory;
 
@@ -14,21 +10,6 @@ public class InventoryModule(IHostApplicationBuilder b) : Module(b)
     protected override void RegisterDbContext()
     {
         CommonRegisterDbContext<InventoryDbContext>();
-    }
-
-    public override void RegisterModule()
-    {
-        base.RegisterModule();
-        RegisterUsecases();
-    }
-
-    protected override void RegisterUsecases()
-    {
-        Services.AddScoped<InitializeProductInventory>();
-        Services.AddScoped<ImportVariantInventory>();
-        Services.AddScoped<IIntegrationEventHandler<OrderSubmitted>, OrderSubmittedHandler>();
-        Services.AddScoped<IIntegrationEventHandler<OrderPlaced>, OrderPlacedHandler>();
-        Services.AddScoped<IIntegrationEventHandler<OrderCanceled>, OrderCanceledHandler>();
     }
 
     public override void Run(WebApplication app)

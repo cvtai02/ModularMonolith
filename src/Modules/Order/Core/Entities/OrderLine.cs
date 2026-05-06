@@ -4,8 +4,8 @@ public class OrderLine : AuditableEntity
 {
     public int Id { get; set; }
     public string OrderCode { get; set; } = string.Empty;
-    public int ProductId { get; private set; }
-    public int VariantId { get; private set; }
+    public string ProductId { get; private set; } = string.Empty;
+    public string VariantId { get; private set; } = string.Empty;
     public string ProductName { get; private set; } = string.Empty;
     public string VariantName { get; private set; } = string.Empty;
     public string ImageUrl { get; private set; } = string.Empty;
@@ -19,8 +19,8 @@ public class OrderLine : AuditableEntity
     }
 
     public OrderLine(
-        int productId,
-        int variantId,
+        string productId,
+        string variantId,
         string productName,
         string variantName,
         string? imageUrl,
@@ -31,20 +31,20 @@ public class OrderLine : AuditableEntity
         UpdatePricing(unitPrice, quantity);
     }
 
-    public void SetSnapshot(int productId, int variantId, string productName, string variantName, string? imageUrl)
+    public void SetSnapshot(string productId, string variantId, string productName, string variantName, string? imageUrl)
     {
-        if (productId <= 0)
+        if (string.IsNullOrWhiteSpace(productId))
         {
-            throw new ArgumentOutOfRangeException(nameof(productId), "ProductId must be greater than zero.");
+            throw new ArgumentException("ProductId is required.", nameof(productId));
         }
 
-        if (variantId <= 0)
+        if (string.IsNullOrWhiteSpace(variantId))
         {
-            throw new ArgumentOutOfRangeException(nameof(variantId), "VariantId must be greater than zero.");
+            throw new ArgumentException("VariantId is required.", nameof(variantId));
         }
 
-        ProductId = productId;
-        VariantId = variantId;
+        ProductId = productId.Trim();
+        VariantId = variantId.Trim();
         ProductName = RequireText(productName, nameof(productName), 256);
         VariantName = RequireText(variantName, nameof(variantName), 256);
         ImageUrl = NormalizeOptionalText(imageUrl, nameof(imageUrl), 1000);

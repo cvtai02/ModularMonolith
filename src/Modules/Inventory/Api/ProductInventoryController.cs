@@ -12,7 +12,7 @@ public class ProductInventoryController(
 {
     [HttpPost("products/{productId:int}/initialize")]
     public async Task<ActionResult<InitializeProductInventoryResponse>> Initialize(
-        int productId,
+        string productId,
         [FromBody] InitializeProductInventoryRequest request,
         CancellationToken cancellationToken)
         => Ok(await initializeProductInventory.ExecuteAsync(productId, request, cancellationToken));

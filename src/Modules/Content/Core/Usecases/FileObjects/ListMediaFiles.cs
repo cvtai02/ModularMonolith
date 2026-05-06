@@ -6,6 +6,7 @@ using SharedKernel.DTOs;
 
 namespace Content.Core.Usecases.FileObjects;
 
+[UsecaseInject]
 public class ListMediaFiles(ContentDbContext db, IFileManager fileManager)
 {
     public async Task<PaginatedList<MediaFileResponse>> ExecuteAsync(

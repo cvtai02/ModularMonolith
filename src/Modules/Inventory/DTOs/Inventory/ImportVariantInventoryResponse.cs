@@ -11,7 +11,7 @@ public class ImportVariantInventoryResponse
 
 public class ImportVariantInventoryRowResponse
 {
-    public int VariantId { get; set; }
+    public string VariantId { get; set; } = string.Empty;
     public string Status { get; set; } = string.Empty;
     public string Message { get; set; } = string.Empty;
     public int PreviousQuantity { get; set; }

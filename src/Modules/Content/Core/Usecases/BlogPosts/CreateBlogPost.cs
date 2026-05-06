@@ -3,6 +3,7 @@ using Content.Core.Entities;
 
 namespace Content.Core.Usecases.BlogPosts;
 
+[UsecaseInject]
 public class CreateBlogPost(ContentDbContext db, BlogPostSlugGenerator slugGenerator)
 {
     public async Task<BlogPostResponse> ExecuteAsync(CreateBlogPostRequest request, CancellationToken ct)

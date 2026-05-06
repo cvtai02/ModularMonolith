@@ -3,7 +3,7 @@ namespace Inventory.Core.Entities;
 public class Transaction : AuditableEntity
 {
     public int Id { get; set; }
-    public int VariantId { get; set; }
+    public string VariantId { get; set; } = string.Empty;
     public TransactionType Type { get; set; }
     public int Quantity { get; set; }
     public string? ReferenceId { get; set; }

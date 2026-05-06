@@ -16,7 +16,7 @@ public class InitializeProductInventoryRequest
 public class VariantInventoryConfig
 {
     [Required]
-    public int VariantId { get; set; }
+    public string VariantId { get; set; } = string.Empty;
 
     public bool UseProductInventory { get; set; } = true;
     public bool TrackInventory { get; set; } = true;

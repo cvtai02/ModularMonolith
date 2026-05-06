@@ -5,7 +5,7 @@ namespace Inventory.Core.Entities;
 public class ProductInventory : AuditableEntity
 {
     [Key]
-    public int ProductId { get; set; }
+    public string ProductId { get; set; } = string.Empty;
     public bool TrackInventory { get; private set; }
     public bool AllowBackorder { get; private set; }
     public int LowStockThreshold { get; private set; }

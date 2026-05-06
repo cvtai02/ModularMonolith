@@ -5,6 +5,7 @@ using SharedKernel.DTOs;
 
 namespace Content.Core.Usecases.BlogPosts;
 
+[UsecaseInject]
 public class ListPublishedBlogPosts(ContentDbContext db)
 {
     public async Task<PaginatedList<BlogPostSummaryResponse>> ExecuteAsync(

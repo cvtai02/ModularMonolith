@@ -4,7 +4,7 @@ namespace Inventory.Core.Entities;
 public class VariantInventory : AuditableEntity
 {
     [Key]
-    public int VariantId  { get; set; } // treat ad SKU
+    public string VariantId  { get; set; } = string.Empty; // treat as SKU
 
     public bool UseProductInventory { get; private set; } = true;
     public bool TrackInventory { get; private set; }

@@ -45,7 +45,11 @@ export function GeneralSection({ register, control, errors, categories }: Props)
           <Field>
             <FieldLabel>Title *</FieldLabel>
             <Input
-              {...register("name", { required: "Title is required" })}
+              {...register("name", {
+                required: "Title is required",
+                maxLength: { value: 200, message: "Max 200 characters" },
+                validate: (v) => v.trim().length > 0 || "Title is required",
+              })}
               placeholder="Short sleeve t-shirt"
             />
             {errors.name && <FieldError>{errors.name.message}</FieldError>}
@@ -84,7 +88,14 @@ export function GeneralSection({ register, control, errors, categories }: Props)
 
           <Field>
             <FieldLabel>Description</FieldLabel>
-            <Textarea {...register("description")} placeholder="Describe your product…" rows={4} />
+            <Textarea
+              {...register("description", {
+                maxLength: { value: 2000, message: "Max 2000 characters" },
+              })}
+              placeholder="Describe your product…"
+              rows={4}
+            />
+            {errors.description && <FieldError>{errors.description.message}</FieldError>}
           </Field>
 
           <Field>

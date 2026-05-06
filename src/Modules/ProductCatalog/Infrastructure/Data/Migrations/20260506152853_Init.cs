@@ -21,7 +21,7 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                     Name = table.Column<string>(type: "text", nullable: false),
                     Slug = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
-                    ImageUrl = table.Column<string>(type: "text", nullable: false),
+                    ImageKey = table.Column<string>(type: "text", nullable: true),
                     ParentId = table.Column<int>(type: "integer", nullable: true),
                     Status = table.Column<int>(type: "integer", nullable: false),
                     TenantId = table.Column<int>(type: "integer", nullable: false),
@@ -50,7 +50,7 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                     Title = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
                     Slug = table.Column<string>(type: "text", nullable: false),
-                    Image = table.Column<string>(type: "text", nullable: false),
+                    ImageKey = table.Column<string>(type: "text", nullable: true),
                     TenantId = table.Column<int>(type: "integer", nullable: false),
                     Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<string>(type: "text", nullable: false),
@@ -67,8 +67,7 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                 name: "Products",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<string>(type: "text", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Slug = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
@@ -107,7 +106,7 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     CollectionId = table.Column<int>(type: "integer", nullable: false),
-                    ProductId = table.Column<int>(type: "integer", nullable: false),
+                    ProductId = table.Column<string>(type: "text", nullable: false),
                     DisplayOrder = table.Column<int>(type: "integer", nullable: false),
                     TenantId = table.Column<int>(type: "integer", nullable: false),
                     Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
@@ -139,7 +138,7 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    ProductId = table.Column<int>(type: "integer", nullable: false),
+                    ProductId = table.Column<string>(type: "text", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     DisplayOrder = table.Column<int>(type: "integer", nullable: false),
                     TenantId = table.Column<int>(type: "integer", nullable: false),
@@ -166,7 +165,7 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    ProductId = table.Column<int>(type: "integer", nullable: false),
+                    ProductId = table.Column<string>(type: "text", nullable: false),
                     Key = table.Column<string>(type: "text", nullable: false),
                     DisplayOrder = table.Column<float>(type: "real", nullable: false),
                     TenantId = table.Column<int>(type: "integer", nullable: false),
@@ -191,7 +190,7 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                 name: "ProductMetrics",
                 columns: table => new
                 {
-                    ProductId = table.Column<int>(type: "integer", nullable: false),
+                    ProductId = table.Column<string>(type: "text", nullable: false),
                     RatingAvg = table.Column<float>(type: "real", nullable: false),
                     RatingCount = table.Column<int>(type: "integer", nullable: false),
                     ViewCount = table.Column<int>(type: "integer", nullable: false),
@@ -214,7 +213,7 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                 name: "ProductShippings",
                 columns: table => new
                 {
-                    ProductId = table.Column<int>(type: "integer", nullable: false),
+                    ProductId = table.Column<string>(type: "text", nullable: false),
                     Weight = table.Column<float>(type: "real", nullable: false),
                     Width = table.Column<float>(type: "real", nullable: false),
                     Height = table.Column<float>(type: "real", nullable: false),
@@ -242,14 +241,12 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                 name: "Variants",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    ProductId = table.Column<int>(type: "integer", nullable: false),
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    ProductId = table.Column<string>(type: "text", nullable: false),
                     ImageKey = table.Column<string>(type: "text", nullable: true),
                     UseProductPricing = table.Column<bool>(type: "boolean", nullable: false),
                     Price = table.Column<decimal>(type: "numeric", nullable: false),
-                    Currency = table.Column<int>(type: "integer", nullable: false),
-                    CompareAtPrice = table.Column<decimal>(type: "numeric", nullable: false),
+                    CompareAtPrice = table.Column<decimal>(type: "numeric", nullable: true),
                     CostPrice = table.Column<decimal>(type: "numeric", nullable: false),
                     ChargeTax = table.Column<bool>(type: "boolean", nullable: false),
                     TrackInventory = table.Column<bool>(type: "boolean", nullable: false),
@@ -301,7 +298,7 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                 name: "VariantMetrics",
                 columns: table => new
                 {
-                    VariantId = table.Column<int>(type: "integer", nullable: false),
+                    VariantId = table.Column<string>(type: "text", nullable: false),
                     Stock = table.Column<int>(type: "integer", nullable: false),
                     Sold = table.Column<int>(type: "integer", nullable: false),
                     RatingAvg = table.Column<float>(type: "real", nullable: false),
@@ -325,7 +322,7 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    VariantId = table.Column<int>(type: "integer", nullable: false),
+                    VariantId = table.Column<string>(type: "text", nullable: false),
                     OptionId = table.Column<int>(type: "integer", nullable: false),
                     OptionName = table.Column<string>(type: "text", nullable: false),
                     Value = table.Column<string>(type: "text", nullable: false),
@@ -351,7 +348,7 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                 name: "VariantShippings",
                 columns: table => new
                 {
-                    VariantId = table.Column<int>(type: "integer", nullable: false),
+                    VariantId = table.Column<string>(type: "text", nullable: false),
                     Weight = table.Column<float>(type: "real", nullable: false),
                     Width = table.Column<float>(type: "real", nullable: false),
                     Height = table.Column<float>(type: "real", nullable: false),

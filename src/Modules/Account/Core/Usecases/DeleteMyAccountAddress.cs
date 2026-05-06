@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Account.Core.Usecases;
 
+[UsecaseInject]
 public class DeleteMyAccountAddress(AccountProfileResolver resolver, AccountDbContext db)
 {
     public async Task<bool> ExecuteAsync(int addressId, AccountType accountType, CancellationToken ct)

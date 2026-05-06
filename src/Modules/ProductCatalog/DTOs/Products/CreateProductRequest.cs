@@ -6,6 +6,9 @@ namespace ProductCatalog.DTOs.Products;
 
 public class CreateProductRequest
 {
+    [MaxLength(64)]
+    public string? Id { get; set; }
+
     [Required]
     [MaxLength(200)]
     public string Name { get; set; } = string.Empty;

@@ -16,6 +16,6 @@ public class CreateOrderRequest
 
 public class CreateOrderItemRequest
 {
-    public int VariantId { get; set; }
+    public string VariantId { get; set; } = string.Empty;
     public int Quantity { get; set; }
 }

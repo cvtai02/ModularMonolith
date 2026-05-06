@@ -1,13 +1,10 @@
 using Intermediary.Events.Inventory;
-using Inventory;
 using Microsoft.EntityFrameworkCore;
 using ProductCatalog.Core.Entities;
 
 namespace ProductCatalog.Core.EventHandlers;
 
-public class ReservationCommitedHandler(
-    ProductCatalogDbContext db,
-    InventoryDbContext inventoryDb) : IIntegrationEventHandler<ReservationCommited>
+public class ReservationCommitedHandler(ProductCatalogDbContext db) : IIntegrationEventHandler<ReservationCommited>
 {
     public async Task Handle(ReservationCommited @event, CancellationToken ct = default)
     {
@@ -39,23 +36,12 @@ public class ReservationCommitedHandler(
             .Where(x => affectedProductIds.Contains(x.ProductId))
             .ToListAsync(ct);
 
-        var variantIds = variants.Select(x => x.Id).ToList();
-        var inventoryByVariantId = await inventoryDb.VariantInventories
-            .AsNoTracking()
-            .Include(x => x.Tracking)
-            .Where(x => variantIds.Contains(x.VariantId))
-            .ToDictionaryAsync(x => x.VariantId, ct);
-
         foreach (var variant in variants)
         {
             var variantMetric = EnsureVariantMetric(variant);
-            if (inventoryByVariantId.TryGetValue(variant.Id, out var inventory))
-            {
-                variantMetric.Stock = inventory.Tracking?.OnHand ?? 0;
-            }
-
             if (quantityByVariantId.TryGetValue(variant.Id, out var quantity))
             {
+                variantMetric.Stock = Math.Max(0, variantMetric.Stock - quantity);
                 variantMetric.Sold += quantity;
             }
         }

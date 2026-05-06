@@ -6,6 +6,7 @@ using SharedKernel.Exceptions;
 
 namespace Content.Core.Usecases.FileObjects;
 
+[UsecaseInject]
 public class ConfirmUpload(ContentDbContext db, IFileManager fileManager, ICacheService cache)
 {
     public async Task<ConfirmUploadResponse> ExecuteAsync(

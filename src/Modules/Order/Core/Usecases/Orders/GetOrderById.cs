@@ -3,6 +3,7 @@ using Order.DTOs.Orders;
 
 namespace Order.Core.Usecases.Orders;
 
+[UsecaseInject]
 public class GetOrderByCode(OrderDbContext db)
 {
     public async Task<OrderResponse?> ExecuteAsync(string code, CancellationToken ct)

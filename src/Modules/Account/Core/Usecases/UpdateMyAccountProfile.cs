@@ -3,6 +3,7 @@ using Account.Core.Entities;
 
 namespace Account.Core.Usecases;
 
+[UsecaseInject]
 public class UpdateMyAccountProfile(AccountProfileResolver resolver, AccountDbContext db)
 {
     public async Task<AccountProfileResponse> ExecuteAsync(

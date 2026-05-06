@@ -6,7 +6,7 @@ namespace Inventory.Core.Entities;
 public class VariantTracking : Entity
 {
     [Key]
-    public int VariantId { get; set; }
+    public string VariantId { get; set; } = string.Empty;
     public int OnHand { get; set; }
     public int Reserved { get; set; }
     [NotMapped]

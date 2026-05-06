@@ -12,7 +12,7 @@ using ProductCatalog;
 namespace ProductCatalog.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ProductCatalogDbContext))]
-    [Migration("20260428084335_Init")]
+    [Migration("20260506152853_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -44,8 +44,7 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
+                    b.Property<string>("ImageKey")
                         .HasColumnType("text");
 
                     b.Property<bool>("IsDeleted")
@@ -102,8 +101,7 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Image")
-                        .IsRequired()
+                    b.Property<string>("ImageKey")
                         .HasColumnType("text");
 
                     b.Property<bool>("IsDeleted")
@@ -163,8 +161,9 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                     b.Property<string>("ModifiedBy")
                         .HasColumnType("text");
 
-                    b.Property<int>("ProductId")
-                        .HasColumnType("integer");
+                    b.Property<string>("ProductId")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<int>("TenantId")
                         .HasColumnType("integer");
@@ -211,8 +210,9 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("ProductId")
-                        .HasColumnType("integer");
+                    b.Property<string>("ProductId")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<int>("TenantId")
                         .HasColumnType("integer");
@@ -265,11 +265,8 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("ProductCatalog.Core.Entities.Product", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
 
                     b.Property<bool>("AllowBackorder")
                         .HasColumnType("boolean");
@@ -373,8 +370,9 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                     b.Property<string>("ModifiedBy")
                         .HasColumnType("text");
 
-                    b.Property<int>("ProductId")
-                        .HasColumnType("integer");
+                    b.Property<string>("ProductId")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<int>("TenantId")
                         .HasColumnType("integer");
@@ -390,8 +388,8 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("ProductCatalog.Core.Entities.ProductMetric", b =>
                 {
-                    b.Property<int>("ProductId")
-                        .HasColumnType("integer");
+                    b.Property<string>("ProductId")
+                        .HasColumnType("text");
 
                     b.Property<float>("RatingAvg")
                         .HasColumnType("real");
@@ -420,8 +418,8 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("ProductCatalog.Core.Entities.ProductShipping", b =>
                 {
-                    b.Property<int>("ProductId")
-                        .HasColumnType("integer");
+                    b.Property<string>("ProductId")
+                        .HasColumnType("text");
 
                     b.Property<DateTimeOffset>("Created")
                         .HasColumnType("timestamp with time zone");
@@ -466,11 +464,8 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("ProductCatalog.Core.Entities.Variant", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
 
                     b.Property<bool>("AllowBackorder")
                         .HasColumnType("boolean");
@@ -478,7 +473,7 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                     b.Property<bool>("ChargeTax")
                         .HasColumnType("boolean");
 
-                    b.Property<decimal>("CompareAtPrice")
+                    b.Property<decimal?>("CompareAtPrice")
                         .HasColumnType("numeric");
 
                     b.Property<decimal>("CostPrice")
@@ -490,9 +485,6 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<int>("Currency")
-                        .HasColumnType("integer");
 
                     b.Property<string>("ImageKey")
                         .HasColumnType("text");
@@ -509,8 +501,9 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric");
 
-                    b.Property<int>("ProductId")
-                        .HasColumnType("integer");
+                    b.Property<string>("ProductId")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<int>("TenantId")
                         .HasColumnType("integer");
@@ -532,8 +525,8 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("ProductCatalog.Core.Entities.VariantMetric", b =>
                 {
-                    b.Property<int>("VariantId")
-                        .HasColumnType("integer");
+                    b.Property<string>("VariantId")
+                        .HasColumnType("text");
 
                     b.Property<float>("RatingAvg")
                         .HasColumnType("real");
@@ -595,8 +588,9 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("VariantId")
-                        .HasColumnType("integer");
+                    b.Property<string>("VariantId")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -609,8 +603,8 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("ProductCatalog.Core.Entities.VariantShipping", b =>
                 {
-                    b.Property<int>("VariantId")
-                        .HasColumnType("integer");
+                    b.Property<string>("VariantId")
+                        .HasColumnType("text");
 
                     b.Property<DateTimeOffset>("Created")
                         .HasColumnType("timestamp with time zone");

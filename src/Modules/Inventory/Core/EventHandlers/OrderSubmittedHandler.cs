@@ -86,7 +86,7 @@ public class OrderSubmittedHandler(InventoryDbContext db) : IIntegrationEventHan
 
     private static Dictionary<string, string[]> Validate(
         OrderSubmitted @event,
-        IReadOnlyDictionary<int, VariantInventory> inventories)
+        IReadOnlyDictionary<string, VariantInventory> inventories)
     {
         var errors = new Dictionary<string, string[]>();
         var itemErrors = new List<string>();

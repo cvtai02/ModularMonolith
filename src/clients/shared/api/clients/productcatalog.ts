@@ -43,8 +43,12 @@ type CollectionProductsPostClient = {
 
 export class ProductCatalogClient implements IProductCatalogClient {
   private readonly client: OpenApiClient;
+  private readonly fetch: Fetch;
+  private readonly apiBaseUrl: string;
 
   constructor(fetch: Fetch, apiBaseUrl: string) {
+    this.fetch = fetch;
+    this.apiBaseUrl = apiBaseUrl.replace(/\/$/, "");
     this.client = createFetchClient<paths>({
       baseUrl: apiBaseUrl,
       fetch,
@@ -57,12 +61,12 @@ export class ProductCatalogClient implements IProductCatalogClient {
     return requireData(data, "Products response was empty.");
   }
 
-  async getProduct(id: number): Promise<ProductResponse> {
-    const { data, error } = await this.client.GET("/api/ProductCatalog/products/{id}", {
-      params: { path: { id } },
-    });
-    if (error) throw error;
-    return requireData(data, "Product response was empty.");
+  async getProduct(id: string): Promise<ProductResponse> {
+    return this.requestJson<ProductResponse>(
+      `/api/ProductCatalog/products/${encodeURIComponent(id)}`,
+      undefined,
+      "Product response was empty.",
+    );
   }
 
   async createProduct(input: CreateProductRequest): Promise<CreateProductResponse> {
@@ -73,13 +77,16 @@ export class ProductCatalogClient implements IProductCatalogClient {
     return requireData(data, "Create product response was empty.");
   }
 
-  async updateProduct(id: number, input: UpdateProductRequest): Promise<UpdateProductResponse> {
-    const { data, error } = await this.client.PUT("/api/ProductCatalog/products/{id}", {
-      params: { path: { id } },
-      body: input,
-    });
-    if (error) throw error;
-    return requireData(data, "Update product response was empty.");
+  async updateProduct(id: string, input: UpdateProductRequest): Promise<UpdateProductResponse> {
+    return this.requestJson<UpdateProductResponse>(
+      `/api/ProductCatalog/products/${encodeURIComponent(id)}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(input),
+      },
+      "Update product response was empty.",
+    );
   }
 
   async listCategory(query?: ListCategoriesQuery): Promise<ListCategoriesResponse> {
@@ -172,5 +179,24 @@ export class ProductCatalogClient implements IProductCatalogClient {
     });
     if (error) throw error;
     return data;
+  }
+
+  private async requestJson<T>(path: string, init: RequestInit | undefined, emptyMessage: string): Promise<T> {
+    const response = await this.fetch(`${this.apiBaseUrl}${path}`, init);
+    if (!response.ok) {
+      throw await this.readError(response);
+    }
+
+    const data = await response.json() as T | undefined;
+    return requireData(data, emptyMessage);
+  }
+
+  private async readError(response: Response): Promise<unknown> {
+    const contentType = response.headers.get("content-type") ?? "";
+    if (contentType.includes("application/json")) {
+      return await response.json();
+    }
+
+    return new Error(await response.text());
   }
 }

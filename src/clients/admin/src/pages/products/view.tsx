@@ -19,7 +19,7 @@ type Tab = "overview" | "variants" | "media" | "inventory" | "shipping";
 
 export default function ProductViewPage() {
   const { id } = useParams<{ id: string }>();
-  const productId = Number(id);
+  const productId = id!;
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<Tab>("overview");
   const productCatalogClient = useProductCatalogClient();
@@ -27,6 +27,7 @@ export default function ProductViewPage() {
   const { data: product, isLoading, isError } = useQuery({
     queryKey: ["product", productId],
     queryFn: () => productCatalogClient.getProduct(productId),
+    enabled: !!productId,
   });
 
   if (isError) {

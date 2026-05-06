@@ -6,6 +6,7 @@ using SharedKernel.Exceptions;
 
 namespace ProductCatalog.Core.Usecases.Categories;
 
+[UsecaseInject]
 public class UpdateCategory(ProductCatalogDbContext db, IFileManager fm)
 {
     public async Task<CategoryResponse?> ExecuteAsync(string name, UpdateCategoryRequest request, CancellationToken ct)

@@ -5,6 +5,7 @@ using SharedKernel.Exceptions;
 
 namespace Account.Core.Usecases;
 
+[UsecaseInject]
 public class AccountProfileResolver(AccountDbContext db, IUser user)
 {
     public async Task<AccountProfile> GetOrCreateCurrentAsync(AccountType accountType, CancellationToken ct)

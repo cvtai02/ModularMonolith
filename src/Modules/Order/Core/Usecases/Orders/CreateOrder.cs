@@ -10,6 +10,7 @@ using SharedKernel.Exceptions;
 
 namespace Order.Core.Usecases.Orders;
 
+[UsecaseInject]
 public class CreateOrder(
     OrderDbContext db,
     IOrderProductLookup productLookup,
@@ -98,11 +99,11 @@ public class CreateOrder(
 
         var itemErrors = new List<string>();
         var invalidQuantityIds = request.Items
-            .Where(x => x.Quantity <= 0)
+            .Where(x => x.Quantity <= 0 || string.IsNullOrWhiteSpace(x.VariantId))
             .Select(x => x.VariantId)
             .ToList();
         if (invalidQuantityIds.Count > 0)
-            itemErrors.Add($"Quantity must be greater than zero for variant ids: {string.Join(", ", invalidQuantityIds)}.");
+            itemErrors.Add($"Variant id is required and quantity must be greater than zero for variant ids: {string.Join(", ", invalidQuantityIds)}.");
 
         var duplicateVariantIds = request.Items
             .GroupBy(x => x.VariantId)
@@ -130,7 +131,7 @@ public class CreateOrder(
     private static void ValidateProductData(
         CreateOrderRequest request,
         string currencyCode,
-        IReadOnlyDictionary<int, OrderProductVariantInfo> variantById)
+        IReadOnlyDictionary<string, OrderProductVariantInfo> variantById)
     {
         var errors = new Dictionary<string, string[]>();
         var itemErrors = new List<string>();

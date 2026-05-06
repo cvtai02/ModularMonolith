@@ -5,6 +5,7 @@ using SharedKernel.DTOs;
 
 namespace ProductCatalog.Core.Usecases.Categories;
 
+[UsecaseInject]
 public class ListCategories(ProductCatalogDbContext db, IFileManager fm)
 {
     public async Task<PaginatedList<CategoryResponse>> ExecuteAsync(

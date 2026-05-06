@@ -4,6 +4,7 @@ using SharedKernel.DTOs;
 
 namespace Order.Core.Usecases.Orders;
 
+[UsecaseInject]
 public class ListOrders(OrderDbContext db)
 {
     public async Task<PaginatedList<OrderSummaryResponse>> ExecuteAsync(ListOrdersRequest request, CancellationToken ct)

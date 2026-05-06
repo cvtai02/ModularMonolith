@@ -5,10 +5,11 @@ using SharedKernel.Exceptions;
 
 namespace Inventory.Core.Usecases.Inventory;
 
+[UsecaseInject]
 public class InitializeProductInventory(InventoryDbContext db)
 {
     public async Task<InitializeProductInventoryResponse> ExecuteAsync(
-        int productId,
+        string productId,
         InitializeProductInventoryRequest request,
         CancellationToken ct)
     {
@@ -61,24 +62,35 @@ public class InitializeProductInventory(InventoryDbContext db)
 
     private static void Validate(InitializeProductInventoryRequest request)
     {
+        var invalidVariantIds = request.Variants
+            .Where(x => string.IsNullOrWhiteSpace(x.VariantId))
+            .Select(x => x.VariantId)
+            .ToList();
+
         var duplicateVariantIds = request.Variants
             .GroupBy(x => x.VariantId)
             .Where(x => x.Count() > 1)
             .Select(x => x.Key)
             .ToList();
 
-        if (duplicateVariantIds.Count > 0)
+        if (invalidVariantIds.Count > 0 || duplicateVariantIds.Count > 0)
         {
+            var errors = new List<string>();
+            if (invalidVariantIds.Count > 0)
+                errors.Add("Variant ids are required.");
+            if (duplicateVariantIds.Count > 0)
+                errors.Add("Variant inventory configs must be unique by variant id.");
+
             throw new ValidationException(
                 "Validation failed",
                 new Dictionary<string, string[]>
                 {
-                    [nameof(request.Variants)] = ["Variant inventory configs must be unique by variant id."]
+                    [nameof(request.Variants)] = errors.ToArray()
                 });
         }
     }
 
-    private async Task<InitializeProductInventoryResponse> BuildResponse(int productId, CancellationToken ct)
+    private async Task<InitializeProductInventoryResponse> BuildResponse(string productId, CancellationToken ct)
     {
         var productInventory = await db.ProductInventories
             .AsNoTracking()

@@ -4,8 +4,8 @@ namespace ProductCatalog.Core.Entities;
 
 public class Variant : AuditableEntity
 {
-    public int Id { get; set; }
-    public int ProductId { get; set; }
+    public string Id { get; set; } = string.Empty;
+    public string ProductId { get; set; } = string.Empty;
     public string? ImageKey { get; set; }   // if null use product image.
 
     // Pricing

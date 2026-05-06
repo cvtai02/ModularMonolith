@@ -1,5 +1,4 @@
 using Account;
-using Cart;
 using Content;
 using Identity;
 using Inventory;
@@ -20,7 +19,6 @@ public static class ModuleList
             new ProductCatalogModule(builder),
             new ContentModule(builder),
             new InventoryModule(builder),
-            new CartModule(builder),
             new PaymentModule(builder),
             new OrderModule(builder)
         ];

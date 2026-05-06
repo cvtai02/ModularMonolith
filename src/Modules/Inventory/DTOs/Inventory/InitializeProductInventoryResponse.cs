@@ -2,7 +2,7 @@ namespace Inventory.DTOs.Inventory;
 
 public class InitializeProductInventoryResponse
 {
-    public int ProductId { get; set; }
+    public string ProductId { get; set; } = string.Empty;
     public bool TrackInventory { get; set; }
     public bool AllowBackorder { get; set; }
     public int LowStockThreshold { get; set; }
@@ -11,7 +11,7 @@ public class InitializeProductInventoryResponse
 
 public class VariantInventoryResponse
 {
-    public int VariantId { get; set; }
+    public string VariantId { get; set; } = string.Empty;
     public bool UseProductInventory { get; set; }
     public bool TrackInventory { get; set; }
     public bool AllowBackorder { get; set; }

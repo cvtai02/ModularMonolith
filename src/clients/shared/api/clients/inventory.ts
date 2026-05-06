@@ -26,7 +26,7 @@ export class InventoryClient implements IInventoryClient {
   }
 
   async initializeProductInventory(
-    productId: number,
+    productId: string,
     input: InitializeProductInventoryRequest,
   ): Promise<InitializeProductInventoryResponse> {
     const { data, error } = await this.client.POST("/api/Inventory/products/{productId}/initialize", {

@@ -5,7 +5,7 @@ namespace ProductCatalog.Core.Entities;
 public class VariantMetric : Entity
 {
     [Key]
-    public int VariantId { get; set; }
+    public string VariantId { get; set; } = string.Empty;
     public int Stock { get; set; }
     public int Sold { get; set; }
 

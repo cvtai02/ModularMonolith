@@ -6,6 +6,7 @@ using SharedKernel.Extensions;
 
 namespace Content.Core.Usecases.FileObjects;
 
+[UsecaseInject]
 public class GetPresignedUpload(IFileManager fileManager, ICacheService cache)
 {
     private const int MaxBatchSize = 20;

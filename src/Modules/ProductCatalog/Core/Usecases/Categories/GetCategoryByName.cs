@@ -4,6 +4,7 @@ using SharedKernel.Abstractions.Services;
 
 namespace ProductCatalog.Core.Usecases.Categories;
 
+[UsecaseInject]
 public class GetCategoryByName(ProductCatalogDbContext db, IFileManager fm)
 {
     public async Task<CategoryResponse?> ExecuteAsync(string name, CancellationToken ct)

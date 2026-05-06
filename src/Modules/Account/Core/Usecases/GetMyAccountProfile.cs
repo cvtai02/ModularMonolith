@@ -3,6 +3,7 @@ using Account.Core.Entities;
 
 namespace Account.Core.Usecases;
 
+[UsecaseInject]
 public class GetMyAccountProfile(AccountProfileResolver resolver)
 {
     public async Task<AccountProfileResponse> ExecuteAsync(AccountType accountType, CancellationToken ct)

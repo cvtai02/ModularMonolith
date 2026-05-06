@@ -10,7 +10,8 @@
       "Bash(npm run *)",
       "Bash(rm -rf node_modules nekomin/node_modules admin/node_modules shared/node_modules)",
       "Bash(npm install *)",
-      "Bash(npx turbo *)"
+      "Bash(npx turbo *)",
+      "Bash(npx eslint *)"
     ],
     "deny": [
       "Read(.git/**)",

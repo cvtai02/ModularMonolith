@@ -66,8 +66,8 @@ public class Order : AuditableEntity
     }
 
     public OrderLine AddLine(
-        int productId,
-        int variantId,
+        string productId,
+        string variantId,
         string productName,
         string variantName,
         string? imageUrl,

@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Content.Core.Usecases.BlogPostCollections;
 
+[UsecaseInject]
 public class DeleteBlogPostCollection(ContentDbContext db)
 {
     public async Task<bool> ExecuteAsync(int id, CancellationToken ct)

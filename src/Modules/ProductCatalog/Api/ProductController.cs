@@ -18,8 +18,8 @@ public class ProductController(
         [FromQuery] ListProductsRequest request, CancellationToken cancellationToken)
         => Ok(await listProducts.ExecuteAsync(request, cancellationToken));
 
-    [HttpGet("{id:int}")]
-    public async Task<ActionResult<ProductResponse>> GetById(int id, CancellationToken cancellationToken)
+    [HttpGet("{id}")]
+    public async Task<ActionResult<ProductResponse>> GetById(string id, CancellationToken cancellationToken)
     {
         var result = await getProductById.ExecuteAsync(id, cancellationToken);
         return result is null ? NotFound() : Ok(result);
@@ -33,9 +33,9 @@ public class ProductController(
         return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
     }
 
-    [HttpPut("{id:int}")]
+    [HttpPut("{id}")]
     public async Task<ActionResult<ProductResponse>> Update(
-        int id, [FromBody] UpdateProductRequest request, CancellationToken cancellationToken)
+        string id, [FromBody] UpdateProductRequest request, CancellationToken cancellationToken)
     {
         var result = await updateProduct.ExecuteAsync(id, request, cancellationToken);
         return result is null ? NotFound() : Ok(result);

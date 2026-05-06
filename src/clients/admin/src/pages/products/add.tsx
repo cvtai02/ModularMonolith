@@ -6,7 +6,7 @@ import { useProductCatalogClient } from "@/components/containers/api-client-prov
 import { ROUTES } from "@/configs/routes";
 
 import type { FormValues, OptionEntry, Variant } from "./components/types";
-import { buildVariantsPayload, getFilledValues } from "./components/helpers";
+import { buildVariantsPayload } from "./components/helpers";
 import { ProductFormLayout } from "./components/ProductFormLayout";
 
 export default function AddProductPage() {
@@ -27,11 +27,10 @@ export default function AddProductPage() {
   const handleSubmit = async (values: FormValues, options: OptionEntry[], variants: Variant[], statusOverride?: string) => {
     const finalStatus = statusOverride ?? values.status;
     const hasVariants = variants.length > 0;
-    const activeOptions = options.filter(
-      (o) => o.name.trim() && getFilledValues(o.inputValues).length > 0
-    );
+    const activeOptions = options.filter((o) => o.name.trim() && o.values.length > 0);
 
     const created = await createProduct({
+      id: values.customId.trim() || undefined,
       name: values.name,
       categoryId: values.categoryId,
       description: values.description || undefined,
@@ -55,7 +54,7 @@ export default function AddProductPage() {
       options: activeOptions.map((opt, displayOrder) => ({
         name: opt.name,
         displayOrder,
-        values: getFilledValues(opt.inputValues),
+        values: opt.values,
       })),
       variants: buildVariantsPayload(variants, hasVariants),
     });
@@ -70,6 +69,7 @@ export default function AddProductPage() {
       title="Add product"
       categories={categories}
       isPending={isPending}
+      showCustomIdField
       onDiscard={() => navigate(ROUTES.products)}
       onSubmit={handleSubmit}
     />

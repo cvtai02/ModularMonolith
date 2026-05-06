@@ -55,8 +55,9 @@ namespace Inventory.Infrastructure.Data.Migrations
                     b.Property<int>("TenantId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("VariantId")
-                        .HasColumnType("integer");
+                    b.Property<string>("VariantId")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -69,11 +70,8 @@ namespace Inventory.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Inventory.Core.Entities.ProductInventory", b =>
                 {
-                    b.Property<int>("ProductId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ProductId"));
+                    b.Property<string>("ProductId")
+                        .HasColumnType("text");
 
                     b.Property<bool>("AllowBackorder")
                         .HasColumnType("boolean");
@@ -171,8 +169,9 @@ namespace Inventory.Infrastructure.Data.Migrations
                     b.Property<int>("TenantId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("VariantId")
-                        .HasColumnType("integer");
+                    b.Property<string>("VariantId")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -224,8 +223,9 @@ namespace Inventory.Infrastructure.Data.Migrations
                     b.Property<int>("Type")
                         .HasColumnType("integer");
 
-                    b.Property<int>("VariantId")
-                        .HasColumnType("integer");
+                    b.Property<string>("VariantId")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -238,11 +238,8 @@ namespace Inventory.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Inventory.Core.Entities.VariantInventory", b =>
                 {
-                    b.Property<int>("VariantId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("VariantId"));
+                    b.Property<string>("VariantId")
+                        .HasColumnType("text");
 
                     b.Property<bool>("AllowBackorder")
                         .HasColumnType("boolean");
@@ -284,8 +281,8 @@ namespace Inventory.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Inventory.Core.Entities.VariantTracking", b =>
                 {
-                    b.Property<int>("VariantId")
-                        .HasColumnType("integer");
+                    b.Property<string>("VariantId")
+                        .HasColumnType("text");
 
                     b.Property<int>("OnHand")
                         .HasColumnType("integer");

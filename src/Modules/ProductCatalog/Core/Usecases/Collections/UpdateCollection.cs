@@ -6,6 +6,7 @@ using SharedKernel.Exceptions;
 
 namespace ProductCatalog.Core.Usecases.Collections;
 
+[UsecaseInject]
 public class UpdateCollection(ProductCatalogDbContext db, IFileManager fm)
 {
     public async Task<CollectionResponse?> ExecuteAsync(int id, UpdateCollectionRequest request, CancellationToken ct)
@@ -56,7 +57,7 @@ public class UpdateCollection(ProductCatalogDbContext db, IFileManager fm)
 
     private void SyncCollectionProducts(
         int collectionId,
-        List<int> requestedProductIds,
+        List<string> requestedProductIds,
         List<CollectionProduct> currentProducts)
     {
         var canonicalCurrentProducts = currentProducts
@@ -95,25 +96,26 @@ public class UpdateCollection(ProductCatalogDbContext db, IFileManager fm)
         }
     }
 
-    private async Task<List<int>> ValidateProductIdsAsync(
-        List<int> requestedProductIds,
+    private async Task<List<string>> ValidateProductIdsAsync(
+        List<string> requestedProductIds,
         Dictionary<string, string[]> errors,
         CancellationToken ct)
     {
         var productIdErrors = new List<string>();
         var productIds = requestedProductIds
-            .Where(x => x > 0)
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Select(x => x.Trim())
             .Distinct()
             .ToList();
         var invalidProductIds = requestedProductIds
-            .Where(x => x <= 0)
+            .Where(string.IsNullOrWhiteSpace)
             .Distinct()
             .ToList();
         if (invalidProductIds.Count > 0)
-            productIdErrors.Add($"Product ids must be greater than zero: {string.Join(", ", invalidProductIds)}.");
+            productIdErrors.Add("Product ids are required.");
 
         var existingProductIds = productIds.Count == 0
-            ? new List<int>()
+            ? new List<string>()
             : await db.Products
                 .Where(x => productIds.Contains(x.Id))
                 .Select(x => x.Id)

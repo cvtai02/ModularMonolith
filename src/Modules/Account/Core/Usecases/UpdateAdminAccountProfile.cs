@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Account.Core.Usecases;
 
+[UsecaseInject]
 public class UpdateAdminAccountProfile(AccountDbContext db)
 {
     public async Task<AccountProfileResponse?> ExecuteAsync(

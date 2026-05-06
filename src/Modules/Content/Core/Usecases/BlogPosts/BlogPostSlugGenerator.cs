@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Content.Core.Usecases.BlogPosts;
 
+[UsecaseInject]
 public class BlogPostSlugGenerator(ContentDbContext db)
 {
     private static readonly Regex InvalidCharacters = new("[^a-z0-9\\s-]", RegexOptions.Compiled);

@@ -6,6 +6,7 @@ using SharedKernel.Exceptions;
 
 namespace Content.Core.Usecases.FileObjects;
 
+[UsecaseInject]
 public class DeleteMediaFiles(
     ContentDbContext db,
     IFileManager fileManager,

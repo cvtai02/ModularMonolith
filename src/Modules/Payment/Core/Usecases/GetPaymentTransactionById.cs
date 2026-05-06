@@ -3,6 +3,7 @@ using Payment.DTOs;
 
 namespace Payment.Core.Usecases;
 
+[UsecaseInject]
 public class GetPaymentTransactionById(PaymentDbContext db)
 {
     public async Task<PaymentTransactionResponse?> ExecuteAsync(int id, CancellationToken ct)
