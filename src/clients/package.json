@@ -1,0 +1,23 @@
+{
+  "name": "mono-clients",
+  "private": true,
+  "packageManager": "npm@10.0.0",
+  "workspaces": [
+    "./admin",
+    "./nekomin",
+    "./shared"
+  ],
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "turbo run dev",
+    "dev:nekomin": "turbo run dev --filter=nekomin",
+    "dev:admin": "turbo run dev --filter=admin",
+    "build": "turbo run build",
+    "lint": "turbo run lint"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.0"
+  },
+  "author": "nekomin",
+  "license": "ISC"
+}

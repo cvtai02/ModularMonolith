@@ -1,57 +1,8 @@
-"use client";
-
 import Image from "next/image";
-import { useEffect, useRef } from "react";
 import "./landing.css";
-
-const PAW_SVG = `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-  <ellipse cx="20" cy="28" rx="8" ry="7"/>
-  <ellipse cx="11" cy="18" rx="4" ry="3.5"/>
-  <ellipse cx="29" cy="18" rx="4" ry="3.5"/>
-  <ellipse cx="16" cy="12" rx="3" ry="2.5"/>
-  <ellipse cx="24" cy="12" rx="3" ry="2.5"/>
-</svg>`;
-
-const SLIDES = [
-  {
-    bg: "oklch(84% 0.05 60)",
-    pattern: (
-      <pattern id="s1" width="28" height="28" patternUnits="userSpaceOnUse">
-        <line x1="0" y1="28" x2="28" y2="0" stroke="oklch(75% 0.06 60)" strokeWidth="0.7" />
-      </pattern>
-    ),
-    tag: "phụ kiện · được chọn lọc kỹ lưỡng",
-  },
-  {
-    bg: "oklch(91% 0.035 75)",
-    pattern: (
-      <pattern id="s2" width="24" height="24" patternUnits="userSpaceOnUse">
-        <rect x="0" y="0" width="12" height="12" fill="oklch(85% 0.04 75)" opacity="0.6" />
-        <rect x="12" y="12" width="12" height="12" fill="oklch(85% 0.04 75)" opacity="0.6" />
-      </pattern>
-    ),
-    tag: "detox · nghi thức thanh lọc",
-  },
-  {
-    bg: "oklch(80% 0.06 48)",
-    pattern: (
-      <pattern id="s3" width="32" height="32" patternUnits="userSpaceOnUse">
-        <circle cx="16" cy="16" r="2" fill="oklch(68% 0.08 48)" />
-      </pattern>
-    ),
-    tag: "decor · không gian sống chậm",
-  },
-  {
-    bg: "oklch(82% 0.055 55)",
-    pattern: (
-      <pattern id="s4" width="20" height="20" patternUnits="userSpaceOnUse">
-        <line x1="0" y1="0" x2="20" y2="20" stroke="oklch(72% 0.07 55)" strokeWidth="0.8" />
-        <line x1="20" y1="0" x2="0" y2="20" stroke="oklch(72% 0.07 55)" strokeWidth="0.8" />
-      </pattern>
-    ),
-    tag: "nekomin · sống chậm, sống đẹp",
-  },
-];
+import { HeroCarousel } from "./components/hero-carousel";
+import { PawCursor } from "./components/paw-cursor";
+import { RevealOnScroll } from "./components/reveal-on-scroll";
 
 const PIECES = [
   {
@@ -100,7 +51,6 @@ const PIECES = [
     patternEl: (
       <pattern id="p4" width="18" height="18" patternUnits="userSpaceOnUse">
         <line x1="0" y1="0" x2="18" y2="18" stroke="oklch(80% 0.04 55)" strokeWidth="0.7" />
-        <line x1="18" y1="0" x2="0" y2="18" stroke="oklch(80% 0.04 55)" strokeWidth="0.7" />
       </pattern>
     ),
     fill: "oklch(91% 0.03 55)",
@@ -129,8 +79,12 @@ const PIECES = [
     patternId: "p6",
     patternEl: (
       <pattern id="p6" width="22" height="22" patternUnits="userSpaceOnUse">
-        <polygon points="11,1 13,8 20,8 14,13 16,20 11,15 6,20 8,13 2,8 9,8"
-          fill="none" stroke="oklch(76% 0.05 52)" strokeWidth="0.6" />
+        <polygon
+          points="11,1 13,8 20,8 14,13 16,20 11,15 6,20 8,13 2,8 9,8"
+          fill="none"
+          stroke="oklch(76% 0.05 52)"
+          strokeWidth="0.6"
+        />
       </pattern>
     ),
     fill: "oklch(89% 0.04 52)",
@@ -167,137 +121,10 @@ const CATEGORIES = [
 ];
 
 export default function Home() {
-  const slidesRef = useRef<HTMLDivElement>(null);
-  const dotsRef = useRef<HTMLDivElement>(null);
-  const barRef = useRef<HTMLDivElement>(null);
-  const pawBgRef = useRef<HTMLDivElement>(null);
-  const currentRef = useRef(0);
-  const rafRef = useRef<number>(0);
-  const startTimeRef = useRef(0);
-
-  useEffect(() => {
-    const slidesEl = slidesRef.current;
-    const dotsEl = dotsRef.current;
-    const barEl = barRef.current;
-    if (!slidesEl || !dotsEl || !barEl) return;
-
-    const slides = slidesEl.querySelectorAll<HTMLElement>(".hero-slide");
-    const dots = dotsEl.querySelectorAll<HTMLButtonElement>(".hero-dot");
-    const DURATION = 5000;
-
-    function goTo(idx: number) {
-      slides[currentRef.current].classList.remove("active");
-      dots[currentRef.current].classList.remove("active");
-      currentRef.current = (idx + slides.length) % slides.length;
-      slides[currentRef.current].classList.add("active");
-      dots[currentRef.current].classList.add("active");
-      startProgress();
-    }
-
-    function startProgress() {
-      cancelAnimationFrame(rafRef.current);
-      startTimeRef.current = performance.now();
-      barEl!.style.transition = "none";
-      barEl!.style.width = "0%";
-      requestAnimationFrame(() => {
-        rafRef.current = requestAnimationFrame(function tick(now) {
-          const pct = Math.min(((now - startTimeRef.current) / DURATION) * 100, 100);
-          barEl!.style.width = pct + "%";
-          if (pct < 100) {
-            rafRef.current = requestAnimationFrame(tick);
-          } else {
-            goTo(currentRef.current + 1);
-          }
-        });
-      });
-    }
-
-    dots.forEach((dot, i) => dot.addEventListener("click", () => goTo(i)));
-    startProgress();
-
-    return () => cancelAnimationFrame(rafRef.current);
-  }, []);
-
-  useEffect(() => {
-    const pawBg = pawBgRef.current;
-    if (!pawBg) return;
-
-    function spawnShape() {
-      const el = document.createElement("div");
-      el.className = "shape-float";
-      const size = 14 + Math.random() * 28;
-      const rot = Math.random() * 360;
-      el.style.cssText = `
-        left: ${Math.random() * 100}%;
-        bottom: -60px;
-        width: ${size}px; height: ${size}px;
-        color: oklch(99% 0.005 68 / 0.4);
-        --rot: ${rot}deg;
-        animation-duration: ${12 + Math.random() * 14}s;
-        animation-delay: ${Math.random() * 6}s;
-      `;
-      el.innerHTML = PAW_SVG;
-      pawBg!.appendChild(el);
-      setTimeout(() => el.remove(), 26000);
-    }
-
-    for (let i = 0; i < 10; i++) spawnShape();
-    const interval = setInterval(spawnShape, 2800);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    let lastX = -999, lastY = -999, frame = 0;
-
-    function onMove(e: MouseEvent) {
-      frame++;
-      if (frame % 5 !== 0) return;
-      const dx = e.clientX - lastX;
-      const dy = e.clientY - lastY;
-      if (Math.abs(dx) < 20 && Math.abs(dy) < 20) return;
-      lastX = e.clientX; lastY = e.clientY;
-
-      const el = document.createElement("div");
-      el.className = "paw-cursor";
-      const rot = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
-      el.style.cssText = `left:${e.clientX - 11}px;top:${e.clientY - 11}px;color:var(--terra);--rot:${rot}deg;`;
-      el.innerHTML = PAW_SVG;
-      document.body.appendChild(el);
-      setTimeout(() => el.remove(), 800);
-    }
-
-    document.addEventListener("mousemove", onMove);
-    return () => document.removeEventListener("mousemove", onMove);
-  }, []);
-
-  useEffect(() => {
-    const cards = document.querySelectorAll<HTMLElement>(".product-card");
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const card = entry.target as HTMLElement;
-            const idx = Array.from(cards).indexOf(card);
-            card.style.animationDelay = (idx % 3) * 120 + "ms";
-            card.classList.add("revealed");
-            observer.unobserve(card);
-          }
-        });
-      },
-      { threshold: 0.15 }
-    );
-    cards.forEach((c) => observer.observe(c));
-    return () => observer.disconnect();
-  }, []);
-
-  const marqueeHtml =
-    [...MARQUEE_ITEMS, ...MARQUEE_ITEMS]
-      .map((t) => `<span>${t}</span><span class="dot">✦</span>`)
-      .join("");
+  const marqueeItems = [...MARQUEE_ITEMS, ...MARQUEE_ITEMS];
 
   return (
     <div className="landing-root">
-      {/* ── Fixed logo ── */}
       <a href="/" className="site-logo">
         <div className="site-logo-circle">
           <Image src="/logo.png" alt="Nekomin" width={30} height={30} />
@@ -305,49 +132,20 @@ export default function Home() {
         <span className="site-logo-name">Nekomin</span>
       </a>
 
-      {/* ── Hero ── */}
-      <section className="hero" id="hero">
-        <div className="hero-slides" ref={slidesRef}>
-          {SLIDES.map((slide, i) => (
-            <div key={i} className={`hero-slide${i === 0 ? " active" : ""}`}>
-              <div className="slide-fill">
-                <svg
-                  viewBox="0 0 1440 900"
-                  preserveAspectRatio="xMidYMid slice"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <defs>{slide.pattern}</defs>
-                  <rect width="1440" height="900" fill={slide.bg} />
-                  <rect width="1440" height="900" fill={`url(#s${i + 1})`} opacity="0.45" />
-                </svg>
-              </div>
-              <div className="slide-tag">{slide.tag}</div>
-            </div>
-          ))}
-        </div>
+      <HeroCarousel />
+      <PawCursor />
 
-        <div className="shape-bg" ref={pawBgRef} />
-
-        <div className="hero-dots" ref={dotsRef}>
-          {SLIDES.map((_, i) => (
-            <button key={i} className={`hero-dot${i === 0 ? " active" : ""}`} />
-          ))}
-        </div>
-
-        <div className="hero-progress">
-          <div className="hero-progress-bar" ref={barRef} />
-        </div>
-      </section>
-
-      {/* ── Marquee ── */}
       <div className="marquee-strip">
-        <div
-          className="marquee-inner"
-          dangerouslySetInnerHTML={{ __html: marqueeHtml }}
-        />
+        <div className="marquee-inner">
+          {marqueeItems.map((t, i) => (
+            <span key={i} style={{ display: "contents" }}>
+              <span>{t}</span>
+              <span className="dot">✦</span>
+            </span>
+          ))}
+        </div>
       </div>
 
-      {/* ── Categories ── */}
       <div className="categories">
         {CATEGORIES.map((cat) => (
           <a key={cat.name} href={`#${cat.name}`} className="cat-pill">
@@ -358,33 +156,33 @@ export default function Home() {
         ))}
       </div>
 
-      {/* ── Lookbook ── */}
       <section className="shop" id="lookbook">
-        <div className="products-grid">
-          {PIECES.map((p, i) => (
-            <div key={i} className="product-card">
-              <div className="product-image" style={{ background: p.bg }}>
-                <svg
-                  viewBox="0 0 320 480"
-                  xmlns="http://www.w3.org/2000/svg"
-                  preserveAspectRatio="xMidYMid slice"
-                >
-                  <defs>{p.patternEl}</defs>
-                  <rect width="320" height="480" fill={p.fill} />
-                  <rect width="320" height="480" fill={`url(#${p.patternId})`} />
-                </svg>
-                <div className="product-img-label">{p.label}</div>
+        <RevealOnScroll>
+          <div className="products-grid">
+            {PIECES.map((p, i) => (
+              <div key={i} className="product-card">
+                <div className="product-image" style={{ background: p.bg }}>
+                  <svg
+                    viewBox="0 0 320 480"
+                    xmlns="http://www.w3.org/2000/svg"
+                    preserveAspectRatio="xMidYMid slice"
+                  >
+                    <defs>{p.patternEl}</defs>
+                    <rect width="320" height="480" fill={p.fill} />
+                    <rect width="320" height="480" fill={`url(#${p.patternId})`} />
+                  </svg>
+                  <div className="product-img-label">{p.label}</div>
+                </div>
+                <div className="product-overlay">
+                  <div className="product-name">{p.name}</div>
+                  <div className="product-desc">{p.desc}</div>
+                </div>
               </div>
-              <div className="product-overlay">
-                <div className="product-name">{p.name}</div>
-                <div className="product-desc">{p.desc}</div>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </RevealOnScroll>
       </section>
 
-      {/* ── Blog ── */}
       <section className="blog" id="blog">
         <div className="blog-header">
           <h2 className="section-title">✦ Trải nghiệm ✦</h2>
@@ -482,7 +280,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── Footer ── */}
       <footer>
         <div className="footer-top">
           <div>

@@ -29,6 +29,7 @@ export default function RootLayout({
       className={`${beVietnam.variable} ${lora.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        {children}
       </body>
     </html>
   );
