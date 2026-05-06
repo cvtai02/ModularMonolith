@@ -22,6 +22,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useOrderClient } from "@/components/containers/api-client-provider";
 import { applyValidationErrors } from "@/lib/form-error";
 import { ROUTES } from "@/configs/routes";
+import { ApiError } from "@shared/api/contracts/common-types";
 import type { AccountProfileResponse } from "@shared/api/contracts/account";
 
 import { CustomerPickerModal } from "./components/CustomerPickerModal";
@@ -144,8 +145,12 @@ export default function AdminCreateOrderPage() {
       });
       toast.success("Order placed");
       queryClient.invalidateQueries({ queryKey: ["admin-orders"] });
-      navigate(ROUTES.orderDetail(result.id));
+      navigate(ROUTES.orderDetail(result.code));
     } catch (err) {
+      if (err instanceof ApiError && err.statusCode === 409) {
+        toast.error("Out of stock. Adjust quantities and try again.");
+        return;
+      }
       if (!applyValidationErrors(err, setError)) {
         toast.error("Failed to place order. Please check the form and try again.");
       }

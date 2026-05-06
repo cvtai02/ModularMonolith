@@ -9,14 +9,13 @@ public class OrderRealtimeNotifier(IHubContext<OrderHub> orderHubContext)
     {
         var placedMessage = new OrderPlacedNotification
         {
-            OrderId = order.Id,
             OrderCode = order.Code,
             ReservationId = reservationId,
             Status = order.Status.ToString()
         };
 
         await orderHubContext.Clients
-            .Group(OrderRealtimeGroups.Order(order.Id))
+            .Group(OrderRealtimeGroups.Order(order.Code))
             .SendAsync("OrderPlaced", placedMessage, ct);
 
         await NotifyOrderChangedAsync(
@@ -28,7 +27,7 @@ public class OrderRealtimeNotifier(IHubContext<OrderHub> orderHubContext)
     }
 
     public Task NotifyOrderRejectedAsync(Entities.Order order, CancellationToken ct)
-        => NotifyOrderRejectedAsync(order, order.InventoryReservationId, ct);
+        => NotifyOrderRejectedAsync(order, null, ct);
 
     public Task NotifyOrderRejectedAsync(Entities.Order order, int? reservationId, CancellationToken ct)
         => NotifyOrderChangedAsync(
@@ -42,7 +41,7 @@ public class OrderRealtimeNotifier(IHubContext<OrderHub> orderHubContext)
         => NotifyOrderChangedAsync(
             order,
             "OrderPaid",
-            order.InventoryReservationId,
+            null,
             null,
             ct);
 
@@ -56,7 +55,6 @@ public class OrderRealtimeNotifier(IHubContext<OrderHub> orderHubContext)
         var message = new OrderNotification
         {
             Type = type,
-            OrderId = order.Id,
             OrderCode = order.Code,
             Status = order.Status.ToString(),
             ReservationId = reservationId,
@@ -67,7 +65,7 @@ public class OrderRealtimeNotifier(IHubContext<OrderHub> orderHubContext)
         var sends = new List<Task>
         {
             orderHubContext.Clients
-                .Group(OrderRealtimeGroups.Order(order.Id))
+                .Group(OrderRealtimeGroups.Order(order.Code))
                 .SendAsync("OrderNotification", message, ct)
         };
 

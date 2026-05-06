@@ -19,7 +19,6 @@ public interface IPaymentMethodStrategy
 }
 
 public record PaymentCheckoutContext(
-    int OrderId,
     string OrderCode,
     decimal Amount,
     string CurrencyCode,

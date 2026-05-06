@@ -62,7 +62,7 @@ export function HeroCarousel() {
   useEffect(() => {
     const bar = barRef.current;
     if (!bar) return;
-    let start = performance.now();
+    const start = performance.now();
     bar.style.transition = "none";
     bar.style.width = "0%";
 

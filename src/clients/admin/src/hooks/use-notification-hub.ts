@@ -4,7 +4,6 @@ import { useIdentityStore } from "@/stores/identity";
 
 export type OrderPlacedNotification = {
   type: "OrderPlaced";
-  orderId: number;
   orderCode: string;
   customerId?: string | null;
   totalAmount: number;

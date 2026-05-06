@@ -12,7 +12,6 @@ public class AdminOrderPlacedHandler(IHubContext<NotificationHub> hubContext) : 
     {
         var message = new AdminOrderPlacedNotification
         {
-            OrderId = @event.OrderId,
             OrderCode = @event.OrderCode,
             CustomerId = @event.CustomerId,
             TotalAmount = @event.TotalAmount,

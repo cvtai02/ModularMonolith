@@ -4,6 +4,6 @@ namespace Intermediary.Events.Inventory;
 
 public class ReservationRejected : IntegrationEvent
 {
-    public int OrderId { get; init; }
+    public string OrderCode { get; set; } = string.Empty;
     public IReadOnlyDictionary<string, string[]> Errors { get; init; } = new Dictionary<string, string[]>();
 }

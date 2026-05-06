@@ -12,7 +12,7 @@ namespace Order.Api;
 public class OrderController(
     CreateOrder createOrder,
     AdminCreateOrder adminCreateOrder,
-    GetOrderById getOrderById,
+    GetOrderByCode getOrderByCode,
     ListOrders listOrders) : ControllerBase
 {
     [HttpPost]
@@ -21,7 +21,7 @@ public class OrderController(
         CancellationToken cancellationToken)
     {
         var result = await createOrder.ExecuteAsync(request, cancellationToken);
-        return AcceptedAtAction(nameof(GetById), new { id = result.Id }, result);
+        return AcceptedAtAction(nameof(GetByCode), new { code = result.Code }, result);
     }
 
     [Authorize(Policy = Policies.TenantAdminUp)]
@@ -31,7 +31,7 @@ public class OrderController(
         CancellationToken cancellationToken)
     {
         var result = await adminCreateOrder.ExecuteAsync(request, cancellationToken);
-        return AcceptedAtAction(nameof(GetAdminById), new { id = result.Id }, result);
+        return AcceptedAtAction(nameof(GetAdminByCode), new { code = result.Code }, result);
     }
 
     [Authorize(Policy = Policies.TenantAdminUp)]
@@ -42,17 +42,17 @@ public class OrderController(
         => Ok(await listOrders.ExecuteAsync(request, cancellationToken));
 
     [Authorize(Policy = Policies.TenantAdminUp)]
-    [HttpGet("admin/{id:int}")]
-    public async Task<ActionResult<OrderResponse>> GetAdminById(int id, CancellationToken cancellationToken)
+    [HttpGet("admin/{code}")]
+    public async Task<ActionResult<OrderResponse>> GetAdminByCode(string code, CancellationToken cancellationToken)
     {
-        var result = await getOrderById.ExecuteAsync(id, cancellationToken);
+        var result = await getOrderByCode.ExecuteAsync(code, cancellationToken);
         return result is null ? NotFound() : Ok(result);
     }
 
-    [HttpGet("{id:int}")]
-    public async Task<ActionResult<OrderResponse>> GetById(int id, CancellationToken cancellationToken)
+    [HttpGet("{code}")]
+    public async Task<ActionResult<OrderResponse>> GetByCode(string code, CancellationToken cancellationToken)
     {
-        var result = await getOrderById.ExecuteAsync(id, cancellationToken);
+        var result = await getOrderByCode.ExecuteAsync(code, cancellationToken);
         return result is null ? NotFound() : Ok(result);
     }
 

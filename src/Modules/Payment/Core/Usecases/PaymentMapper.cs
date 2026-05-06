@@ -8,7 +8,6 @@ public static class PaymentMapper
     public static PaymentTransactionResponse ToResponse(PaymentTransaction transaction) => new()
     {
         Id = transaction.Id,
-        OrderId = transaction.OrderId,
         OrderCode = transaction.OrderCode,
         CustomerId = transaction.CustomerId,
         Amount = transaction.Amount,

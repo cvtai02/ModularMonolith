@@ -4,7 +4,6 @@ namespace Order.DTOs.Orders;
 
 public class OrderSummaryResponse
 {
-    public int Id { get; set; }
     public string Code { get; set; } = string.Empty;
     public string? CustomerId { get; set; }
     public OrderStatus Status { get; set; }

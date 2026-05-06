@@ -12,8 +12,8 @@ using Order;
 namespace Order.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(OrderDbContext))]
-    [Migration("20260501115600_FixMigration")]
-    partial class FixMigration
+    [Migration("20260506112926_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,14 +27,7 @@ namespace Order.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Order.Core.Entities.Order", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
                     b.Property<string>("Code")
-                        .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
 
@@ -52,9 +45,6 @@ namespace Order.Infrastructure.Data.Migrations
 
                     b.Property<string>("CustomerId")
                         .HasColumnType("text");
-
-                    b.Property<int?>("InventoryReservationId")
-                        .HasColumnType("integer");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
@@ -79,10 +69,7 @@ namespace Order.Infrastructure.Data.Migrations
                         .HasPrecision(18, 2)
                         .HasColumnType("numeric(18,2)");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("Code")
-                        .IsUnique();
+                    b.HasKey("Code");
 
                     b.HasIndex("TenantId");
 
@@ -118,8 +105,10 @@ namespace Order.Infrastructure.Data.Migrations
                     b.Property<string>("ModifiedBy")
                         .HasColumnType("text");
 
-                    b.Property<int>("OrderId")
-                        .HasColumnType("integer");
+                    b.Property<string>("OrderCode")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("integer");
@@ -153,7 +142,7 @@ namespace Order.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OrderId");
+                    b.HasIndex("OrderCode");
 
                     b.HasIndex("TenantId");
 
@@ -164,8 +153,8 @@ namespace Order.Infrastructure.Data.Migrations
                 {
                     b.OwnsOne("SharedKernel.DTOs.Address", "ShippingAddress", b1 =>
                         {
-                            b1.Property<int>("OrderId")
-                                .HasColumnType("integer");
+                            b1.Property<string>("OrderCode")
+                                .HasColumnType("character varying(64)");
 
                             b1.Property<string>("City")
                                 .HasMaxLength(100)
@@ -212,12 +201,12 @@ namespace Order.Infrastructure.Data.Migrations
                                 .IsRequired()
                                 .HasColumnType("text");
 
-                            b1.HasKey("OrderId");
+                            b1.HasKey("OrderCode");
 
                             b1.ToTable("Orders");
 
                             b1.WithOwner()
-                                .HasForeignKey("OrderId");
+                                .HasForeignKey("OrderCode");
                         });
 
                     b.Navigation("ShippingAddress");
@@ -225,11 +214,13 @@ namespace Order.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Order.Core.Entities.OrderLine", b =>
                 {
-                    b.HasOne("Order.Core.Entities.Order", null)
+                    b.HasOne("Order.Core.Entities.Order", "Order")
                         .WithMany("Lines")
-                        .HasForeignKey("OrderId")
+                        .HasForeignKey("OrderCode")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("Order.Core.Entities.Order", b =>

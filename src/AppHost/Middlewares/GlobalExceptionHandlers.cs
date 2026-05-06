@@ -62,6 +62,7 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger, IHos
         {
             NotFoundException => (StatusCodes.Status404NotFound, exception.Message),
             UnauthorizedAccessException => (StatusCodes.Status403Forbidden, $"Forbidden: {exception.Message}"),
+            { } when exception.GetType().Name == "InventoryReservationConflictException" => (StatusCodes.Status409Conflict, exception.Message),
             
             // Catch-all for other DbUpdateExceptions
             DbUpdateException => (StatusCodes.Status500InternalServerError, "Database operation failed. " + exception.InnerException?.Message),

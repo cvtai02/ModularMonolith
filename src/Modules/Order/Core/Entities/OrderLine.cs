@@ -3,7 +3,7 @@ namespace Order.Core.Entities;
 public class OrderLine : AuditableEntity
 {
     public int Id { get; set; }
-    public int OrderId { get; set; }
+    public string OrderCode { get; set; } = string.Empty;
     public int ProductId { get; private set; }
     public int VariantId { get; private set; }
     public string ProductName { get; private set; } = string.Empty;

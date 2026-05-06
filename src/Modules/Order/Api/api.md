@@ -6,13 +6,13 @@
 Client contract: [OrderClient](../../../clients/shared/api/clients/order.ts), [IOrderClient](../../../clients/shared/api/contracts/order.ts)
 
 ### Order
-- `POST /api/Order/orders` - auth: none currently. DTOs: [CreateOrderRequest](../DTOs/Orders/CreateOrderRequest.cs), [OrderResponse](../DTOs/Orders/OrderResponse.cs). Creates a customer order and submits inventory reservation.
+- `POST /api/Order/orders` - auth: none currently. DTOs: [CreateOrderRequest](../DTOs/Orders/CreateOrderRequest.cs), [OrderResponse](../DTOs/Orders/OrderResponse.cs). Creates a customer order with code and submits inventory reservation.
 - `POST /api/Order/orders/admin` - auth: `TenantAdminUp`. DTOs: [AdminCreateOrderRequest](../DTOs/Orders/AdminCreateOrderRequest.cs), [OrderResponse](../DTOs/Orders/OrderResponse.cs). Creates an order for a selected customer profile.
 - `GET /api/Order/orders/admin` - auth: `TenantAdminUp`. DTOs: [ListOrdersRequest](../DTOs/Orders/ListOrdersRequest.cs), [OrderSummaryResponse](../DTOs/Orders/OrderSummaryResponse.cs). Lists tenant orders for admin.
-- `GET /api/Order/orders/admin/{id}` - auth: `TenantAdminUp`. DTOs: [OrderResponse](../DTOs/Orders/OrderResponse.cs). Gets admin order detail.
-- `GET /api/Order/orders/{id}` - auth: none currently. DTOs: [OrderResponse](../DTOs/Orders/OrderResponse.cs). Gets order detail by id.
+- `GET /api/Order/orders/admin/{code}` - auth: `TenantAdminUp`. DTOs: [OrderResponse](../DTOs/Orders/OrderResponse.cs). Gets admin order detail by code.
+- `GET /api/Order/orders/{code}` - auth: none currently. DTOs: [OrderResponse](../DTOs/Orders/OrderResponse.cs). Gets order detail by code.
 - `GET /api/Order/orders` - auth: none currently. DTOs: [ListOrdersRequest](../DTOs/Orders/ListOrdersRequest.cs), [OrderSummaryResponse](../DTOs/Orders/OrderSummaryResponse.cs). Lists orders.
 
 ### Realtime Order Notifications
-- Hub `/hubs/orders` - auth: authenticated user. Methods: `JoinOrder(orderId)`, `LeaveOrder(orderId)`, `JoinMyOrders()`, `LeaveMyOrders()`.
+- Hub `/hubs/orders` - auth: authenticated user. Methods: `JoinOrder(orderCode: string)`, `LeaveOrder(orderCode: string)`, `JoinMyOrders()`, `LeaveMyOrders()`.
 - Server events: `OrderPlaced` for existing order-specific placed payloads, `OrderNotification` for placed/rejected/paid order lifecycle notifications.

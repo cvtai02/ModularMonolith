@@ -11,12 +11,12 @@ public class ReservationRejectedHandler(
 {
     public async Task Handle(ReservationRejected @event, CancellationToken ct = default)
     {
-        var order = await db.Orders.FirstOrDefaultAsync(x => x.Id == @event.OrderId, ct);
-        if (order is null || order.Status != Entities.OrderStatus.PendingInventory)
+        var order = await db.Orders.FirstOrDefaultAsync(x => x.Code == @event.OrderCode, ct);
+        if (order is null || order.Status != Entities.OrderStatus.PendingPayment)
             return;
 
         order.SetRejectionReason(BuildReason(@event.Errors));
-        order.SetStatus(Entities.OrderStatus.Rejected);
+        order.SetStatus(Entities.OrderStatus.Cancelled);
         await db.SaveChangesAsync(ct);
 
         await realtimeNotifier.NotifyOrderRejectedAsync(order, ct);

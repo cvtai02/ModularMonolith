@@ -16,7 +16,7 @@ export interface IPaymentClient {
 
   // Request: src/Modules/Payment/DTOs/CreateCheckoutRequest.cs
   // Response: src/Modules/Payment/DTOs/PaymentTransactionResponse.cs
-  createCheckout(orderId: number, input: CreatePaymentCheckoutRequest): Promise<CreatePaymentCheckoutResponse>;
+  createCheckout(orderCode: string, input: CreatePaymentCheckoutRequest): Promise<CreatePaymentCheckoutResponse>;
 
   // Response: src/Modules/Payment/DTOs/PaymentTransactionResponse.cs
   getTransactionById(id: number): Promise<PaymentTransactionResponse>;

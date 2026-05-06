@@ -26,6 +26,9 @@ public class InventoryModule(IHostApplicationBuilder b) : Module(b)
     {
         Services.AddScoped<InitializeProductInventory>();
         Services.AddScoped<ImportVariantInventory>();
+        Services.AddScoped<IIntegrationEventHandler<OrderSubmitted>, OrderSubmittedHandler>();
+        Services.AddScoped<IIntegrationEventHandler<OrderPlaced>, OrderPlacedHandler>();
+        Services.AddScoped<IIntegrationEventHandler<OrderCanceled>, OrderCanceledHandler>();
     }
 
     public override void Run(WebApplication app)

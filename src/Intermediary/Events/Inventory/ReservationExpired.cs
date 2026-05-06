@@ -4,6 +4,6 @@ namespace Intermediary.Events.Inventory;
 
 public class ReservationExpired : IntegrationEvent
 {
-    public int OrderId { get; init; }
-    public int ReservationId { get; init; }
+    public string OrderCode { get; set; } = string.Empty;
+    public int ReservationId { get; set; }
 }

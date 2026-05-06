@@ -10,7 +10,7 @@ import { getAccessToken } from "@/app/lib/auth";
 // Use on the order detail page alongside useMyOrdersHub in the layout.
 // Deduplicate with the session-wide hook via the notificationKey before acting.
 export function useOrderDetailHub(
-  orderId: number,
+  orderCode: string,
   onNotification: (notification: OrderNotification) => void,
 ) {
   const onNotificationRef = useRef(onNotification);
@@ -21,7 +21,7 @@ export function useOrderDetailHub(
   }, []);
 
   useEffect(() => {
-    if (!orderId) return;
+    if (!orderCode) return;
 
     let mounted = true;
     let connection: SignalR.HubConnection | null = null;
@@ -42,7 +42,7 @@ export function useOrderDetailHub(
       try {
         await connection.start();
         if (!mounted) { await connection.stop(); return; }
-        await connection.invoke("JoinOrder", orderId);
+        await connection.invoke("JoinOrder", orderCode);
       } catch {
         // User does not own this order or server unreachable.
       }
@@ -53,9 +53,9 @@ export function useOrderDetailHub(
     return () => {
       mounted = false;
       if (connection) {
-        connection.invoke("LeaveOrder", orderId).catch(() => {});
+        connection.invoke("LeaveOrder", orderCode).catch(() => {});
         connection.stop().catch(() => {});
       }
     };
-  }, [orderId, handleNotification]);
+  }, [orderCode, handleNotification]);
 }

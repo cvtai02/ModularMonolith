@@ -5,13 +5,11 @@ namespace Order.DTOs.Orders;
 
 public class OrderResponse
 {
-    public int Id { get; set; }
     public string Code { get; set; } = string.Empty;
     public string? CustomerId { get; set; }
     public OrderStatus Status { get; set; }
     public string CurrencyCode { get; set; } = string.Empty;
     public decimal TotalAmount { get; set; }
-    public int? InventoryReservationId { get; set; }
     public string? RejectionReason { get; set; }
     public Address? ShippingAddress { get; set; }
     public List<OrderLineResponse> Lines { get; set; } = [];

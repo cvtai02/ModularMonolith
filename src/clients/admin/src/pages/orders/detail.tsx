@@ -25,15 +25,14 @@ function LabeledValue({ label, value }: { label: string; value: React.ReactNode 
 }
 
 export default function OrderDetailPage() {
-  const { id } = useParams<{ id: string }>();
-  const orderId = Number(id);
+  const { id: orderCode } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const orderClient = useOrderClient();
 
   const { data: order, isLoading, isError } = useQuery({
-    queryKey: ["admin-order", orderId],
-    queryFn: () => orderClient.getAdminOrderById(orderId),
-    enabled: !Number.isNaN(orderId),
+    queryKey: ["admin-order", orderCode],
+    queryFn: () => orderClient.getAdminOrderByCode(orderCode!),
+    enabled: !!orderCode,
   });
 
   return (
@@ -107,14 +106,7 @@ export default function OrderDetailPage() {
                     </span>
                   }
                 />
-                <LabeledValue
-                  label="Inventory reservation"
-                  value={
-                    order.inventoryReservationId != null
-                      ? String(order.inventoryReservationId)
-                      : undefined
-                  }
-                />
+
               </div>
             </div>
 

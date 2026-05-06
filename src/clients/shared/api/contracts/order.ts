@@ -3,7 +3,7 @@ import type {
   AdminCreateOrderResponse,
   CreateOrderRequest,
   CreateOrderResponse,
-  GetAdminOrderByIdResponse,
+  GetAdminOrderByCodeResponse,
   ListAdminOrdersQuery,
   ListAdminOrdersResponse,
   ListOrdersQuery,
@@ -19,7 +19,7 @@ export interface IOrderClient {
   createOrder(input: CreateOrderRequest): Promise<CreateOrderResponse>;
 
   // Response: src/Modules/Order/DTOs/Orders/OrderResponse.cs
-  getOrderById(id: number): Promise<OrderResponse>;
+  getOrderByCode(code: string): Promise<OrderResponse>;
 
   // Query: src/Modules/Order/DTOs/Orders/ListOrdersRequest.cs
   // Item response: src/Modules/Order/DTOs/Orders/OrderSummaryResponse.cs
@@ -36,7 +36,7 @@ export interface IOrderClient {
   // Item response: src/Modules/Order/DTOs/Orders/OrderSummaryResponse.cs
   listAdminOrders(query?: ListAdminOrdersQuery): Promise<ListAdminOrdersResponse>;
 
-  // Contract method: getAdminOrderById. Tenant admin order detail.
+  // Contract method: getAdminOrderByCode. Tenant admin order detail.
   // Response: src/Modules/Order/DTOs/Orders/OrderResponse.cs
-  getAdminOrderById(id: number): Promise<GetAdminOrderByIdResponse>;
+  getAdminOrderByCode(code: string): Promise<GetAdminOrderByCodeResponse>;
 }

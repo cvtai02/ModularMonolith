@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Order.Infrastructure.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,13 +16,12 @@ namespace Order.Infrastructure.Data.Migrations
                 name: "Orders",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Code = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
                     CustomerId = table.Column<string>(type: "text", nullable: true),
                     Status = table.Column<int>(type: "integer", nullable: false),
                     CurrencyCode = table.Column<string>(type: "character varying(3)", maxLength: 3, nullable: false),
                     TotalAmount = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
+                    RejectionReason = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true),
                     ShippingAddress_OwnerName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
                     ShippingAddress_Type = table.Column<string>(type: "text", nullable: true),
                     ShippingAddress_PhoneNumber = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
@@ -42,7 +41,7 @@ namespace Order.Infrastructure.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Orders", x => x.Id);
+                    table.PrimaryKey("PK_Orders", x => x.Code);
                 });
 
             migrationBuilder.CreateTable(
@@ -51,9 +50,12 @@ namespace Order.Infrastructure.Data.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    OrderId = table.Column<int>(type: "integer", nullable: false),
+                    OrderCode = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    ProductId = table.Column<int>(type: "integer", nullable: false),
                     VariantId = table.Column<int>(type: "integer", nullable: false),
                     ProductName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    VariantName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    ImageUrl = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
                     UnitPrice = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
                     Quantity = table.Column<int>(type: "integer", nullable: false),
                     Subtotal = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
@@ -68,28 +70,22 @@ namespace Order.Infrastructure.Data.Migrations
                 {
                     table.PrimaryKey("PK_OrderLines", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_OrderLines_Orders_OrderId",
-                        column: x => x.OrderId,
+                        name: "FK_OrderLines_Orders_OrderCode",
+                        column: x => x.OrderCode,
                         principalTable: "Orders",
-                        principalColumn: "Id",
+                        principalColumn: "Code",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_OrderLines_OrderId",
+                name: "IX_OrderLines_OrderCode",
                 table: "OrderLines",
-                column: "OrderId");
+                column: "OrderCode");
 
             migrationBuilder.CreateIndex(
                 name: "IX_OrderLines_TenantId",
                 table: "OrderLines",
                 column: "TenantId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Orders_Code",
-                table: "Orders",
-                column: "Code",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Orders_TenantId",

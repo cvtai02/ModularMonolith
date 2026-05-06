@@ -20,12 +20,12 @@ public class PaymentController(
         => Ok(listPaymentMethods.Execute());
 
     [Authorize(Policy = Policies.AuthenticatedUserUp)]
-    [HttpPost("orders/{orderId:int}/checkout")]
+    [HttpPost("orders/{orderCode}/checkout")]
     public async Task<ActionResult<PaymentTransactionResponse>> CreateCheckout(
-        int orderId,
+        string orderCode,
         [FromBody] CreateCheckoutRequest request,
         CancellationToken cancellationToken)
-        => Ok(await createOrderCheckout.ExecuteAsync(orderId, request, cancellationToken));
+        => Ok(await createOrderCheckout.ExecuteAsync(orderCode, request, cancellationToken));
 
     [Authorize(Policy = Policies.AuthenticatedUserUp)]
     [HttpGet("transactions/{id:int}")]

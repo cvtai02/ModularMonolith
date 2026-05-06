@@ -11,21 +11,12 @@ public class InventoryReservedHandler(
 {
     public async Task Handle(InventoryReserved @event, CancellationToken ct = default)
     {
-        var order = await db.Orders.FirstOrDefaultAsync(x => x.Id == @event.OrderId, ct);
-        if (order is null || order.Status != Entities.OrderStatus.PendingInventory)
+        var order = await db.Orders.FirstOrDefaultAsync(x => x.Code == @event.OrderCode, ct);
+        if (order is null || order.Status != Entities.OrderStatus.PendingPayment)
             return;
 
-        order.SetInventoryReservation(@event.ReservationId);
-        order.SetStatus(Entities.OrderStatus.Placed);
-        order.Events.Add(new OrderPlaced
-        {
-            OrderId = order.Id,
-            OrderCode = order.Code,
-            ReservationId = @event.ReservationId
-        });
         order.Events.Add(new AdminOrderPlaced
         {
-            OrderId = order.Id,
             OrderCode = order.Code,
             CustomerId = order.CustomerId,
             TotalAmount = order.TotalAmount,

@@ -4,7 +4,6 @@ namespace Intermediary.Events.Order;
 
 public class OrderSubmitted : IntegrationEvent
 {
-    public int OrderId { get; init; }
     public string OrderCode { get; init; } = string.Empty;
     public string CurrencyCode { get; init; } = string.Empty;
     public IReadOnlyCollection<OrderSubmittedItem> Items { get; init; } = [];

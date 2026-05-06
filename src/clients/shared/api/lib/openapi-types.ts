@@ -1901,7 +1901,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/Order/orders/admin/{id}": {
+    "/api/Order/orders/admin/{code}": {
         parameters: {
             query?: never;
             header?: never;
@@ -1913,7 +1913,7 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    id: components["schemas"]["System.Int32"];
+                    code: components["schemas"]["System.String"];
                 };
                 cookie?: never;
             };
@@ -1940,7 +1940,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/Order/orders/{id}": {
+    "/api/Order/orders/{code}": {
         parameters: {
             query?: never;
             header?: never;
@@ -1952,7 +1952,7 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    id: components["schemas"]["System.Int32"];
+                    code: components["schemas"]["System.String"];
                 };
                 cookie?: never;
             };
@@ -2016,7 +2016,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/Payment/orders/{orderId}/checkout": {
+    "/api/Payment/orders/{orderCode}/checkout": {
         parameters: {
             query?: never;
             header?: never;
@@ -2030,7 +2030,7 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    orderId: components["schemas"]["System.Int32"];
+                    orderCode: components["schemas"]["System.String"];
                 };
                 cookie?: never;
             };
@@ -2972,7 +2972,7 @@ export interface components {
             isMachineRemembered: components["schemas"]["System.Boolean"];
         };
         /** @enum {unknown} */
-        "Order.Core.Entities.OrderStatus": "Draft" | "PendingInventory" | "Placed" | "Paid" | "Rejected" | "Cancelled" | "Shipped";
+        "Order.Core.Entities.OrderStatus": "Draft" | "PendingInventory" | "PendingPayment" | "Placed" | "Paid" | "Rejected" | "Cancelled" | "Shipped";
         "Order.DTOs.Orders.AdminCreateOrderRequest": {
             customerProfileId?: null | components["schemas"]["System.Nullable`1[[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
             currencyCode?: null | components["schemas"]["System.String"];
@@ -3000,19 +3000,16 @@ export interface components {
             subtotal: components["schemas"]["System.Decimal"];
         };
         "Order.DTOs.Orders.OrderResponse": {
-            id: components["schemas"]["System.Int32"];
             code: components["schemas"]["System.String"];
             customerId: null | components["schemas"]["System.String"];
             status: components["schemas"]["Order.Core.Entities.OrderStatus"];
             currencyCode: components["schemas"]["System.String"];
             totalAmount: components["schemas"]["System.Decimal"];
-            inventoryReservationId: null | components["schemas"]["System.Nullable`1[[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
             rejectionReason: null | components["schemas"]["System.String"];
             shippingAddress: null | components["schemas"]["SharedKernel.DTOs.Address"];
             lines: components["schemas"]["System.Collections.Generic.List`1[[Order.DTOs.Orders.OrderLineResponse, Order, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
         };
         "Order.DTOs.Orders.OrderSummaryResponse": {
-            id: components["schemas"]["System.Int32"];
             code: components["schemas"]["System.String"];
             customerId: null | components["schemas"]["System.String"];
             status: components["schemas"]["Order.Core.Entities.OrderStatus"];
@@ -3036,7 +3033,6 @@ export interface components {
         };
         "Payment.DTOs.PaymentTransactionResponse": {
             id: components["schemas"]["System.Int32"];
-            orderId: components["schemas"]["System.Int32"];
             orderCode: components["schemas"]["System.String"];
             customerId: null | components["schemas"]["System.String"];
             amount: components["schemas"]["System.Decimal"];
@@ -3417,7 +3413,7 @@ export interface components {
         /** @enum {unknown} */
         "System.Nullable`1[[Content.Core.Entities.BlogPostStatus, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": "Draft" | "Published" | "Archived" | null;
         /** @enum {unknown} */
-        "System.Nullable`1[[Order.Core.Entities.OrderStatus, Order, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": "Draft" | "PendingInventory" | "Placed" | "Paid" | "Rejected" | "Cancelled" | "Shipped" | null;
+        "System.Nullable`1[[Order.Core.Entities.OrderStatus, Order, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": "Draft" | "PendingInventory" | "PendingPayment" | "Placed" | "Paid" | "Rejected" | "Cancelled" | "Shipped" | null;
         /** @enum {unknown} */
         "System.Nullable`1[[ProductCatalog.Core.Entities.ProductStatus, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": "Active" | "Draft" | "Unlisted" | null;
         "System.Nullable`1[[System.Boolean, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]": boolean;

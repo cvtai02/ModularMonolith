@@ -1,6 +1,7 @@
 using Intermediary.Events.Inventory;
 using Intermediary.Events.Order;
 using Inventory.Core.Entities;
+using Inventory.Core.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel.Abstractions.Contracts;
 
@@ -14,7 +15,7 @@ public class OrderSubmittedHandler(InventoryDbContext db) : IIntegrationEventHan
     {
         if (@event.Items.Count == 0)
         {
-            await Reject(@event.OrderId, new Dictionary<string, string[]>
+            await Reject(@event.OrderCode, new Dictionary<string, string[]>
             {
                 ["items"] = ["Order has no items to reserve."]
             }, ct);
@@ -30,14 +31,14 @@ public class OrderSubmittedHandler(InventoryDbContext db) : IIntegrationEventHan
         var errors = Validate(@event, inventories);
         if (errors.Count > 0)
         {
-            await Reject(@event.OrderId, errors, ct);
-            return;
+            await Reject(@event.OrderCode, errors, ct);
+            throw new InventoryReservationConflictException("Out of stock.");
         }
 
         var expiresAt = DateTimeOffset.UtcNow.Add(ReservationTtl);
         var reservation = new Reservation
         {
-            OrderId = @event.OrderId,
+            OrderCode = @event.OrderCode,
             Status = ReservationStatus.Active,
             ExpiresAt = expiresAt,
             ReservationLines = @event.Items
@@ -51,7 +52,7 @@ public class OrderSubmittedHandler(InventoryDbContext db) : IIntegrationEventHan
 
         reservation.Events.Add(new InventoryReserved
         {
-            OrderId = @event.OrderId,
+            OrderCode = @event.OrderCode,
             ReservationId = reservation.Id,
             ExpiresAt = expiresAt,
             Items = @event.Items
@@ -75,7 +76,7 @@ public class OrderSubmittedHandler(InventoryDbContext db) : IIntegrationEventHan
                 VariantId = item.VariantId,
                 Type = TransactionType.Reserve,
                 Quantity = item.Quantity,
-                ReferenceId = @event.OrderId.ToString(),
+                ReferenceId = @event.OrderCode,
                 Note = $"Reserved for order {@event.OrderCode}"
             });
         }
@@ -121,19 +122,19 @@ public class OrderSubmittedHandler(InventoryDbContext db) : IIntegrationEventHan
     }
 
     private async Task Reject(
-        int orderId,
+        string orderCode,
         IReadOnlyDictionary<string, string[]> errors,
         CancellationToken ct)
     {
         var reservation = new Reservation
         {
-            OrderId = orderId,
+            OrderCode = orderCode,
             Status = ReservationStatus.Released,
             ExpiresAt = DateTimeOffset.UtcNow
         };
         reservation.Events.Add(new ReservationRejected
         {
-            OrderId = orderId,
+            OrderCode = orderCode,
             Errors = errors
         });
 

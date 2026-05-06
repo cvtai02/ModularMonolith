@@ -29,7 +29,7 @@ public class OrderModule(IHostApplicationBuilder b) : Module(b)
     {
         Services.AddScoped<CreateOrder>();
         Services.AddScoped<AdminCreateOrder>();
-        Services.AddScoped<GetOrderById>();
+        Services.AddScoped<GetOrderByCode>();
         Services.AddScoped<ListOrders>();
         Services.AddScoped<OrderRealtimeNotifier>();
         Services.AddScoped<IIntegrationEventHandler<InventoryReserved>, InventoryReservedHandler>();
@@ -37,6 +37,7 @@ public class OrderModule(IHostApplicationBuilder b) : Module(b)
         Services.AddScoped<IIntegrationEventHandler<ReservationCommited>, ReservationCommitedHandler>();
         Services.AddScoped<IIntegrationEventHandler<ReservationExpired>, ReservationExpiredHandler>();
         Services.AddScoped<IIntegrationEventHandler<PaymentSucceeded>, PaymentSucceededHandler>();
+        Services.AddScoped<IIntegrationEventHandler<PaymentFailed>, PaymentFailedHandler>();
     }
 
     public override void Run(WebApplication app)

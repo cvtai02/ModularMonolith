@@ -13,7 +13,7 @@ public class OrderPlacedHandler(InventoryDbContext db) : IIntegrationEventHandle
             .Include(x => x.ReservationLines)
                 .ThenInclude(x => x.Variant)
                 .ThenInclude(x => x.Tracking)
-            .FirstOrDefaultAsync(x => x.OrderId == @event.OrderId && x.Status == ReservationStatus.Active, ct);
+            .FirstOrDefaultAsync(x => x.OrderCode == @event.OrderCode && x.Status == ReservationStatus.Active, ct);
 
         if (reservation is null)
             return;
@@ -31,7 +31,7 @@ public class OrderPlacedHandler(InventoryDbContext db) : IIntegrationEventHandle
                 VariantId = line.VariantId,
                 Type = TransactionType.Out,
                 Quantity = line.Quantity,
-                ReferenceId = @event.OrderId.ToString(),
+                ReferenceId = @event.OrderCode,
                 Note = $"Committed for order {@event.OrderCode}"
             });
         }
@@ -39,7 +39,7 @@ public class OrderPlacedHandler(InventoryDbContext db) : IIntegrationEventHandle
         reservation.Status = ReservationStatus.Confirmed;
         reservation.Events.Add(new ReservationCommited
         {
-            OrderId = @event.OrderId,
+            OrderCode = @event.OrderCode,
             ReservationId = reservation.Id,
             Items = reservation.ReservationLines
                 .Select(x => new InventoryReservationItem

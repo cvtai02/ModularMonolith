@@ -6,13 +6,11 @@ internal static class OrderMapper
 {
     internal static OrderResponse ToResponse(Entities.Order order) => new()
     {
-        Id = order.Id,
         Code = order.Code,
         CustomerId = order.CustomerId,
         Status = order.Status,
         CurrencyCode = order.CurrencyCode,
         TotalAmount = order.TotalAmount,
-        InventoryReservationId = order.InventoryReservationId,
         RejectionReason = order.RejectionReason,
         ShippingAddress = order.ShippingAddress,
         Lines = order.Lines
@@ -34,7 +32,6 @@ internal static class OrderMapper
 
     internal static OrderSummaryResponse ToSummary(Entities.Order order) => new()
     {
-        Id = order.Id,
         Code = order.Code,
         CustomerId = order.CustomerId,
         Status = order.Status,

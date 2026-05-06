@@ -10,9 +10,10 @@ Client contract: [PaymentClient](../../../clients/shared/api/clients/payment.ts)
   - Authorization: public.
   - Lists supported payment methods.
 
-- `POST /api/Payment/orders/{orderId}/checkout`
+- `POST /api/Payment/orders/{orderCode}/checkout`
   - Authorization: authenticated user.
-  - Creates or returns an active checkout transaction for a placed order.
+  - `orderCode` is the order code string.
+  - Creates or returns an active checkout transaction for a pending-payment order.
 
 - `GET /api/Payment/transactions/{id}`
   - Authorization: authenticated user.

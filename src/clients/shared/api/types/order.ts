@@ -1,5 +1,5 @@
 import type { paths } from "../lib/openapi-types";
-import type { JsonRequestBody, JsonResponse, PathParams, QueryParams } from "./path-type-helpers";
+import type { JsonRequestBody, JsonResponse, QueryParams } from "./path-type-helpers";
 
 // -- API Types --
 type OrderPaths = paths; // do not export this
@@ -9,17 +9,29 @@ type ListOrdersOperation =
 type CreateOrderOperation =
     OrderPaths["/api/Order/orders"]["post"];
 type GetOrderOperation =
-    OrderPaths["/api/Order/orders/{id}"]["get"];
+    OrderPaths["/api/Order/orders/{code}"]["get"];
 
 export type ListOrdersQuery = QueryParams<ListOrdersOperation>;
+type GeneratedListOrdersResponse = JsonResponse<ListOrdersOperation>;
+type GeneratedOrderResponse = JsonResponse<GetOrderOperation>;
 // 200 OK
-export type ListOrdersResponse = JsonResponse<ListOrdersOperation>;
+export type ListOrdersResponse = Omit<GeneratedListOrdersResponse, "items"> & {
+    items: OrderSummaryResponse[];
+};
 export type CreateOrderRequest = JsonRequestBody<CreateOrderOperation>;
 // 202 Accepted
-export type CreateOrderResponse = JsonResponse<CreateOrderOperation>;
-export type GetOrderParams = PathParams<GetOrderOperation>;
+export type CreateOrderResponse = OrderResponse;
+export type GetOrderParams = { code: string };
 // 200 OK
-export type OrderResponse = JsonResponse<GetOrderOperation>;
+export type OrderResponse = Omit<GeneratedOrderResponse, "id" | "inventoryReservationId"> & {
+    code: string;
+};
+
+export type OrderSummaryResponse = Omit<GeneratedOrderResponse, "id" | "inventoryReservationId" | "shippingAddress" | "lines"> & {
+    code: string;
+    lineCount: number;
+    createdAt: string;
+};
 
 export type AdminCreateOrderRequest = CreateOrderRequest & {
     customerProfileId?: number | null;
@@ -28,4 +40,4 @@ export type AdminCreateOrderRequest = CreateOrderRequest & {
 export type AdminCreateOrderResponse = CreateOrderResponse;
 export type ListAdminOrdersQuery = ListOrdersQuery;
 export type ListAdminOrdersResponse = ListOrdersResponse;
-export type GetAdminOrderByIdResponse = OrderResponse;
+export type GetAdminOrderByCodeResponse = OrderResponse;

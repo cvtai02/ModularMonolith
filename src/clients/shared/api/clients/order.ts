@@ -1,11 +1,9 @@
-import createFetchClient, { type Client } from "openapi-fetch";
-import type { paths } from "../lib/openapi-types";
 import type {
   AdminCreateOrderRequest,
   AdminCreateOrderResponse,
   CreateOrderRequest,
   CreateOrderResponse,
-  GetAdminOrderByIdResponse,
+  GetAdminOrderByCodeResponse,
   ListAdminOrdersQuery,
   ListAdminOrdersResponse,
   ListOrdersQuery,
@@ -16,37 +14,41 @@ import type { IOrderClient } from "../contracts/order";
 import type { Fetch } from "./shared";
 import { requireData } from "./shared";
 
-type OpenApiClient = Client<paths>;
-
 export class OrderClient implements IOrderClient {
-  private readonly client: OpenApiClient;
   private readonly fetch: Fetch;
   private readonly apiBaseUrl: string;
 
   constructor(fetch: Fetch, apiBaseUrl: string) {
     this.fetch = fetch;
     this.apiBaseUrl = apiBaseUrl.replace(/\/$/, "");
-    this.client = createFetchClient<paths>({ baseUrl: apiBaseUrl, fetch });
   }
 
   async createOrder(input: CreateOrderRequest): Promise<CreateOrderResponse> {
-    const { data, error } = await this.client.POST("/api/Order/orders", { body: input });
-    if (error) throw error;
-    return requireData(data, "Create order response was empty.");
+    return this.requestJson<CreateOrderResponse>(
+      "/api/Order/orders",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(input),
+      },
+      "Create order response was empty.",
+    );
   }
 
-  async getOrderById(id: number): Promise<OrderResponse> {
-    const { data, error } = await this.client.GET("/api/Order/orders/{id}", {
-      params: { path: { id } },
-    });
-    if (error) throw error;
-    return requireData(data, "Order response was empty.");
+  async getOrderByCode(code: string): Promise<OrderResponse> {
+    return this.requestJson<OrderResponse>(
+      `/api/Order/orders/${encodeURIComponent(code)}`,
+      undefined,
+      "Order response was empty.",
+    );
   }
 
   async listOrders(query?: ListOrdersQuery): Promise<ListOrdersResponse> {
-    const { data, error } = await this.client.GET("/api/Order/orders", { params: { query } });
-    if (error) throw error;
-    return requireData(data, "Orders response was empty.");
+    return this.requestJson<ListOrdersResponse>(
+      `/api/Order/orders${this.toQueryString(query)}`,
+      undefined,
+      "Orders response was empty.",
+    );
   }
 
   async adminCreateOrder(input: AdminCreateOrderRequest): Promise<AdminCreateOrderResponse> {
@@ -69,9 +71,9 @@ export class OrderClient implements IOrderClient {
     );
   }
 
-  async getAdminOrderById(id: number): Promise<GetAdminOrderByIdResponse> {
-    return this.requestJson<GetAdminOrderByIdResponse>(
-      `/api/Order/orders/admin/${id}`,
+  async getAdminOrderByCode(code: string): Promise<GetAdminOrderByCodeResponse> {
+    return this.requestJson<GetAdminOrderByCodeResponse>(
+      `/api/Order/orders/admin/${encodeURIComponent(code)}`,
       undefined,
       "Admin order response was empty.",
     );

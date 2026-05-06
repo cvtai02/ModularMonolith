@@ -12,11 +12,13 @@ type Operation<TPath extends string, TMethod extends string> =
 type ListPaymentMethodsOperation =
     Operation<"/api/Payment/methods", "get">;
 type CreatePaymentCheckoutOperation =
-    Operation<"/api/Payment/orders/{orderId}/checkout", "post">;
+    Operation<"/api/Payment/orders/{orderCode}/checkout", "post">;
 type GetPaymentTransactionOperation =
     Operation<"/api/Payment/transactions/{id}", "get">;
 type PaymentWebhookOperation =
     Operation<"/api/Payment/webhooks/{provider}", "post">;
+type GeneratedPaymentTransactionResponse =
+    JsonResponse<GetPaymentTransactionOperation>;
 
 export const paymentStatuses = ["Pending", "Succeeded", "Failed", "Cancelled", "Refunded"] as const;
 export type PaymentStatus = typeof paymentStatuses[number];
@@ -26,18 +28,20 @@ export type ListPaymentMethodsResponse =
     JsonResponse<ListPaymentMethodsOperation>;
 
 export type CreatePaymentCheckoutParams =
-    PathParams<CreatePaymentCheckoutOperation>;
+    { orderCode: string };
 export type CreatePaymentCheckoutRequest =
     JsonRequestBody<CreatePaymentCheckoutOperation>;
 // 200 OK
 export type CreatePaymentCheckoutResponse =
-    JsonResponse<CreatePaymentCheckoutOperation>;
+    PaymentTransactionResponse;
 
 export type GetPaymentTransactionParams =
     PathParams<GetPaymentTransactionOperation>;
 // 200 OK
 export type PaymentTransactionResponse =
-    JsonResponse<GetPaymentTransactionOperation>;
+    Omit<GeneratedPaymentTransactionResponse, "orderId"> & {
+        orderCode: string;
+    };
 
 export type PaymentWebhookParams =
     PathParams<PaymentWebhookOperation>;
@@ -45,4 +49,4 @@ export type PaymentWebhookRequest =
     JsonRequestBody<PaymentWebhookOperation>;
 // 200 OK
 export type PaymentWebhookResponse =
-    JsonResponse<PaymentWebhookOperation>;
+    PaymentTransactionResponse;

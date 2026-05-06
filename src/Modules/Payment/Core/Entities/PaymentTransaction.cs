@@ -3,7 +3,6 @@ namespace Payment.Core.Entities;
 public class PaymentTransaction : AuditableEntity
 {
     public int Id { get; set; }
-    public int OrderId { get; set; }
     public string OrderCode { get; set; } = string.Empty;
     public string? CustomerId { get; set; }
     public decimal Amount { get; set; }

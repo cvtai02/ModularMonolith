@@ -4,7 +4,6 @@ namespace Intermediary.Events.Payment;
 
 public class PaymentSucceeded : IntegrationEvent
 {
-    public int OrderId { get; set; }
     public string OrderCode { get; set; } = string.Empty;
     public int PaymentTransactionId { get; set; }
     public string Provider { get; set; } = string.Empty;

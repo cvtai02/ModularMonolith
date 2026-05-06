@@ -22,14 +22,14 @@ description: Implement/Update API endpoints.
 - If backend work needs a frontend implementation change, write a frontend-handoff document under `requirements/frontend-handoff/` instead of editing frontend files.
 
 # API Flow
-1. Create or update an abstract backend plan under `requirements/backend-plan/` before implementation.
-   - Keep the plan focused on goals, API capability, affected module boundaries, validation behavior, and handoff impact.
+1. Create or update an simple system flow under `requirements/flows/` before implementation.
    - Do not write detailed implementation steps, internal code notes, or frontend UI instructions in the backend plan.
+   - Ex: 1. User click Buy -> 2. Add Order -> 2. reserve inventory -> ...
 2. Implement APIs:
    - Add or update DTOs under `src/Modules/<ModuleName>/DTOs/**`.
    - Add or update use cases/controllers under `src/Modules/<ModuleName>/Api/**` using the module's existing style.
    - Register use cases in `src/Modules/<ModuleName>/<ModuleName>Module.cs` or the module registration file already used by that module.
-   - move the backend-plan to requirements/done after implementation.
+   - move the backend-plan to `requirements/done` after implementation.
 3. Update `src/Modules/<ModuleName>/Api/api.md` with endpoint summaries only:
    - route and method
    - auth requirement

@@ -27,12 +27,11 @@ public class ListOrders(OrderDbContext db)
         var totalCount = await query.CountAsync(ct);
         var items = await query
             .OrderByDescending(x => x.Created)
-            .ThenByDescending(x => x.Id)
+            .ThenByDescending(x => x.Code)
             .Skip((request.PageNumber - 1) * request.PageSize)
             .Take(request.PageSize)
             .Select(x => new OrderSummaryResponse
             {
-                Id = x.Id,
                 Code = x.Code,
                 CustomerId = x.CustomerId,
                 Status = x.Status,

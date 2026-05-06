@@ -91,7 +91,7 @@ internal static class ProductMapper
         ChargeTax = variant.ChargeTax,
         ImageUrl = variant.ImageKey ?? string.Empty,
         Stock = inventory?.Tracking?.OnHand ?? variant.Metric?.Stock ?? 0,
-        Sold = 0,
+        Sold = variant.Metric?.Sold ?? 0,
         Reserved = inventory?.Tracking?.Reserved ?? 0,
         TrackInventory = inventory?.TrackInventory ?? variant.TrackInventory,
         LowStockThreshold = inventory?.LowStockThreshold ?? 0,

@@ -16,32 +16,33 @@ public class CreateOrderCheckout(
     PaymentMethodStrategyResolver strategyResolver)
 {
     public async Task<PaymentTransactionResponse> ExecuteAsync(
-        int orderId,
+        string orderCode,
         CreateCheckoutRequest request,
         CancellationToken ct)
     {
         request ??= new CreateCheckoutRequest();
+        var normalizedOrderCode = string.IsNullOrWhiteSpace(orderCode) ? string.Empty : orderCode.Trim();
 
         var order = await orderDb.Orders
             .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.Id == orderId && !x.IsDeleted, ct);
+            .FirstOrDefaultAsync(x => x.Code == normalizedOrderCode && !x.IsDeleted, ct);
 
         if (order is null)
-            throw Validation("orderId", "Order does not exist.");
+            throw Validation("orderCode", "Order does not exist.");
 
         if (!string.IsNullOrWhiteSpace(order.CustomerId) &&
             !string.Equals(order.CustomerId, user.Id, StringComparison.Ordinal))
         {
-            throw Validation("orderId", "Order does not belong to the current user.");
+            throw Validation("orderCode", "Order does not belong to the current user.");
         }
 
-        if (order.Status != OrderStatus.Placed)
-            throw Validation("orderId", "Order must be placed before checkout can be created.");
+        if (order.Status != OrderStatus.PendingPayment)
+            throw Validation("orderCode", "Order must be pending payment before checkout can be created.");
 
         var strategy = strategyResolver.Resolve(request.Provider);
         var existing = await paymentDb.Transactions
             .AsNoTracking()
-            .Where(x => x.OrderId == orderId &&
+            .Where(x => x.OrderCode == order.Code &&
                         x.Provider == strategy.Code &&
                         !x.IsDeleted &&
                         (x.Status == PaymentStatus.Pending || x.Status == PaymentStatus.Succeeded))
@@ -52,7 +53,6 @@ public class CreateOrderCheckout(
             return PaymentMapper.ToResponse(existing);
 
         var checkout = await strategy.CreateCheckoutAsync(new PaymentCheckoutContext(
-            order.Id,
             order.Code,
             order.TotalAmount,
             order.CurrencyCode,
@@ -61,7 +61,6 @@ public class CreateOrderCheckout(
 
         var transaction = new PaymentTransaction
         {
-            OrderId = order.Id,
             OrderCode = order.Code,
             CustomerId = order.CustomerId,
             Amount = order.TotalAmount,

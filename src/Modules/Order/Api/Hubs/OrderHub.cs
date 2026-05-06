@@ -8,28 +8,29 @@ namespace Order.Api.Hubs;
 [Authorize]
 public class OrderHub(OrderDbContext db) : Hub
 {
-    public async Task JoinOrder(int orderId)
+    public async Task JoinOrder(string orderCode)
     {
         var userId = Context.User?.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (orderId <= 0 || string.IsNullOrWhiteSpace(userId))
+        if (string.IsNullOrWhiteSpace(orderCode) || string.IsNullOrWhiteSpace(userId))
         {
             throw new HubException("Order is not available.");
         }
 
+        var normalizedCode = orderCode.Trim();
         var canAccessOrder = await db.Orders
             .AsNoTracking()
-            .AnyAsync(x => x.Id == orderId && x.CustomerId == userId, Context.ConnectionAborted);
+            .AnyAsync(x => x.Code == normalizedCode && x.CustomerId == userId, Context.ConnectionAborted);
 
         if (!canAccessOrder)
         {
             throw new HubException("Order is not available.");
         }
 
-        await Groups.AddToGroupAsync(Context.ConnectionId, OrderRealtimeGroups.Order(orderId), Context.ConnectionAborted);
+        await Groups.AddToGroupAsync(Context.ConnectionId, OrderRealtimeGroups.Order(normalizedCode), Context.ConnectionAborted);
     }
 
-    public Task LeaveOrder(int orderId)
-        => Groups.RemoveFromGroupAsync(Context.ConnectionId, OrderRealtimeGroups.Order(orderId), Context.ConnectionAborted);
+    public Task LeaveOrder(string orderCode)
+        => Groups.RemoveFromGroupAsync(Context.ConnectionId, OrderRealtimeGroups.Order(orderCode.Trim()), Context.ConnectionAborted);
 
     public Task JoinMyOrders()
     {

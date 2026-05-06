@@ -71,7 +71,6 @@ public class HandlePaymentWebhook(
         transaction.FailureReason = null;
         transaction.Events.Add(new PaymentSucceeded
         {
-            OrderId = transaction.OrderId,
             OrderCode = transaction.OrderCode,
             PaymentTransactionId = transaction.Id,
             Provider = transaction.Provider,
@@ -102,7 +101,6 @@ public class HandlePaymentWebhook(
 
     private static PaymentFailed ToFailedEvent(PaymentTransaction transaction) => new()
     {
-        OrderId = transaction.OrderId,
         OrderCode = transaction.OrderCode,
         PaymentTransactionId = transaction.Id,
         Provider = transaction.Provider,

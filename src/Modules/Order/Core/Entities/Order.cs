@@ -1,16 +1,17 @@
+using System.ComponentModel.DataAnnotations;
+using SharedKernel.Abstractions.Services;
 using SharedKernel.DTOs;
 
 namespace Order.Core.Entities;
 
 public class Order : AuditableEntity
 {
-    public int Id { get; set; }
-    public string Code { get; private set; } = string.Empty;
+    [Key]
+    public string Code { get; private set; } = null!;
     public string? CustomerId { get; set; }
     public OrderStatus Status { get; private set; } = OrderStatus.Draft;
     public string CurrencyCode { get; private set; } = "USD";
     public decimal TotalAmount { get; private set; }
-    public int? InventoryReservationId { get; private set; }
     public string? RejectionReason { get; private set; }
     public Address? ShippingAddress { get; private set; }
     public ICollection<OrderLine> Lines { get; private set; } = [];
@@ -40,8 +41,9 @@ public class Order : AuditableEntity
 
         List<OrderStatus> allowed = Status switch
         {
-            OrderStatus.Draft => [OrderStatus.PendingInventory, OrderStatus.Cancelled],
-            OrderStatus.PendingInventory => [OrderStatus.Placed, OrderStatus.Rejected, OrderStatus.Cancelled],
+            OrderStatus.Draft => [OrderStatus.PendingInventory, OrderStatus.PendingPayment, OrderStatus.Cancelled],
+            OrderStatus.PendingInventory => [OrderStatus.PendingPayment, OrderStatus.Rejected, OrderStatus.Cancelled],
+            OrderStatus.PendingPayment => [OrderStatus.Paid, OrderStatus.Cancelled],
             OrderStatus.Placed => [OrderStatus.Paid, OrderStatus.Cancelled],
             OrderStatus.Paid => [OrderStatus.Shipped, OrderStatus.Cancelled],
             OrderStatus.Rejected => [],
@@ -56,17 +58,6 @@ public class Order : AuditableEntity
         }
 
         Status = status;
-    }
-
-    public void SetInventoryReservation(int reservationId)
-    {
-        if (reservationId <= 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(reservationId), "ReservationId must be greater than zero.");
-        }
-
-        InventoryReservationId = reservationId;
-        RejectionReason = null;
     }
 
     public void SetRejectionReason(string reason)
@@ -122,6 +113,7 @@ public enum OrderStatus
 {
     Draft,
     PendingInventory,
+    PendingPayment,
     Placed,
     Paid,
     Rejected,

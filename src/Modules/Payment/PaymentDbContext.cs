@@ -22,7 +22,7 @@ public class PaymentDbContext(DbContextOptions<PaymentDbContext> options, ITenan
             builder.Property(x => x.ProviderPaymentId).HasMaxLength(256);
             builder.Property(x => x.CheckoutUrl).HasMaxLength(2000);
             builder.Property(x => x.FailureReason).HasMaxLength(2000);
-            builder.HasIndex(x => x.OrderId);
+            builder.HasIndex(x => x.OrderCode);
             builder.HasIndex(x => new { x.Provider, x.ProviderPaymentId }).IsUnique();
         });
     }

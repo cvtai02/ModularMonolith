@@ -51,7 +51,7 @@ export const ROUTES = {
 
   // Orders & Settings
   orders: "/orders",
-  orderDetail: (id: number | string) => `/orders/${id}`,
+  orderDetail: (id: string) => `/orders/${id}`,
   orderCreate: "/orders/new",
   settings: "/settings",
 

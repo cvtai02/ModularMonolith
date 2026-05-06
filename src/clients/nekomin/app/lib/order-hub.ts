@@ -4,7 +4,6 @@ export type OrderNotificationType = "OrderPlaced" | "OrderRejected" | "OrderPaid
 
 export type OrderNotification = {
   type: OrderNotificationType;
-  orderId: number;
   orderCode: string;
   status: string;
   reservationId?: number | null;
@@ -13,7 +12,7 @@ export type OrderNotification = {
 };
 
 export function notificationKey(n: OrderNotification): string {
-  return `${n.type}:${n.orderId}:${n.status}:${n.occurredAt}`;
+  return `${n.type}:${n.orderCode}:${n.status}:${n.occurredAt}`;
 }
 
 export function notificationMessage(n: OrderNotification): string {

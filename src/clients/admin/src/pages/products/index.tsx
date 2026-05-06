@@ -382,6 +382,7 @@ function ProductRow({
   onEdit: () => void;
 }) {
   const variantCount = product.variants?.length ?? 0;
+  const tracked = product.trackInventory ?? false;
   const stock = product.stock ?? 0;
 
   return (
@@ -412,7 +413,9 @@ function ProductRow({
         {priceDisplay(product)}
       </TableCell>
       <TableCell className="text-sm tabular-nums">
-        <span className={stock === 0 ? "text-destructive font-medium" : ""}>{stock}</span>
+        {tracked
+          ? <span className={stock === 0 ? "text-destructive font-medium" : ""}>{stock}</span>
+          : <span className="italic text-muted-foreground">—</span>}
       </TableCell>
       <TableCell className="text-sm tabular-nums text-muted-foreground">
         {product.reserved ?? 0}

@@ -88,7 +88,7 @@ export function NotificationCenter() {
               <ul className="max-h-96 overflow-y-auto divide-y divide-zinc-100">
                 {notifications.map((n) => (
                   <li
-                    key={`${n.type}-${n.orderId}-${n.occurredAt}`}
+                    key={`${n.type}-${n.orderCode}-${n.occurredAt}`}
                     className="px-4 py-3"
                   >
                     <p className="text-sm text-zinc-800">{notificationMessage(n)}</p>

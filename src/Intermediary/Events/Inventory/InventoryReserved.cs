@@ -4,8 +4,8 @@ namespace Intermediary.Events.Inventory;
 
 public class InventoryReserved : IntegrationEvent
 {
-    public int OrderId { get; init; }
-    public int ReservationId { get; init; }
+    public string OrderCode { get; set; } = string.Empty;
+    public int ReservationId { get; set; }
     public DateTimeOffset ExpiresAt { get; init; }
     public IReadOnlyCollection<InventoryReservationItem> Items { get; init; } = [];
 }

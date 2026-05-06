@@ -1,6 +1,8 @@
 using Intermediary.Events.Order;
 using Intermediary.Ordering;
+using Microsoft.EntityFrameworkCore;
 using Order.DTOs.Orders;
+using System.Security.Cryptography;
 using SharedKernel.Abstractions.Services;
 using SharedKernel.DTOs;
 using SharedKernel.Enums;
@@ -61,15 +63,14 @@ public class CreateOrder(
                 item.Quantity);
         }
 
-        order.SetStatus(Entities.OrderStatus.PendingInventory);
+        order.SetStatus(Entities.OrderStatus.PendingPayment);
         db.Orders.Add(order);
         order.Events.Add(new OrderSubmitted
         {
-            OrderId = order.Id,
             OrderCode = order.Code,
             CurrencyCode = order.CurrencyCode,
             Items = order.Lines
-            .Select(x => new OrderSubmittedItem
+                .Select(x => new OrderSubmittedItem
                 {
                     VariantId = x.VariantId,
                     Quantity = x.Quantity
@@ -199,7 +200,8 @@ public class CreateOrder(
 
     private static string GenerateOrderCode()
     {
-        var suffix = Guid.NewGuid().ToString("N")[..10].ToUpperInvariant();
-        return $"ORD-{DateTime.UtcNow:yyyyMMdd}-{suffix}";
+        Span<byte> bytes = stackalloc byte[1];
+        RandomNumberGenerator.Fill(bytes);
+        return $"{DateTime.UtcNow:yyyyMMddHHmm}{Convert.ToHexString(bytes)}";
     }
 }

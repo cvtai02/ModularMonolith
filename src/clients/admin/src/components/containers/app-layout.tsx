@@ -286,7 +286,7 @@ export default function AppLayout() {
                         className="flex items-start gap-3 px-3 py-2.5 hover:bg-muted/50 cursor-pointer border-b last:border-0"
                         onClick={() => {
                           if (n.type === "OrderPlaced") {
-                            navigate(`/orders/${n.orderId}`);
+                            navigate(`/orders/${n.orderCode}`);
                           }
                         }}
                       >

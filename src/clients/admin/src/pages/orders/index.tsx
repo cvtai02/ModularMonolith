@@ -172,9 +172,9 @@ export default function OrdersPage() {
               ) : (
                 orders.map((order) => (
                   <TableRow
-                    key={order.id}
+                    key={order.code}
                     className="cursor-pointer"
-                    onClick={() => navigate(ROUTES.orderDetail(order.id))}
+                    onClick={() => navigate(ROUTES.orderDetail(order.code))}
                   >
                     <TableCell>
                       <code className="font-mono text-sm font-medium">{order.code}</code>
