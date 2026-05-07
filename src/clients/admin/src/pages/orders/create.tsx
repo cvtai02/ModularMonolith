@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import {
   ArrowLeftIcon,
   ClipboardListIcon,
+  CreditCardIcon,
   MinusIcon,
   PackageIcon,
   PlusIcon,
@@ -11,15 +12,20 @@ import {
   XIcon,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { useOrderClient } from "@/components/containers/api-client-provider";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  useOrderClient,
+  usePaymentClient,
+} from "@/components/containers/api-client-provider";
 import { applyValidationErrors } from "@/lib/form-error";
 import { ROUTES } from "@/configs/routes";
 import { ApiError } from "@shared/api/contracts/common-types";
@@ -49,12 +55,20 @@ export default function AdminCreateOrderPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const orderClient = useOrderClient();
+  const paymentClient = usePaymentClient();
 
   const [customer, setCustomer] = useState<AccountProfileResponse | null>(null);
   const [customerPickerOpen, setCustomerPickerOpen] = useState(false);
 
   const [orderItems, setOrderItems] = useState<SelectedVariantItem[]>([]);
   const [variantPickerOpen, setVariantPickerOpen] = useState(false);
+
+  const [paymentProvider, setPaymentProvider] = useState<string>("CashOnDelivery");
+
+  const { data: paymentMethods = [], isLoading: paymentMethodsLoading } = useQuery({
+    queryKey: ["payment-methods"],
+    queryFn: () => paymentClient.listPaymentMethods(),
+  });
 
   const {
     register,
@@ -67,7 +81,7 @@ export default function AdminCreateOrderPage() {
       type: "Home",
       phoneNumber: "",
       email: "",
-      country: "",
+      country: "VN",
       state: "",
       city: "",
       postalCode: "",
@@ -122,10 +136,16 @@ export default function AdminCreateOrderPage() {
       toast.error("Please add at least one product.");
       return;
     }
+    if (!paymentProvider) {
+      toast.error("Please choose a payment method.");
+      return;
+    }
 
+    let orderCode: string;
     try {
       const result = await createOrder({
         customerProfileId: customer?.id ?? null,
+        paymentProvider,
         shippingAddress: {
           ownerName: addressValues.ownerName,
           type: addressValues.type,
@@ -143,9 +163,7 @@ export default function AdminCreateOrderPage() {
           quantity: i.quantity,
         })),
       });
-      toast.success("Order placed");
-      queryClient.invalidateQueries({ queryKey: ["admin-orders"] });
-      navigate(ROUTES.orderDetail(result.code));
+      orderCode = result.code;
     } catch (err) {
       if (err instanceof ApiError && err.statusCode === 409) {
         toast.error("Out of stock. Adjust quantities and try again.");
@@ -154,6 +172,47 @@ export default function AdminCreateOrderPage() {
       if (!applyValidationErrors(err, setError)) {
         toast.error("Failed to place order. Please check the form and try again.");
       }
+      return;
+    }
+
+    queryClient.invalidateQueries({ queryKey: ["admin-orders"] });
+
+    // Kick off checkout for the chosen provider. Outcomes:
+    //   - CashOnDelivery: backend marks the transaction Succeeded and the order Placed.
+    //   - Provider returning a `checkoutUrl`: surface the link so admin can share with the customer.
+    //   - Sepay (NotImplementedException): warn admin; the order itself is still created.
+    try {
+      const checkout = await paymentClient.createCheckout(orderCode, {
+        provider: paymentProvider,
+        returnUrl: null,
+        cancelUrl: null,
+      });
+
+      if (checkout.checkoutUrl) {
+        toast.success(`Order ${orderCode} placed. Share the payment link with the customer.`, {
+          description: checkout.checkoutUrl,
+        });
+      } else if (
+        (checkout.provider ?? "").toLowerCase() === "cashondelivery" &&
+        String(checkout.status) === "Succeeded"
+      ) {
+        toast.success(`Order ${orderCode} placed (Cash on Delivery).`);
+      } else {
+        toast.success(`Order ${orderCode} placed.`);
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "";
+      if (/not\s*implement/i.test(message)) {
+        toast.warning(
+          `Order ${orderCode} placed, but ${paymentProvider} checkout is not available yet.`,
+        );
+      } else {
+        toast.warning(
+          `Order ${orderCode} placed, but checkout could not be started: ${message || "unknown error"}.`,
+        );
+      }
+    } finally {
+      navigate(ROUTES.orderDetail(orderCode));
     }
   });
 
@@ -335,6 +394,42 @@ export default function AdminCreateOrderPage() {
           )}
         </div>
 
+        {/* Payment method */}
+        <div className="rounded-xl border bg-card p-6">
+          <h2 className="mb-4 flex items-center gap-2 text-sm font-semibold">
+            <CreditCardIcon className="size-4 text-muted-foreground" />
+            Payment Method *
+          </h2>
+          {paymentMethodsLoading ? (
+            <div className="flex flex-col gap-2">
+              <Skeleton className="h-10 rounded-md" />
+              <Skeleton className="h-10 rounded-md" />
+            </div>
+          ) : paymentMethods.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No payment methods available.</p>
+          ) : (
+            <RadioGroup
+              value={paymentProvider}
+              onValueChange={setPaymentProvider}
+              className="flex flex-col gap-2"
+            >
+              {paymentMethods.map((method) => (
+                <label
+                  key={method.code}
+                  htmlFor={`payment-${method.code}`}
+                  className="flex cursor-pointer items-center gap-3 rounded-lg border px-3 py-2 text-sm transition-colors hover:bg-muted/40"
+                >
+                  <RadioGroupItem value={method.code} id={`payment-${method.code}`} />
+                  <span className="flex-1">{method.displayName}</span>
+                  {method.requiresRedirect && (
+                    <span className="text-xs text-muted-foreground">redirect</span>
+                  )}
+                </label>
+              ))}
+            </RadioGroup>
+          )}
+        </div>
+
         {/* Shipping address */}
         <div className="rounded-xl border bg-card p-6">
           <h2 className="mb-4 text-sm font-semibold">Shipping Address *</h2>
@@ -367,13 +462,12 @@ export default function AdminCreateOrderPage() {
                 {errors.phoneNumber && <FieldError>{errors.phoneNumber.message}</FieldError>}
               </Field>
               <Field>
-                <FieldLabel>Email *</FieldLabel>
+                <FieldLabel>Email</FieldLabel>
                 <Input
-                  {...register("email", { required: "Email is required" })}
+                  {...register("email")}
                   placeholder="recipient@example.com"
                   type="email"
                 />
-                {errors.email && <FieldError>{errors.email.message}</FieldError>}
               </Field>
             </div>
 

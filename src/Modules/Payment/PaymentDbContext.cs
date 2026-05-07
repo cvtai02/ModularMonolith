@@ -6,7 +6,7 @@ namespace Payment;
 
 public class PaymentDbContext(DbContextOptions<PaymentDbContext> options, ITenant? tenant) : TenancyDbContext(options, tenant)
 {
-    public DbSet<PaymentTransaction> Transactions => Set<PaymentTransaction>();
+    public DbSet<PaymentTransaction> PaymentTransactions => Set<PaymentTransaction>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

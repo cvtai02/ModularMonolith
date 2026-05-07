@@ -8,6 +8,7 @@ public class OrderSummaryResponse
     public string? CustomerId { get; set; }
     public OrderStatus Status { get; set; }
     public string CurrencyCode { get; set; } = string.Empty;
+    public string PaymentProvider { get; set; } = string.Empty;
     public decimal TotalAmount { get; set; }
     public string? RejectionReason { get; set; }
     public int LineCount { get; set; }

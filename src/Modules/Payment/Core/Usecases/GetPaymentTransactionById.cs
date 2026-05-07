@@ -8,7 +8,7 @@ public class GetPaymentTransactionById(PaymentDbContext db)
 {
     public async Task<PaymentTransactionResponse?> ExecuteAsync(int id, CancellationToken ct)
     {
-        var transaction = await db.Transactions
+        var transaction = await db.PaymentTransactions
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted, ct);
 

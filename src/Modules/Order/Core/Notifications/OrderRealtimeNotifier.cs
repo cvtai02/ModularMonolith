@@ -5,7 +5,7 @@ namespace Order.Core.Notifications;
 
 public class OrderRealtimeNotifier(IHubContext<OrderHub> orderHubContext)
 {
-    public async Task NotifyOrderPlacedAsync(Entities.Order order, int reservationId, CancellationToken ct)
+    public async Task NotifyOrderPlacedAsync(Entities.Order order, int? reservationId, CancellationToken ct)
     {
         var placedMessage = new OrderPlacedNotification
         {

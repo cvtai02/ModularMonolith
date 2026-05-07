@@ -2976,6 +2976,7 @@ export interface components {
         "Order.DTOs.Orders.AdminCreateOrderRequest": {
             customerProfileId?: null | components["schemas"]["System.Nullable`1[[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
             currencyCode?: null | components["schemas"]["System.String"];
+            paymentProvider?: null | components["schemas"]["System.String"];
             shippingAddress: components["schemas"]["SharedKernel.DTOs.Address"];
             items?: components["schemas"]["System.Collections.Generic.List`1[[Order.DTOs.Orders.CreateOrderItemRequest, Order, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
         };
@@ -2985,6 +2986,7 @@ export interface components {
         };
         "Order.DTOs.Orders.CreateOrderRequest": {
             currencyCode?: null | components["schemas"]["System.String"];
+            paymentProvider?: null | components["schemas"]["System.String"];
             shippingAddress: components["schemas"]["SharedKernel.DTOs.Address"];
             items?: components["schemas"]["System.Collections.Generic.List`1[[Order.DTOs.Orders.CreateOrderItemRequest, Order, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
         };
@@ -3004,6 +3006,7 @@ export interface components {
             customerId: null | components["schemas"]["System.String"];
             status: components["schemas"]["Order.Core.Entities.OrderStatus"];
             currencyCode: components["schemas"]["System.String"];
+            paymentProvider: components["schemas"]["System.String"];
             totalAmount: components["schemas"]["System.Decimal"];
             rejectionReason: null | components["schemas"]["System.String"];
             shippingAddress: null | components["schemas"]["SharedKernel.DTOs.Address"];
@@ -3014,6 +3017,7 @@ export interface components {
             customerId: null | components["schemas"]["System.String"];
             status: components["schemas"]["Order.Core.Entities.OrderStatus"];
             currencyCode: components["schemas"]["System.String"];
+            paymentProvider: components["schemas"]["System.String"];
             totalAmount: components["schemas"]["System.Decimal"];
             rejectionReason: null | components["schemas"]["System.String"];
             lineCount: components["schemas"]["System.Int32"];

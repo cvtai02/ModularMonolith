@@ -1,4 +1,5 @@
 using Intermediary.Events.Inventory;
+using Intermediary.Events.Order;
 using Microsoft.EntityFrameworkCore;
 using Order.Core.Notifications;
 using SharedKernel.Abstractions.Contracts;

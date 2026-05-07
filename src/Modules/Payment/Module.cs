@@ -17,6 +17,7 @@ public class PaymentModule(IHostApplicationBuilder b) : Module(b)
     protected override void RegisterUsecases()
     {
         Services.AddScoped<IPaymentMethodStrategy, CashOnDeliveryPaymentMethodStrategy>();
+        Services.AddScoped<IPaymentMethodStrategy, SepayPaymentMethodStrategy>();
     }
 }
 

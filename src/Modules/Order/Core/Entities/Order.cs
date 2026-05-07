@@ -11,6 +11,7 @@ public class Order : AuditableEntity
     public string? CustomerId { get; set; }
     public OrderStatus Status { get; private set; } = OrderStatus.Draft;
     public string CurrencyCode { get; private set; } = "USD";
+    public string PaymentProvider { get; private set; } = "CashOnDelivery";
     public decimal TotalAmount { get; private set; }
     public string? RejectionReason { get; private set; }
     public Address? ShippingAddress { get; private set; }
@@ -32,6 +33,11 @@ public class Order : AuditableEntity
         CurrencyCode = RequireText(currencyCode, nameof(currencyCode), 3).ToUpperInvariant();
     }
 
+    public void SetPaymentProvider(string paymentProvider)
+    {
+        PaymentProvider = RequireText(paymentProvider, nameof(paymentProvider), 100);
+    }
+
     public void SetStatus(OrderStatus status)
     {
         if (Status == status)
@@ -43,7 +49,7 @@ public class Order : AuditableEntity
         {
             OrderStatus.Draft => [OrderStatus.PendingInventory, OrderStatus.PendingPayment, OrderStatus.Cancelled],
             OrderStatus.PendingInventory => [OrderStatus.PendingPayment, OrderStatus.Rejected, OrderStatus.Cancelled],
-            OrderStatus.PendingPayment => [OrderStatus.Paid, OrderStatus.Cancelled],
+            OrderStatus.PendingPayment => [OrderStatus.Placed, OrderStatus.Paid, OrderStatus.Cancelled],
             OrderStatus.Placed => [OrderStatus.Paid, OrderStatus.Cancelled],
             OrderStatus.Paid => [OrderStatus.Shipped, OrderStatus.Cancelled],
             OrderStatus.Rejected => [],

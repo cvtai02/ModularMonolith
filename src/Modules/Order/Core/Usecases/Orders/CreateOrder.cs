@@ -34,6 +34,7 @@ public class CreateOrder(
 
         request.Items ??= [];
         var currencyCode = NormalizeCurrency(request.CurrencyCode);
+        var paymentProvider = NormalizePaymentProvider(request.PaymentProvider);
         ValidateRequestShape(request, currencyCode);
 
         var requestedVariantIds = request.Items.Select(x => x.VariantId).Distinct().ToList();
@@ -48,6 +49,7 @@ public class CreateOrder(
         };
         order.SetCode(GenerateOrderCode());
         order.SetCurrency(currencyCode);
+        order.SetPaymentProvider(paymentProvider);
         order.SetShippingAddress(NormalizeAddress(request.ShippingAddress!));
 
         foreach (var item in request.Items)
@@ -198,6 +200,9 @@ public class CreateOrder(
 
     private static string NormalizeCurrency(string? currencyCode) =>
         string.IsNullOrWhiteSpace(currencyCode) ? Currency.VND.ToString() : currencyCode.Trim().ToUpperInvariant();
+
+    private static string NormalizePaymentProvider(string? paymentProvider) =>
+        string.IsNullOrWhiteSpace(paymentProvider) ? "CashOnDelivery" : paymentProvider.Trim();
 
     private static string GenerateOrderCode()
     {

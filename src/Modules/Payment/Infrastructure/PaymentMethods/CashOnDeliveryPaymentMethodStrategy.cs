@@ -15,7 +15,7 @@ public class CashOnDeliveryPaymentMethodStrategy : IPaymentMethodStrategy
     {
         return Task.FromResult(new PaymentCheckoutResult(
             $"{Code.ToLowerInvariant()}_{Guid.NewGuid():N}",
-            PaymentStatus.Pending,
+            PaymentStatus.Succeeded,
             null));
     }
 

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Intermediary.Events.Payment;
 using Order;
 using Order.Core.Entities;
 using Payment.DTOs;
@@ -40,8 +41,15 @@ public class CreateOrderCheckout(
         if (order.Status != OrderStatus.PendingPayment)
             throw Validation("orderCode", "Order must be pending payment before checkout can be created.");
 
-        var strategy = strategyResolver.Resolve(request.Provider);
-        var existing = await paymentDb.Transactions
+        var provider = string.IsNullOrWhiteSpace(request.Provider)
+            ? order.PaymentProvider
+            : request.Provider.Trim();
+        var strategy = strategyResolver.Resolve(provider);
+
+        if (!string.Equals(order.PaymentProvider, strategy.Code, StringComparison.OrdinalIgnoreCase))
+            throw Validation(nameof(request.Provider), "Payment provider must match the provider selected for the order.");
+
+        var existing = await paymentDb.PaymentTransactions
             .AsNoTracking()
             .Where(x => x.OrderCode == order.Code &&
                         x.Provider == strategy.Code &&
@@ -73,8 +81,23 @@ public class CreateOrderCheckout(
             PaidAt = checkout.Status == PaymentStatus.Succeeded ? DateTimeOffset.UtcNow : null
         };
 
-        paymentDb.Transactions.Add(transaction);
+        paymentDb.PaymentTransactions.Add(transaction);
         await paymentDb.SaveChangesAsync(ct);
+
+        if (transaction.Status == PaymentStatus.Succeeded)
+        {
+            transaction.Events.Add(new PaymentSucceeded
+            {
+                OrderCode = transaction.OrderCode,
+                PaymentTransactionId = transaction.Id,
+                Provider = transaction.Provider,
+                ProviderPaymentId = transaction.ProviderPaymentId,
+                Amount = transaction.Amount,
+                CurrencyCode = transaction.CurrencyCode,
+                PaidAt = transaction.PaidAt ?? DateTimeOffset.UtcNow
+            });
+            await paymentDb.SaveChangesAsync(ct);
+        }
 
         return PaymentMapper.ToResponse(transaction);
     }

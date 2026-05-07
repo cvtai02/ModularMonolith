@@ -22,7 +22,7 @@ public class HandlePaymentWebhook(
 
         var strategy = strategyResolver.Resolve(provider);
         var providerPaymentId = request.ProviderPaymentId.Trim();
-        var transaction = await db.Transactions
+        var transaction = await db.PaymentTransactions
             .FirstOrDefaultAsync(x => x.Provider == strategy.Code &&
                                       x.ProviderPaymentId == providerPaymentId &&
                                       !x.IsDeleted, ct);

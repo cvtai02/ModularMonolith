@@ -16,6 +16,19 @@ public class PaymentSucceededHandler(
         if (order is null || order.Status != Entities.OrderStatus.PendingPayment)
             return;
 
+        if (string.Equals(@event.Provider, "CashOnDelivery", StringComparison.OrdinalIgnoreCase))
+        {
+            order.SetStatus(Entities.OrderStatus.Placed);
+            order.Events.Add(new OrderPlaced
+            {
+                OrderCode = order.Code
+            });
+            await db.SaveChangesAsync(ct);
+
+            await realtimeNotifier.NotifyOrderPlacedAsync(order, null, ct);
+            return;
+        }
+
         order.SetStatus(Entities.OrderStatus.Paid);
         order.Events.Add(new OrderPaid
         {

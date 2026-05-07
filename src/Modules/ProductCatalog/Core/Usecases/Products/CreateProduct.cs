@@ -9,7 +9,7 @@ using SharedKernel.Extensions;
 namespace ProductCatalog.Core.Usecases.Products;
 
 [UsecaseInject]
-public class CreateProduct(ProductCatalogDbContext db, IFileManager fileManager)
+public class CreateProduct(ProductCatalogDbContext db, IFileManager fileManager, ITenant tenant)
 {
     public async Task<ProductResponse> ExecuteAsync(CreateProductRequest request, CancellationToken ct)
     {
@@ -246,7 +246,7 @@ public class CreateProduct(ProductCatalogDbContext db, IFileManager fileManager)
         {
             var variant = new Variant
             {
-                Id = GenerateVariantId(product.Id, "default"),
+                Id = GenerateVariantId(product.Id, "variant"),
                 ProductId = product.Id,
                 ImageKey = string.IsNullOrWhiteSpace(request.ImageUrl) ? null : NormalizeMediaKey(request.ImageUrl)
             };
@@ -353,18 +353,18 @@ public class CreateProduct(ProductCatalogDbContext db, IFileManager fileManager)
     private static string ResolveVariantId(string? requestedId, string productId, CreateVariantRequest request)
         => NormalizeId(requestedId) ?? GenerateVariantId(productId, VariantKey(request));
 
-    private static string GenerateProductId(string slug)
-        => $"prd-{NormalizeId(slug) ?? Guid.NewGuid().ToString("N")[..10]}";
+    private string GenerateProductId(string slug)
+        => $"{tenant.Signature}-{NormalizeId(slug) ?? Guid.NewGuid().ToString("N")[..10]}";
 
     private static string GenerateVariantId(string productId, string key)
         => $"{productId}-{NormalizeId(key) ?? Guid.NewGuid().ToString("N")[..8]}";
 
     private static string VariantKey(CreateVariantRequest request)
         => request.OptionValues.Count == 0
-            ? "default"
-            : string.Join("|", request.OptionValues
+            ? "variant"
+            : string.Join("-", request.OptionValues
                 .OrderBy(x => x.OptionName, StringComparer.OrdinalIgnoreCase)
-                .Select(x => $"{x.OptionName.Trim()}:{x.Value.Trim()}"));
+                .Select(x => $"{x.OptionName.Trim().First()}-{x.Value.Trim()}"));
 
     private static string NormalizeMediaKey(string value)
     {

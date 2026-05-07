@@ -7,6 +7,7 @@ import {
   ContentClient,
   IdentityClient,
   OrderClient,
+  PaymentClient,
   ProductCatalogClient,
 } from "@modular-monolith/clients-shared/api/clients";
 import type {
@@ -14,6 +15,7 @@ import type {
   IContentClient,
   IIdentityClient,
   IOrderClient,
+  IPaymentClient,
   IProductCatalogClient,
 } from "@modular-monolith/clients-shared/api/contracts";
 import { appFetch } from "@/app/configs/appFetch";
@@ -26,6 +28,7 @@ type ApiClients = {
   content: IContentClient;
   identity: IIdentityClient;
   order: IOrderClient;
+  payment: IPaymentClient;
   productCatalog: IProductCatalogClient;
 };
 
@@ -38,6 +41,7 @@ export function ApiClientProvider({ children }: { children: ReactNode }) {
       content: new ContentClient(appFetch, API_BASE_URL),
       identity: new IdentityClient(appFetch, API_IDENTITY_URL),
       order: new OrderClient(appFetch, API_BASE_URL),
+      payment: new PaymentClient(appFetch, API_BASE_URL),
       productCatalog: new ProductCatalogClient(appFetch, API_BASE_URL),
     }),
     []
@@ -60,4 +64,5 @@ export const useAccountClient = () => useApiClients().account;
 export const useContentClient = () => useApiClients().content;
 export const useIdentityClient = () => useApiClients().identity;
 export const useOrderClient = () => useApiClients().order;
+export const usePaymentClient = () => useApiClients().payment;
 export const useProductCatalogClient = () => useApiClients().productCatalog;

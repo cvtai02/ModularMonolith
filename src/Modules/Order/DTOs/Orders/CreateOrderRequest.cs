@@ -8,6 +8,9 @@ public class CreateOrderRequest
     [MaxLength(3)]
     public string? CurrencyCode { get; set; }
 
+    [MaxLength(100)]
+    public string? PaymentProvider { get; set; } = "CashOnDelivery";
+
     [Required]
     public Address ShippingAddress { get; set; } = new();
 
