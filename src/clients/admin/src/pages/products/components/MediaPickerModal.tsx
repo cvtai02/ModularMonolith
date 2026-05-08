@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { CheckIcon, FileIcon, ImageIcon, SearchIcon } from "lucide-react";
+import { CheckIcon, FileIcon, ImageIcon, SearchIcon, VideoIcon } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/button";
@@ -22,22 +22,25 @@ const PAGE_SIZE = 18;
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  selectedUrl: string;
-  onSelect: (url: string) => void;
+  /** URLs that are already selected when the modal opens. */
+  selectedUrls: string[];
+  onSelect: (urls: string[]) => void;
+  /** Allow selecting more than one image. Defaults to false. */
+  multiple?: boolean;
 };
 
-export function MediaPickerModal({ open, onOpenChange, selectedUrl, onSelect }: Props) {
+export function MediaPickerModal({ open, onOpenChange, selectedUrls, onSelect, multiple = false }: Props) {
   const queryClient = useQueryClient();
   const contentClient = useContentClient();
   const [prevOpen, setPrevOpen] = useState(open);
-  const [pendingUrl, setPendingUrl] = useState(selectedUrl);
+  const [pendingUrls, setPendingUrls] = useState<string[]>(selectedUrls);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
 
   if (prevOpen !== open) {
     setPrevOpen(open);
     if (open) {
-      setPendingUrl(selectedUrl);
+      setPendingUrls(selectedUrls);
       setSearch("");
       setPage(1);
     }
@@ -64,13 +67,35 @@ export function MediaPickerModal({ open, onOpenChange, selectedUrl, onSelect }: 
       queryClient.invalidateQueries({ queryKey: ["content-files"] });
       setSearch("");
       setPage(1);
-      if (urls.length > 0) setPendingUrl(urls[0]);
+      if (urls.length > 0) {
+        if (multiple) {
+          setPendingUrls((prev) => {
+            const next = [...prev];
+            for (const u of urls) {
+              if (!next.includes(u)) next.push(u);
+            }
+            return next;
+          });
+        } else {
+          setPendingUrls([urls[0]]);
+        }
+      }
     },
-    [queryClient]
+    [queryClient, multiple]
   );
 
+  function toggleUrl(url: string) {
+    if (multiple) {
+      setPendingUrls((prev) =>
+        prev.includes(url) ? prev.filter((u) => u !== url) : [...prev, url]
+      );
+    } else {
+      setPendingUrls((prev) => (prev[0] === url ? [] : [url]));
+    }
+  }
+
   const handleConfirm = () => {
-    onSelect(pendingUrl);
+    onSelect(pendingUrls);
     onOpenChange(false);
   };
 
@@ -81,14 +106,14 @@ export function MediaPickerModal({ open, onOpenChange, selectedUrl, onSelect }: 
         className="flex h-[80vh] w-[80vw] max-w-none sm:max-w-none flex-col gap-0 overflow-hidden p-0"
       >
         <DialogHeader className="shrink-0 px-4 pt-4 pb-3">
-          <DialogTitle>Select image</DialogTitle>
+          <DialogTitle>{multiple ? "Select images" : "Select image"}</DialogTitle>
         </DialogHeader>
 
         {/* Upload zone */}
         <div className="shrink-0 px-4 pb-3">
           <FileUploader
             category="product"
-            accept="image/*"
+            accept="image/*,video/mp4"
             multiple
             value={[]}
             onChange={handleUpload}
@@ -128,12 +153,13 @@ export function MediaPickerModal({ open, onOpenChange, selectedUrl, onSelect }: 
             <div className={cn("grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6", isFetching && "opacity-60")}>
               {files.map((file) => {
                 const isImg = file.contentType?.startsWith("image/");
-                const isSelected = file.url === pendingUrl;
+                const isSelected = pendingUrls.includes(file.url!);
+                const selectionIndex = multiple ? pendingUrls.indexOf(file.url!) : -1;
                 return (
                   <button
                     key={file.id}
                     type="button"
-                    onClick={() => setPendingUrl(isSelected ? "" : file.url!)}
+                    onClick={() => toggleUrl(file.url!)}
                     className={cn(
                       "group relative aspect-square overflow-hidden rounded-lg border-2 bg-muted transition-colors",
                       isSelected
@@ -148,6 +174,11 @@ export function MediaPickerModal({ open, onOpenChange, selectedUrl, onSelect }: 
                         className="size-full object-cover"
                         onError={(e) => { (e.target as HTMLImageElement).style.opacity = "0.3"; }}
                       />
+                    ) : file.contentType === "video/mp4" || file.url?.toLowerCase().endsWith(".mp4") ? (
+                      <div className="flex size-full flex-col items-center justify-center gap-1 text-muted-foreground">
+                        <VideoIcon className="size-7 opacity-60" />
+                        <span className="text-[10px]">MP4</span>
+                      </div>
                     ) : (
                       <div className="flex size-full items-center justify-center">
                         <FileIcon className="size-7 text-muted-foreground/40" />
@@ -155,8 +186,10 @@ export function MediaPickerModal({ open, onOpenChange, selectedUrl, onSelect }: 
                     )}
                     {isSelected && (
                       <div className="absolute inset-0 flex items-center justify-center bg-primary/20">
-                        <div className="flex size-6 items-center justify-center rounded-full bg-primary text-primary-foreground shadow">
-                          <CheckIcon className="size-3.5" />
+                        <div className="flex size-6 items-center justify-center rounded-full bg-primary text-primary-foreground shadow text-[10px] font-bold">
+                          {multiple && selectionIndex >= 0
+                            ? selectionIndex + 1
+                            : <CheckIcon className="size-3.5" />}
                         </div>
                       </div>
                     )}
@@ -196,8 +229,15 @@ export function MediaPickerModal({ open, onOpenChange, selectedUrl, onSelect }: 
         )}
 
         <DialogFooter showCloseButton className="shrink-0">
-          <Button disabled={!pendingUrl} onClick={handleConfirm}>
-            Select
+          {multiple && pendingUrls.length > 0 && (
+            <span className="mr-auto text-xs text-muted-foreground self-center">
+              {pendingUrls.length} selected
+            </span>
+          )}
+          <Button disabled={pendingUrls.length === 0} onClick={handleConfirm}>
+            {multiple && pendingUrls.length > 1
+              ? `Add ${pendingUrls.length} images`
+              : "Select"}
           </Button>
         </DialogFooter>
       </DialogContent>

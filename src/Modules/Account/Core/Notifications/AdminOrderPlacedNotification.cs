@@ -7,7 +7,7 @@ public class AdminOrderPlacedNotification
     public string? CustomerId { get; init; }
     public decimal TotalAmount { get; init; }
     public string CurrencyCode { get; init; } = string.Empty;
-    public int ReservationId { get; init; }
+    public int? ReservationId { get; init; }
     public string Status { get; init; } = string.Empty;
     public DateTimeOffset CreatedAt { get; init; }
 }

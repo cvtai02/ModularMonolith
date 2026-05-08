@@ -12,6 +12,7 @@ export type VariantOverride = {
   // Backend variant id (carried through on edit so the update payload can target
   // the existing variant). Undefined for variants generated from new option values.
   id?: string;
+  imageKey: string;
   useProductPrice: boolean;
   price: string;
   compareAtPrice: string;
@@ -83,6 +84,7 @@ export const DEFAULT_FORM_VALUES: FormValues = {
 };
 
 export const DEFAULT_VARIANT_OVERRIDE: VariantOverride = {
+  imageKey: "",
   useProductPrice: true,
   price: "",
   compareAtPrice: "",

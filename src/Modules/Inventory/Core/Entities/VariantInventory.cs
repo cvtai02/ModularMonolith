@@ -5,6 +5,7 @@ public class VariantInventory : AuditableEntity
 {
     [Key]
     public string VariantId  { get; set; } = string.Empty; // treat as SKU
+    public string ProductId { get; set; } = string.Empty;
 
     public bool UseProductInventory { get; private set; } = true;
     public bool TrackInventory { get; private set; }

@@ -124,7 +124,7 @@ export default function ProductsPage() {
   const productCatalogClient = useProductCatalogClient();
 
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("Active");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [pageSize, setPageSize] = useState(20);
   const [page, setPage] = useState(1);
@@ -272,7 +272,7 @@ export default function ProductsPage() {
                   <TableHead>Status</TableHead>
                   <SortHead field="price" label="Price" sort={sort} onSort={handleSort} />
                   <SortHead field="stock" label="Stock" sort={sort} onSort={handleSort} />
-                  <TableHead>Reserved</TableHead>
+                  <TableHead>Sold</TableHead>
                   <TableHead>Variants</TableHead>
                   <TableHead className="w-10" />
                 </TableRow>
@@ -418,7 +418,7 @@ function ProductRow({
           : <span className="italic text-muted-foreground">—</span>}
       </TableCell>
       <TableCell className="text-sm tabular-nums text-muted-foreground">
-        {product.reserved ?? 0}
+        {product.sold ?? 0}
       </TableCell>
       <TableCell className="text-sm text-muted-foreground">
         {variantCount > 0 ? variantCount : <span className="italic opacity-50">—</span>}

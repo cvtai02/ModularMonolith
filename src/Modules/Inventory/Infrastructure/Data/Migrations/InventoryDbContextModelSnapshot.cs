@@ -263,6 +263,11 @@ namespace Inventory.Infrastructure.Data.Migrations
                     b.Property<string>("ModifiedBy")
                         .HasColumnType("text");
 
+                    b.Property<string>("ProductId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
                     b.Property<int>("TenantId")
                         .HasColumnType("integer");
 
@@ -273,6 +278,8 @@ namespace Inventory.Infrastructure.Data.Migrations
                         .HasColumnType("boolean");
 
                     b.HasKey("VariantId");
+
+                    b.HasIndex("ProductId");
 
                     b.HasIndex("TenantId");
 

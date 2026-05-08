@@ -43,7 +43,7 @@ public class OrderProductLookup(ProductCatalogDbContext db, IFileManager fileMan
         var primaryProductMediaKey = variant.Product.Medias
             .OrderBy(x => x.DisplayOrder)
             .Select(x => x.Key)
-            .FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
+            .FirstOrDefault(x => !string.IsNullOrWhiteSpace(x) && IsImage(x));
         var primaryProductMediaUrl = fileManager.BuildPublicUrl(primaryProductMediaKey);
         if (!string.IsNullOrWhiteSpace(primaryProductMediaUrl))
             return primaryProductMediaUrl;
@@ -63,5 +63,11 @@ public class OrderProductLookup(ProductCatalogDbContext db, IFileManager fileMan
         return options.Count == 0
             ? variant.Product.Name
             : string.Join(", ", options);
+    }
+
+    private static bool IsImage(string key)
+    {
+        var extension = Path.GetExtension(key).ToLowerInvariant();
+        return extension is ".jpg" or ".jpeg" or ".png" or ".gif" or ".webp" or ".svg";
     }
 }

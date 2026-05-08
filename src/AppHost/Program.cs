@@ -20,8 +20,11 @@ app.MapGet("/", () => Results.Redirect("/scalar/v1", true));
 
 if(!app.Environment.IsDevelopment()) app.UseHttpsRedirection();
 
-// No need of cors if not using cookies or cookies samesite.
-app.UseCors(policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()) 
+app.UseCors(policy => policy
+    .SetIsOriginAllowed(_ => true)
+    .AllowAnyMethod()
+    .AllowAnyHeader()
+    .AllowCredentials())
 .UseAuthentication()
 .UseAuthorization()
 .UseExceptionHandler();

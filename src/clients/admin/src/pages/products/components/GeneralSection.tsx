@@ -99,7 +99,7 @@ export function GeneralSection({ register, control, errors, categories }: Props)
           </Field>
 
           <Field>
-            <FieldLabel>Product Image</FieldLabel>
+            <FieldLabel>Product Media</FieldLabel>
             <Controller
               control={control}
               name="mediaUrls"

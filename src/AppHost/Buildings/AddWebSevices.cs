@@ -4,6 +4,7 @@ using AppHost.Specifications;
 using Infrastructure;
 using Microsoft.AspNetCore.Authentication.BearerToken;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using SharedKernel.Abstractions.Services;
@@ -68,6 +69,22 @@ public static partial class ServiceCollectionExtensions
             var jwtSettings = SettingsProvider.GetInstance(builder).GetCommonSettings().Jwt;
 
             services.AddAuthentication();
+            services.Configure<BearerTokenOptions>(IdentityConstants.BearerScheme, options =>
+            {
+                options.Events ??= new BearerTokenEvents();
+                options.Events.OnMessageReceived = context =>
+                {
+                    var path = context.Request.Path;
+                    if ((path.StartsWithSegments("/hubs/notifications") ||
+                         path.StartsWithSegments("/hubs/orders")) &&
+                        context.Request.Query.TryGetValue("access_token", out var accessToken))
+                    {
+                        context.Token = accessToken.ToString();
+                    }
+
+                    return Task.CompletedTask;
+                };
+            });
 
             // services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             //     .AddJwtBearer("Bearer", options =>

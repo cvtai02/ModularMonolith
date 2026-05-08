@@ -53,7 +53,6 @@ public class OrderSubmittedHandler(InventoryDbContext db) : IIntegrationEventHan
         reservation.Events.Add(new InventoryReserved
         {
             OrderCode = @event.OrderCode,
-            ReservationId = reservation.Id,
             ExpiresAt = expiresAt,
             Items = @event.Items
                 .Select(x => new InventoryReservationItem

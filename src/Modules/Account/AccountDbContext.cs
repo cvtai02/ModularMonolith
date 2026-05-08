@@ -9,6 +9,7 @@ public class AccountDbContext(DbContextOptions<AccountDbContext> options, ITenan
 {
     public DbSet<AccountProfile> Profiles => Set<AccountProfile>();
     public DbSet<AccountAddress> Addresses => Set<AccountAddress>();
+    public DbSet<Notification> Notifications => Set<Notification>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -24,5 +25,20 @@ public class AccountDbContext(DbContextOptions<AccountDbContext> options, ITenan
             .WithOne(x => x.Profile)
             .HasForeignKey(x => x.AccountProfileId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Notification>(builder =>
+        {
+            builder.Property(x => x.RecipientUserId).HasMaxLength(450);
+            builder.Property(x => x.RecipientRole).HasMaxLength(100);
+            builder.Property(x => x.Type).HasMaxLength(100);
+            builder.Property(x => x.Title).HasMaxLength(200);
+            builder.Property(x => x.Message).HasMaxLength(1000);
+            builder.Property(x => x.EntityType).HasMaxLength(100);
+            builder.Property(x => x.EntityId).HasMaxLength(100);
+            builder.Property(x => x.PayloadJson).HasColumnType("jsonb");
+            builder.Property(x => x.ReadByUserId).HasMaxLength(450);
+            builder.HasIndex(x => new { x.TenantId, x.IsRead, x.Created });
+            builder.HasIndex(x => new { x.TenantId, x.EntityType, x.EntityId });
+        });
     }
 }

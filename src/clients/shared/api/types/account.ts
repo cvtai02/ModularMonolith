@@ -87,3 +87,41 @@ export type AdminUpdateAccountProfileRequest =
 // 200 OK
 export type UpdateAdminAccountProfileResponse =
     JsonResponse<UpdateAdminAccountProfileOperation>;
+
+export type ListNotificationsQuery = {
+    pageNumber?: number | null;
+    pageSize?: number | null;
+    isRead?: boolean | null;
+    type?: string | null;
+    entityType?: string | null;
+    entityId?: string | null;
+    search?: string | null;
+};
+
+export type NotificationResponse = {
+    id: number;
+    recipientUserId: string | null;
+    recipientRole: string | null;
+    type: string;
+    title: string;
+    message: string | null;
+    entityType: string | null;
+    entityId: string | null;
+    payloadJson: string;
+    isRead: boolean;
+    readAt: string | null;
+    readByUserId: string | null;
+    created: string;
+};
+
+export type ListNotificationsResponse = {
+    items: NotificationResponse[];
+    pageNumber: number;
+    totalPages: number;
+    totalCount: number;
+    hasPreviousPage: boolean;
+    hasNextPage: boolean;
+};
+
+export type MarkNotificationReadResponse = NotificationResponse;
+export type MarkAllNotificationsReadResponse = ListNotificationsResponse;

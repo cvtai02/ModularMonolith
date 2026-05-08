@@ -3,11 +3,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { useProductCatalogClient } from "@/components/containers/api-client-provider";
+import { useInventoryClient, useProductCatalogClient } from "@/components/containers/api-client-provider";
 import { ROUTES } from "@/configs/routes";
 
 import type { FormValues, OptionEntry, Variant, VariantOverride } from "./components/types";
-import { buildVariantsPayload, uid } from "./components/helpers";
+import { buildMediaPayload, buildVariantsPayload, uid } from "./components/helpers";
+import { urlToMediaKey } from "@/lib/media";
 import { ProductFormLayout } from "./components/ProductFormLayout";
 
 export default function EditProductPage() {
@@ -16,6 +17,7 @@ export default function EditProductPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const productCatalogClient = useProductCatalogClient();
+  const inventoryClient = useInventoryClient();
 
   const { data: product, isLoading: loadingProduct } = useQuery({
     queryKey: ["product", productId],
@@ -36,7 +38,7 @@ export default function EditProductPage() {
   const defaultValues = useMemo((): Partial<FormValues> | undefined => {
     if (!product) return undefined;
     const mediaUrls = product.medias?.length
-      ? product.medias.map((m) => m.url)
+      ? product.medias.map((m) => m.url).filter((u): u is string => !!u)
       : product.imageUrl ? [product.imageUrl] : [];
     return {
       name: product.name ?? "",
@@ -52,7 +54,7 @@ export default function EditProductPage() {
       trackInventory: product.trackInventory ?? true,
       stock: product.stock ? String(product.stock) : "",
       allowBackorder: product.allowBackorder ?? false,
-      lowStockThreshold: "",
+      lowStockThreshold: product.lowStockThreshold ? String(product.lowStockThreshold) : "",
       isPhysical: product.physicalProduct ?? true,
       weight: product.weight ? String(product.weight) : "",
       width: product.width ? String(product.width) : "",
@@ -91,18 +93,19 @@ export default function EditProductPage() {
         .join("|");
       overrides[localId] = {
         id: variant.id ?? undefined,
+        imageKey: urlToMediaKey(variant.imageUrl ?? ""),
         useProductPrice: variant.useProductPricing ?? true,
         price: !variant.useProductPricing && variant.price ? String(variant.price) : "",
         compareAtPrice: !variant.useProductPricing && variant.compareAtPrice ? String(variant.compareAtPrice) : "",
         costPrice: !variant.useProductPricing && variant.costPrice ? String(variant.costPrice) : "",
         chargeTax: !variant.useProductPricing ? (variant.chargeTax ?? false) : false,
         useProductShipping: variant.useProductShipping ?? true,
-        physicalProduct: !variant.useProductShipping ? variant.physicalProduct : false,
+        physicalProduct: !variant.useProductShipping ? (variant.physicalProduct ?? true) : true,
         weight: !variant.useProductShipping && variant.weight ? String(variant.weight) : "",
         width: !variant.useProductShipping && variant.width ? String(variant.width) : "",
         height: !variant.useProductShipping && variant.height ? String(variant.height) : "",
         length: !variant.useProductShipping && variant.length ? String(variant.length) : "",
-        useProductInventory: true,
+        useProductInventory: variant.useProductInventory ?? true,
         stock: variant.stock ? String(variant.stock) : "0",
         trackInventory: variant.trackInventory ?? true,
         allowBackorder: variant.allowBackorder ?? false,
@@ -117,12 +120,11 @@ export default function EditProductPage() {
     const hasVariants = variants.length > 0;
     const activeOptions = options.filter((o) => o.name.trim() && o.values.length > 0);
 
-    await updateProduct({
+    const updated = await updateProduct({
       name: values.name,
       categoryId: values.categoryId,
       description: values.description || undefined,
-      imageUrl: values.mediaUrls[0] || undefined,
-      medias: values.mediaUrls.map((url, i) => ({ url, type: "image", displayOrder: i })),
+      ...buildMediaPayload(values.mediaUrls),
       status: finalStatus as never,
       price: values.price ? parseFloat(values.price) : undefined,
       compareAtPrice: values.compareAtPrice ? parseFloat(values.compareAtPrice) : undefined,
@@ -131,7 +133,6 @@ export default function EditProductPage() {
       stock: !hasVariants && values.stock ? parseInt(values.stock) : undefined,
       trackInventory: values.trackInventory,
       allowBackorder: values.allowBackorder,
-      lowStockThreshold: values.lowStockThreshold ? parseInt(values.lowStockThreshold) : undefined,
       physicalProduct: values.isPhysical,
       weight: values.weight ? parseFloat(values.weight) : undefined,
       width: values.width ? parseFloat(values.width) : undefined,
@@ -146,6 +147,35 @@ export default function EditProductPage() {
       // derived from newly-added option values are skipped — backend creates them.
       variants: buildVariantsPayload(variants, hasVariants, { existingOnly: true }),
     });
+
+    // Second call: Inventory — uses IDs returned by the catalog.
+    try {
+      await inventoryClient.initializeProductInventory(updated.id!, {
+        trackInventory: values.trackInventory,
+        allowBackorder: values.allowBackorder,
+        lowStockThreshold: values.lowStockThreshold ? parseInt(values.lowStockThreshold) : 0,
+        variants: (updated.variants ?? []).map((rv) => {
+          const key = (rv.optionValues ?? [])
+            .map((ov) => `${ov.optionName}:${ov.value}`)
+            .join("|");
+          const draft = variants.find((v) => v.localId === key);
+          return {
+            variantId: rv.id!,
+            useProductInventory: draft?.useProductInventory ?? true,
+            trackInventory: draft?.trackInventory ?? true,
+            allowBackorder: draft?.allowBackorder ?? false,
+            lowStockThreshold: draft?.lowStockThreshold ? parseInt(draft.lowStockThreshold) : 0,
+            quantity: parseInt(draft?.stock ?? "0") || 0,
+          };
+        }),
+      });
+    } catch {
+      // Catalog succeeded; inventory setup failed. Navigate so the admin can retry.
+      toast.warning("Product saved, but inventory setup failed. Please retry by re-saving.");
+      await queryClient.invalidateQueries({ queryKey: ["products"] });
+      navigate(ROUTES.productDetail(productId));
+      return;
+    }
 
     toast.success("Product updated!");
     await queryClient.invalidateQueries({ queryKey: ["products"] });

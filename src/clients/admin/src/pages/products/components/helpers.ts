@@ -1,5 +1,30 @@
 import type { OptionEntry, Variant, VariantOverride } from "./types";
 
+// ─── Media helpers ────────────────────────────────────────────────────────────
+
+export function isMp4(url: string): boolean {
+  return url.toLowerCase().endsWith(".mp4");
+}
+
+/**
+ * Builds the `imageUrl` + `medias` payload from a flat list of media URLs.
+ * - mp4 is placed first with type "video" and displayOrder 0.
+ * - imageUrl is the first non-mp4 URL (used as the product thumbnail).
+ */
+export function buildMediaPayload(mediaUrls: string[]) {
+  const mp4s = mediaUrls.filter(isMp4);
+  const images = mediaUrls.filter((u) => !isMp4(u));
+  const ordered = [...mp4s, ...images];
+  return {
+    imageUrl: images[0] || undefined,
+    medias: ordered.map((url, i) => ({
+      url,
+      type: isMp4(url) ? "video" : "image",
+      displayOrder: i,
+    })),
+  };
+}
+
 export function uid() {
   return Math.random().toString(36).slice(2, 9);
 }
@@ -176,7 +201,7 @@ export function buildVariantsPayload(
     compareAtPrice: !v.useProductPrice && v.compareAtPrice ? parseFloat(v.compareAtPrice) : null,
     costPrice: !v.useProductPrice && v.costPrice ? parseFloat(v.costPrice) : null,
     chargeTax: !v.useProductPrice ? v.chargeTax : null,
-    imageKey: null,
+    imageKey: v.imageKey || null,
     useProductShipping: v.useProductShipping,
     physicalProduct: !v.useProductShipping ? v.physicalProduct : null,
     weight: !v.useProductShipping && v.weight ? parseFloat(v.weight) : null,
@@ -186,7 +211,6 @@ export function buildVariantsPayload(
     useProductInventory: v.useProductInventory,
     trackInventory: !v.useProductInventory ? v.trackInventory : null,
     allowBackorder: !v.useProductInventory ? v.allowBackorder : null,
-    lowStockThreshold: !v.useProductInventory && v.lowStockThreshold ? parseInt(v.lowStockThreshold) : null,
     quantity: parseInt(v.stock) || 0,
     optionValues: v.optionValues.map((ov) => ({
       optionId: null,

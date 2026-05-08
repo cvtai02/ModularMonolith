@@ -8,7 +8,7 @@ public class AdminOrderPlaced : IntegrationEvent
     public string? CustomerId { get; init; }
     public decimal TotalAmount { get; init; }
     public string CurrencyCode { get; init; } = string.Empty;
-    public int ReservationId { get; set; }
+    public int? ReservationId { get; set; }
     public string Status { get; init; } = string.Empty;
     public DateTimeOffset CreatedAt { get; init; }
 }

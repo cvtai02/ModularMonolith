@@ -14,6 +14,8 @@ public class ProductResponse
     public string ImageUrl { get; set; } = string.Empty;
     public ProductStatus Status { get; set; }
     public decimal Price { get; set; }
+    public decimal LowestPrice { get; set; }
+    public decimal HighestPrice { get; set; }
     public Currency Currency { get; set; }
     public decimal CompareAtPrice { get; set; }
     public decimal CostPrice { get; set; }

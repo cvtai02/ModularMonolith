@@ -13,6 +13,8 @@ public class InitializeProductInventory(InventoryDbContext db)
         InitializeProductInventoryRequest request,
         CancellationToken ct)
     {
+        request ??= new InitializeProductInventoryRequest();
+        productId = string.IsNullOrWhiteSpace(productId) ? string.Empty : productId.Trim();
         Validate(request);
 
         await using var transaction = await db.Database.BeginTransactionAsync(ct);
@@ -38,10 +40,17 @@ public class InitializeProductInventory(InventoryDbContext db)
             {
                 variantInventory = new VariantInventory
                 {
+                    ProductId = productId,
                     VariantId = variantRequest.VariantId,
                     Tracking = new VariantTracking { VariantId = variantRequest.VariantId }
                 };
                 db.VariantInventories.Add(variantInventory);
+            }
+            else
+            {
+                variantInventory.ProductId = productId;
+                if (variantInventory.Tracking is null)
+                    variantInventory.Tracking = new VariantTracking { VariantId = variantRequest.VariantId };
             }
 
             if (variantRequest.UseProductInventory)
@@ -99,7 +108,7 @@ public class InitializeProductInventory(InventoryDbContext db)
         var variants = await db.VariantInventories
             .AsNoTracking()
             .Include(x => x.Tracking)
-            .Where(x => x.Tracking != null)
+            .Where(x => x.ProductId == productId && x.Tracking != null)
             .OrderBy(x => x.VariantId)
             .Select(x => new VariantInventoryResponse
             {

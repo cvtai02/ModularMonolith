@@ -11,6 +11,10 @@ import type {
   ListAccountAddressesResponse,
   ListAdminAccountProfilesQuery,
   ListAdminAccountProfilesResponse,
+  ListNotificationsQuery,
+  ListNotificationsResponse,
+  MarkAllNotificationsReadResponse,
+  MarkNotificationReadResponse,
   SaveAccountAddressRequest,
   UpdateAccountAddressRequest,
   UpdateAccountAddressResponse,
@@ -116,6 +120,30 @@ export class AccountClient implements IAccountClient {
     return requireData(data, "Update admin account profile response was empty.");
   }
 
+  async listAdminNotifications(query?: ListNotificationsQuery): Promise<ListNotificationsResponse> {
+    return this.requestJson<ListNotificationsResponse>(
+      `/api/Account/admin/notifications${this.toQueryString(query)}`,
+      undefined,
+      "Admin notifications response was empty.",
+    );
+  }
+
+  async markAdminNotificationRead(id: number): Promise<MarkNotificationReadResponse> {
+    return this.requestJson<MarkNotificationReadResponse>(
+      `/api/Account/admin/notifications/${id}/read`,
+      { method: "PATCH" },
+      "Mark notification read response was empty.",
+    );
+  }
+
+  async markAllAdminNotificationsRead(): Promise<MarkAllNotificationsReadResponse> {
+    return this.requestJson<MarkAllNotificationsReadResponse>(
+      "/api/Account/admin/notifications/read",
+      { method: "PATCH" },
+      "Mark all notifications read response was empty.",
+    );
+  }
+
   private async requestJson<T>(path: string, init: RequestInit | undefined, emptyMessage: string): Promise<T> {
     const response = await this.fetch(`${this.apiBaseUrl}${path}`, init);
     if (!response.ok) {
@@ -128,6 +156,24 @@ export class AccountClient implements IAccountClient {
 
     const data = await response.json() as T | undefined;
     return requireData(data, emptyMessage);
+  }
+
+  private toQueryString(query?: Record<string, unknown>): string {
+    if (!query) {
+      return "";
+    }
+
+    const params = new URLSearchParams();
+    for (const [key, value] of Object.entries(query)) {
+      if (value === undefined || value === null || value === "") {
+        continue;
+      }
+
+      params.set(key, String(value));
+    }
+
+    const queryString = params.toString();
+    return queryString ? `?${queryString}` : "";
   }
 
   private async readError(response: Response): Promise<unknown> {

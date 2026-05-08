@@ -22,6 +22,9 @@ Client contract: [AccountClient](../../../clients/shared/api/clients/account.ts)
 - [Update](AccountProfileController.cs#L75)
 
 ### Admin Notifications
+- `GET /api/Account/admin/notifications` - auth: `TenantAdminUp`. DTOs: [ListNotificationsRequest](../DTOs/Notifications/ListNotificationsRequest.cs), [NotificationResponse](../DTOs/Notifications/NotificationResponse.cs).
+- `PATCH /api/Account/admin/notifications/{id}/read` - auth: `TenantAdminUp`. Marks one notification read.
+- `PATCH /api/Account/admin/notifications/read` - auth: `TenantAdminUp`. Marks recent unread notifications read.
 - Hub: `/hubs/notifications`
 - Auth: `TenantAdminUp` required
-- Server event emitted when inventory is reserved and an order becomes placed: `NotificationReceived`
+- Server event emitted when an order is placed: `NotificationReceived`

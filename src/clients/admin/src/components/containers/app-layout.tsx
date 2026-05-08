@@ -186,7 +186,7 @@ function NavItemRow({ item }: { item: NavItem }) {
 export default function AppLayout() {
   const navigate = useNavigate();
   const { logout, email } = useIdentityStore();
-  const { notifications, clearAll } = useNotificationHub();
+  const { notifications, unreadCount, markAllRead, markOneRead, clearAll } = useNotificationHub();
 
   const handleSignOut = () => {
     logout();
@@ -253,12 +253,12 @@ export default function AppLayout() {
           </div>
           <div className="flex items-center gap-2">
             <ModeToggle />
-            <DropdownMenu>
+            <DropdownMenu onOpenChange={(open) => { if (open) markAllRead(); }}>
               <DropdownMenuTrigger
                 render={
                   <Button variant="ghost" size="icon" className="size-8 relative">
                     <BellIcon className="size-4" />
-                    {notifications.length > 0 && (
+                    {unreadCount > 0 && (
                       <span className="absolute top-1 right-1 size-2 rounded-full bg-destructive" />
                     )}
                   </Button>
@@ -282,11 +282,12 @@ export default function AppLayout() {
                   ) : (
                     notifications.map((n, i) => (
                       <div
-                        key={i}
-                        className="flex items-start gap-3 px-3 py-2.5 hover:bg-muted/50 cursor-pointer border-b last:border-0"
+                        key={n.id}
+                        className={`flex items-start gap-3 px-3 py-2.5 cursor-pointer border-b last:border-0 transition-colors ${n.isRead ? "hover:bg-muted/50" : "bg-primary/5 hover:bg-primary/10"}`}
                         onClick={() => {
-                          if (n.type === "OrderPlaced") {
-                            navigate(`/orders/${n.orderCode}`);
+                          markOneRead(n.id);
+                          if (n.entityType === "Order" || n.type === "OrderPlaced") {
+                            navigate(ROUTES.orderDetail(n.entityId!));
                           }
                         }}
                       >
@@ -294,15 +295,15 @@ export default function AppLayout() {
                           <ShoppingCartIcon className="size-3.5 text-primary" />
                         </div>
                         <div className="flex flex-col gap-0.5 min-w-0">
-                          <span className="text-xs font-medium leading-tight">New order {n.orderCode}</span>
-                          <span className="text-[11px] text-muted-foreground truncate">
-                            {new Intl.NumberFormat("vi-VN").format(n.totalAmount)} {n.currencyCode}
-                          </span>
+                          <span className="text-xs font-medium leading-tight">{n.title}</span>
+                          {n.message && (
+                            <span className="text-[11px] text-muted-foreground truncate">{n.message}</span>
+                          )}
                           <span className="text-[10px] text-muted-foreground">
-                            {new Date(n.createdAt).toLocaleString("vi-VN")}
+                            {new Date(n.created).toLocaleString("vi-VN")}
                           </span>
                         </div>
-                        {notifications.length > 0 && i === 0 && (
+                        {!n.isRead && (
                           <Badge variant="secondary" className="ml-auto shrink-0 text-[10px]">New</Badge>
                         )}
                       </div>

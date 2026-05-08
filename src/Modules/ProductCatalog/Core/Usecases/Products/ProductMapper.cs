@@ -16,6 +16,15 @@ internal static class ProductMapper
             .ToList();
         var primaryVariant = product.Variants.OrderBy(x => x.Id).FirstOrDefault();
         var primaryVariantShipping = primaryVariant?.ShippingInfo;
+        var displayPrice = primaryVariant?.Price ?? product.Price;
+        var hasMetricPriceRange = product.Metric is not null
+            && (product.Metric.LowestPrice > 0 || product.Metric.HighestPrice > 0);
+        var lowestPrice = hasMetricPriceRange
+            ? product.Metric!.LowestPrice
+            : product.Variants.Select(x => x.Price).DefaultIfEmpty(product.Price).Min();
+        var highestPrice = hasMetricPriceRange
+            ? product.Metric!.HighestPrice
+            : product.Variants.Select(x => x.Price).DefaultIfEmpty(product.Price).Max();
 
         return new ProductResponse
         {
@@ -29,15 +38,17 @@ internal static class ProductMapper
                 ? product.Medias.OrderBy(x => x.DisplayOrder).Select(x => fileManager.BuildPublicUrl(x.Key)).FirstOrDefault() ?? string.Empty
                 : product.ImageUrl,
             Status = product.Status,
-            Price = primaryVariant?.Price ?? product.Price,
+            Price = displayPrice,
+            LowestPrice = lowestPrice,
+            HighestPrice = highestPrice,
             Currency = product.Currency,
             CompareAtPrice = primaryVariant?.CompareAtPrice ?? product.CompareAtPrice,
             CostPrice = primaryVariant?.CostPrice ?? product.CostPrice,
             ChargeTax = primaryVariant?.ChargeTax ?? product.ChargeTax,
             Stock = product.Metric?.Stock ?? 0,
-            TrackInventory = primaryVariant?.TrackInventory ?? product.TrackInventory,
+            TrackInventory = product.TrackInventory,
             LowStockThreshold = 0,
-            AllowBackorder = primaryVariant?.AllowBackorder ?? product.AllowBackorder,
+            AllowBackorder = product.AllowBackorder,
             Sold = product.Metric?.Sold ?? 0,
             Reserved = 0,
             PhysicalProduct = product.ShippingInfo?.Physical ?? primaryVariantShipping?.Physical ?? false,

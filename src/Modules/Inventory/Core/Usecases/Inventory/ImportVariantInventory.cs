@@ -35,6 +35,7 @@ public class ImportVariantInventory(InventoryDbContext db)
             {
                 inventory = new VariantInventory
                 {
+                    ProductId = string.Empty,
                     VariantId = row.VariantId,
                     Tracking = new VariantTracking { VariantId = row.VariantId }
                 };

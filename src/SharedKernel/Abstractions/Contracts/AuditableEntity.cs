@@ -13,5 +13,5 @@ public abstract class AuditableEntity : Entity
     public string? ModifiedBy { get; set; }
     public bool IsDeleted { get; set; } = false;
     [NotMapped]
-    public bool IsSoftDeleted = true; 
+    public bool IsSoftDeleted = false;
 }

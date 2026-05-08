@@ -9,6 +9,10 @@ import type {
   ListAccountAddressesResponse,
   ListAdminAccountProfilesQuery,
   ListAdminAccountProfilesResponse,
+  ListNotificationsQuery,
+  ListNotificationsResponse,
+  MarkAllNotificationsReadResponse,
+  MarkNotificationReadResponse,
   SaveAccountAddressRequest,
   UpdateAccountAddressRequest,
   UpdateAccountAddressResponse,
@@ -58,4 +62,14 @@ export interface IAccountClient {
   // Request: src/Modules/Account/DTOs/AccountProfiles/AdminUpdateAccountProfileRequest.cs
   // Response: src/Modules/Account/DTOs/AccountProfiles/AccountProfileResponse.cs
   updateAdminProfile(id: number, input: AdminUpdateAccountProfileRequest): Promise<UpdateAdminAccountProfileResponse>;
+
+  // Query: src/Modules/Account/DTOs/Notifications/ListNotificationsRequest.cs
+  // Response: src/Modules/Account/DTOs/Notifications/NotificationResponse.cs paginated wrapper.
+  listAdminNotifications(query?: ListNotificationsQuery): Promise<ListNotificationsResponse>;
+
+  // Response: src/Modules/Account/DTOs/Notifications/NotificationResponse.cs
+  markAdminNotificationRead(id: number): Promise<MarkNotificationReadResponse>;
+
+  // Response: src/Modules/Account/DTOs/Notifications/NotificationResponse.cs paginated wrapper.
+  markAllAdminNotificationsRead(): Promise<MarkAllNotificationsReadResponse>;
 }

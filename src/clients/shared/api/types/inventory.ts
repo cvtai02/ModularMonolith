@@ -1,19 +1,41 @@
-import type { paths } from "../lib/openapi-types";
-import type { JsonRequestBody, JsonResponse, PathParams } from "./path-type-helpers";
+export type InitializeProductInventoryParams = {
+    productId: string;
+};
 
-// -- API Types --
-type InventoryPaths = paths; // do not export this
+export type InitializeProductInventoryRequest = {
+    trackInventory?: boolean;
+    allowBackorder?: boolean;
+    lowStockThreshold?: number;
+    variants?: VariantInventoryConfig[];
+};
 
-type InitializeProductInventoryOperation =
-    InventoryPaths["/api/Inventory/products/{productId}/initialize"]["post"];
+export type VariantInventoryConfig = {
+    variantId: string;
+    useProductInventory?: boolean;
+    trackInventory?: boolean;
+    allowBackorder?: boolean;
+    lowStockThreshold?: number;
+    quantity?: number;
+};
 
-export type InitializeProductInventoryParams =
-    PathParams<InitializeProductInventoryOperation>;
-export type InitializeProductInventoryRequest =
-    JsonRequestBody<InitializeProductInventoryOperation>;
-// 200 OK
-export type InitializeProductInventoryResponse =
-    JsonResponse<InitializeProductInventoryOperation>;
+export type InitializeProductInventoryResponse = {
+    productId: string;
+    trackInventory: boolean;
+    allowBackorder: boolean;
+    lowStockThreshold: number;
+    variants: VariantInventoryResponse[];
+};
+
+export type VariantInventoryResponse = {
+    variantId: string;
+    useProductInventory: boolean;
+    trackInventory: boolean;
+    allowBackorder: boolean;
+    lowStockThreshold: number;
+    quantity: number;
+    reserved: number;
+    available: number;
+};
 
 export type ImportVariantInventoryRequest = {
     referenceId?: string | null;

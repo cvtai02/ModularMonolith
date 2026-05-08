@@ -11,13 +11,14 @@ import { applyValidationErrors } from "@/lib/form-error";
 
 import { DEFAULT_FORM_VALUES, DEFAULT_VARIANT_OVERRIDE } from "./types";
 import type { FormValues, OptionEntry, Variant, VariantOverride } from "./types";
-import { deriveVariants, uid, validateOptions, validateVariantNumerics } from "./helpers";
+import { deriveVariants, isMp4, uid, validateOptions, validateVariantNumerics } from "./helpers";
 import { GeneralSection } from "./GeneralSection";
 import { OptionsSection } from "./OptionsSection";
 import { VariantsSection } from "./VariantsSection";
 import { InventoryCard } from "./InventoryCard";
 import { PricingCard } from "./PricingCard";
 import { ShippingCard } from "./ShippingCard";
+import { VariantImageCard } from "./VariantImageCard";
 
 type Props = {
   title: string;
@@ -60,7 +61,7 @@ export function ProductFormLayout({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const { register, control, handleSubmit, watch, getValues, setError, formState: { errors, isValid } } = useForm<FormValues>({
+  const { register, control, handleSubmit, watch, getValues, setError, formState: { errors } } = useForm<FormValues>({
     defaultValues: { ...DEFAULT_FORM_VALUES, ...defaultValues },
     mode: "onChange",
   });
@@ -177,6 +178,22 @@ export function ProductFormLayout({
     }));
   }, []);
 
+  // When admin sets an image on one variant, propagate to every variant that shares
+  // the same first-option value (the backend groups images by that key).
+  const updateVariantImage = useCallback((localId: string, imageKey: string) => {
+    const target = variants.find((v) => v.localId === localId);
+    const firstOptValue = target?.optionValues[0]?.value;
+    setVariantOverrides((p) => {
+      const next = { ...p };
+      for (const v of variants) {
+        if (firstOptValue === undefined || v.optionValues[0]?.value === firstOptValue) {
+          next[v.localId] = { ...DEFAULT_VARIANT_OVERRIDE, ...(p[v.localId] ?? {}), imageKey };
+        }
+      }
+      return next;
+    });
+  }, [variants]);
+
   const bulkUpdateVariants = useCallback((ids: Set<string>, update: Partial<VariantOverride>) => {
     setVariantOverrides((p) => {
       const next = { ...p };
@@ -200,6 +217,13 @@ export function ProductFormLayout({
 
   // ── Submit ──
   const doSubmit = async (values: FormValues, statusOverride?: string) => {
+    // Validate mp4 count before anything else.
+    const mp4Count = values.mediaUrls.filter(isMp4).length;
+    if (mp4Count > 1) {
+      toast.error("Only one video (.mp4) is allowed per product.");
+      return;
+    }
+
     // Auto-commit any pending value the user typed but didn't blur yet.
     const flushed: OptionEntry[] = options.map((opt) => {
       const trimmed = opt.pending.trim();
@@ -262,10 +286,10 @@ export function ProductFormLayout({
           <Button variant="ghost" size="sm" type="button" onClick={onDiscard}>
             Discard
           </Button>
-          <Button variant="outline" size="sm" type="button" disabled={isPending || !isValid} onClick={handleSaveDraft}>
+          <Button variant="outline" size="sm" type="button" disabled={isPending} onClick={handleSaveDraft}>
             Save draft
           </Button>
-          <Button size="sm" type="button" disabled={isPending || !isValid} onClick={handleSave}>
+          <Button size="sm" type="button" disabled={isPending} onClick={handleSave}>
             {isPending ? "Saving…" : "Save"}
           </Button>
         </div>
@@ -309,6 +333,12 @@ export function ProductFormLayout({
         </div>
 
         <div className="flex flex-col gap-4 lg:sticky lg:top-14 lg:self-start lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto *:shrink-0">
+          {selectedVariant && (
+            <VariantImageCard
+              selectedVariant={selectedVariant}
+              onChangeImage={(imageKey) => updateVariantImage(selectedVariant.localId, imageKey)}
+            />
+          )}
           <PricingCard
             register={register}
             control={control}

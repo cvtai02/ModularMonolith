@@ -388,6 +388,12 @@ namespace ProductCatalog.Infrastructure.Data.Migrations
                     b.Property<string>("ProductId")
                         .HasColumnType("text");
 
+                    b.Property<decimal>("HighestPrice")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("LowestPrice")
+                        .HasColumnType("numeric");
+
                     b.Property<float>("RatingAvg")
                         .HasColumnType("real");
 

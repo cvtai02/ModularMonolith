@@ -17,4 +17,15 @@ public class InventoryDbContext : TenancyDbContext
     public DbSet<Reservation> Reservations => Set<Reservation>();
     public DbSet<ReservationLine> ReservationLines => Set<ReservationLine>();
     public DbSet<Transaction> Transactions => Set<Transaction>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<VariantInventory>(builder =>
+        {
+            builder.Property(x => x.ProductId).HasMaxLength(64);
+            builder.HasIndex(x => x.ProductId);
+        });
+    }
 }

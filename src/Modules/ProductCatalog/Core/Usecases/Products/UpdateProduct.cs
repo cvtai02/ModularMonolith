@@ -52,8 +52,9 @@ public class UpdateProduct(ProductCatalogDbContext db, IFileManager fileManager)
         foreach (var variant in product.Variants.Where(x => x.UseProductPricing))
             variant.ApplyProductPricing(product);
 
-        if (product.Metric is not null)
-            product.Metric.Stock = product.Variants.Sum(x => x.Metric?.Stock ?? 0);
+        var productMetric = EnsureProductMetric(product);
+        productMetric.Stock = product.Variants.Sum(x => x.Metric?.Stock ?? 0);
+        ApplyPriceRange(product);
 
         await db.SaveChangesAsync(ct);
 
@@ -70,6 +71,27 @@ public class UpdateProduct(ProductCatalogDbContext db, IFileManager fileManager)
             .FirstAsync(x => x.Id == id, ct);
 
         return ProductMapper.ToResponse(updated, fileManager);
+    }
+
+    private ProductMetric EnsureProductMetric(Product product)
+    {
+        if (product.Metric is null)
+        {
+            product.Metric = new ProductMetric { ProductId = product.Id };
+            db.ProductMetrics.Add(product.Metric);
+        }
+
+        return product.Metric;
+    }
+
+    private static void ApplyPriceRange(Product product)
+    {
+        var prices = product.Variants.Select(x => x.Price)
+            .DefaultIfEmpty(product.Price)
+            .ToList();
+
+        product.Metric.LowestPrice = prices.Min();
+        product.Metric.HighestPrice = prices.Max();
     }
 
     private async Task ValidateRequest(UpdateProductRequest request, string productId, Product product, string slug, CancellationToken ct)
@@ -89,6 +111,8 @@ public class UpdateProduct(ProductCatalogDbContext db, IFileManager fileManager)
 
         if (request.Variants.Count > 0)
             ValidateVariants(request, product, errors);
+
+        ValidateMedias(request, errors);
 
         if (errors.Count > 0)
             throw new ValidationException("Validation failed", errors);
@@ -182,7 +206,8 @@ public class UpdateProduct(ProductCatalogDbContext db, IFileManager fileManager)
         foreach (var media in medias)
             media.ProductId = product.Id;
         db.ProductMedias.AddRange(medias);
-        product.ImageUrl = medias.OrderBy(x => x.DisplayOrder).Select(x => fileManager.BuildPublicUrl(x.Key)).FirstOrDefault()
+        var productImageKey = ResolveProductImageKey(medias, request.ImageUrl);
+        product.ImageUrl = productImageKey is null ? null : fileManager.BuildPublicUrl(productImageKey)
             ?? request.ImageUrl.Trim();
     }
 
@@ -213,6 +238,7 @@ public class UpdateProduct(ProductCatalogDbContext db, IFileManager fileManager)
     private static void ApplyVariantUpdates(Product product, UpdateProductRequest request)
     {
         var existingById = product.Variants.ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase);
+        var imageKeyByFirstOptionValue = BuildImageKeyByFirstOptionValue(product, request, existingById);
 
         foreach (var variantRequest in request.Variants)
         {
@@ -220,10 +246,16 @@ public class UpdateProduct(ProductCatalogDbContext db, IFileManager fileManager)
             if (variantId is null || !existingById.TryGetValue(variantId, out var variant))
                 continue;
 
-            if (variantRequest.ImageKey is not null)
+            if (TryGetSharedImageKey(variant, product, imageKeyByFirstOptionValue, out var sharedImageKey))
+            {
+                variant.ImageKey = sharedImageKey;
+            }
+            else if (variantRequest.ImageKey is not null)
+            {
                 variant.ImageKey = string.IsNullOrWhiteSpace(variantRequest.ImageKey)
                     ? null
                     : NormalizeMediaKey(variantRequest.ImageKey);
+            }
 
             if (variantRequest.UseProductPricing)
             {
@@ -266,22 +298,86 @@ public class UpdateProduct(ProductCatalogDbContext db, IFileManager fileManager)
         }
     }
 
+    private static Dictionary<string, string?> BuildImageKeyByFirstOptionValue(
+        Product product,
+        UpdateProductRequest request,
+        IReadOnlyDictionary<string, Variant> existingById)
+    {
+        var firstOptionName = GetFirstOptionName(product);
+        if (firstOptionName is null)
+            return [];
+
+        var explicitImageKeyByValue = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
+        foreach (var variantRequest in request.Variants)
+        {
+            var variantId = NormalizeId(variantRequest.Id);
+            if (variantId is null || variantRequest.ImageKey is null || !existingById.TryGetValue(variantId, out var variant))
+                continue;
+
+            var firstOptionValue = GetOptionValue(variant, firstOptionName);
+            if (firstOptionValue is null || explicitImageKeyByValue.ContainsKey(firstOptionValue))
+                continue;
+
+            explicitImageKeyByValue[firstOptionValue] = string.IsNullOrWhiteSpace(variantRequest.ImageKey)
+                ? null
+                : NormalizeMediaKey(variantRequest.ImageKey);
+        }
+
+        var imageKeyByValue = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
+        foreach (var group in product.Variants
+                     .Select(x => new { Variant = x, FirstOptionValue = GetOptionValue(x, firstOptionName) })
+                     .Where(x => x.FirstOptionValue is not null)
+                     .GroupBy(x => x.FirstOptionValue!, StringComparer.OrdinalIgnoreCase))
+        {
+            imageKeyByValue[group.Key] = explicitImageKeyByValue.TryGetValue(group.Key, out var explicitImageKey)
+                ? explicitImageKey
+                : group.Select(x => x.Variant.ImageKey).FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
+        }
+
+        return imageKeyByValue;
+    }
+
+    private static bool TryGetSharedImageKey(
+        Variant variant,
+        Product product,
+        IReadOnlyDictionary<string, string?> imageKeyByFirstOptionValue,
+        out string? imageKey)
+    {
+        imageKey = null;
+        var firstOptionName = GetFirstOptionName(product);
+        var firstOptionValue = firstOptionName is null ? null : GetOptionValue(variant, firstOptionName);
+        return firstOptionValue is not null
+            && imageKeyByFirstOptionValue.TryGetValue(firstOptionValue, out imageKey);
+    }
+
+    private static string? GetFirstOptionName(Product product)
+        => product.Options
+            .OrderBy(x => x.DisplayOrder)
+            .ThenBy(x => x.Name, StringComparer.OrdinalIgnoreCase)
+            .Select(x => x.Name.Trim())
+            .FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
+
+    private static string? GetOptionValue(Variant variant, string optionName)
+        => variant.OptionValues
+            .FirstOrDefault(x => string.Equals(x.OptionName.Trim(), optionName, StringComparison.OrdinalIgnoreCase))
+            ?.Value
+            .Trim();
+
     private static List<ProductMedia> BuildMedias(UpdateProductRequest request)
     {
         var mediaKeys = request.MediaKeys
             .Where(x => !string.IsNullOrWhiteSpace(x))
-            .Select((key, index) => new ProductMedia { Key = NormalizeMediaKey(key), DisplayOrder = index });
+            .Select((key, index) => new MediaInput(NormalizeMediaKey(key), index));
 
         var medias = mediaKeys.Concat(request.Medias
             .Where(x => !string.IsNullOrWhiteSpace(x.Url))
-            .Select(x => new ProductMedia { Key = NormalizeMediaKey(x.Url), DisplayOrder = x.DisplayOrder }))
-            .OrderBy(x => x.DisplayOrder)
+            .Select(x => new MediaInput(NormalizeMediaKey(x.Url), x.DisplayOrder)))
             .ToList();
 
         if (medias.Count == 0 && !string.IsNullOrWhiteSpace(request.ImageUrl))
-            medias.Add(new ProductMedia { Key = NormalizeMediaKey(request.ImageUrl), DisplayOrder = 0 });
+            medias.Add(new MediaInput(NormalizeMediaKey(request.ImageUrl), 0));
 
-        return medias;
+        return OrderMedias(medias);
     }
 
     private static string NormalizeMediaKey(string value)
@@ -291,6 +387,60 @@ public class UpdateProduct(ProductCatalogDbContext db, IFileManager fileManager)
             return uri.AbsolutePath.TrimStart('/');
         return trimmed.TrimStart('/');
     }
+
+    private static void ValidateMedias(UpdateProductRequest request, Dictionary<string, string[]> errors)
+    {
+        var mp4Keys = request.MediaKeys
+            .Concat(request.Medias.Select(x => x.Url))
+            .Concat(string.IsNullOrWhiteSpace(request.ImageUrl) ? [] : [request.ImageUrl])
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Select(NormalizeMediaKey)
+            .Where(IsMp4)
+            .ToList();
+
+        if (mp4Keys.Count > 1)
+            errors[nameof(request.MediaKeys)] = ["Only one mp4 media key is allowed per product."];
+    }
+
+    private static List<ProductMedia> OrderMedias(List<MediaInput> medias)
+    {
+        var mp4 = medias.FirstOrDefault(x => IsMp4(x.Key));
+        var ordered = new List<MediaInput>();
+        if (mp4 is not null)
+            ordered.Add(mp4);
+
+        ordered.AddRange(medias
+            .Where(x => !IsMp4(x.Key))
+            .OrderBy(x => x.DisplayOrder));
+
+        return ordered
+            .Select((x, index) => new ProductMedia { Key = x.Key, DisplayOrder = index })
+            .ToList();
+    }
+
+    private static string? ResolveProductImageKey(IReadOnlyCollection<ProductMedia> medias, string? fallbackImageUrl)
+    {
+        var imageKey = medias
+            .OrderBy(x => x.DisplayOrder)
+            .Select(x => x.Key)
+            .FirstOrDefault(IsImage);
+
+        if (imageKey is not null)
+            return imageKey;
+
+        return string.IsNullOrWhiteSpace(fallbackImageUrl) ? null : NormalizeMediaKey(fallbackImageUrl);
+    }
+
+    private static bool IsMp4(string key) =>
+        string.Equals(Path.GetExtension(key), ".mp4", StringComparison.OrdinalIgnoreCase);
+
+    private static bool IsImage(string key)
+    {
+        var extension = Path.GetExtension(key).ToLowerInvariant();
+        return extension is ".jpg" or ".jpeg" or ".png" or ".gif" or ".webp" or ".svg";
+    }
+
+    private sealed record MediaInput(string Key, float DisplayOrder);
 
     private static bool MatchesExistingOptionValues(CreateVariantRequest request, Variant variant)
     {

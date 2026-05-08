@@ -9,7 +9,7 @@ import {
   SearchIcon,
   MoreHorizontalIcon,
 } from "lucide-react";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -77,8 +77,9 @@ export default function CategoriesPage() {
   const [editing, setEditing] = useState<CategoryResponse | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<CategoryResponse | null>(null);
   const productCatalogClient = useProductCatalogClient();
+  const queryClient = useQueryClient();
 
-  const { data, isLoading, isError, refetch } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ["categories", { search: search.trim() || undefined }],
     queryFn: () => productCatalogClient.listCategory({ pageSize: 200, search: search.trim() || undefined }),
   });
@@ -148,7 +149,7 @@ export default function CategoriesPage() {
         toast.success("Category created");
       }
       setSheetOpen(false);
-      refetch();
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
     } catch (err) {
       if (!applyValidationErrors(err, setError)) throw err;
     }
@@ -160,7 +161,7 @@ export default function CategoriesPage() {
       await deleteCategory(deleteTarget.name!);
       toast.success(`"${deleteTarget.name}" deleted`);
       setDeleteTarget(null);
-      refetch();
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
     } catch {
       toast.error("Failed to delete category.");
     }

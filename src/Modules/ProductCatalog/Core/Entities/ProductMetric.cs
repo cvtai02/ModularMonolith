@@ -14,6 +14,8 @@ public class ProductMetric : Entity
 
     public int Stock { get; set; }
     public int Sold { get; set; }
+    public decimal LowestPrice { get; set; }
+    public decimal HighestPrice { get; set; }
 
     public virtual Product Product { get; set; } = null!;
 }

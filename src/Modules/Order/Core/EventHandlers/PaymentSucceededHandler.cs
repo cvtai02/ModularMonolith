@@ -23,6 +23,7 @@ public class PaymentSucceededHandler(
             {
                 OrderCode = order.Code
             });
+            order.Events.Add(ToAdminOrderPlaced(order));
             await db.SaveChangesAsync(ct);
 
             await realtimeNotifier.NotifyOrderPlacedAsync(order, null, ct);
@@ -43,8 +44,19 @@ public class PaymentSucceededHandler(
         {
             OrderCode = order.Code
         });
+        order.Events.Add(ToAdminOrderPlaced(order));
         await db.SaveChangesAsync(ct);
 
         await realtimeNotifier.NotifyOrderPaidAsync(order, ct);
     }
+
+    private static AdminOrderPlaced ToAdminOrderPlaced(Entities.Order order) => new()
+    {
+        OrderCode = order.Code,
+        CustomerId = order.CustomerId,
+        TotalAmount = order.TotalAmount,
+        CurrencyCode = order.CurrencyCode,
+        Status = order.Status.ToString(),
+        CreatedAt = DateTimeOffset.UtcNow
+    };
 }

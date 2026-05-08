@@ -101,7 +101,7 @@ export type DeleteCollectionResponse = void;
 
 export type ListProductsQuery = QueryParams<ListProductsOperation>;
 // 200 OK
-export type ListProductsResponse = JsonResponse<ListProductsOperation>;
+type ListProductsResponseBody = JsonResponse<ListProductsOperation>;
 export type CreateProductRequest = JsonRequestBody<CreateProductOperation>;
 // 200 OK
 export type CreateProductResponse = ProductResponse;
@@ -112,9 +112,14 @@ type GeneratedVariantResponse = GeneratedProductResponse extends { variants?: Ar
 export type VariantResponse = Omit<GeneratedVariantResponse, "id"> & {
     id: string;
 };
-export type ProductResponse = Omit<GeneratedProductResponse, "id" | "variants"> & {
+export type ProductResponse = Omit<GeneratedProductResponse, "id" | "variants" | "lowestPrice" | "highestPrice"> & {
     id: string;
+    lowestPrice: number;
+    highestPrice: number;
     variants: VariantResponse[];
+};
+export type ListProductsResponse = Omit<ListProductsResponseBody, "items"> & {
+    items: ProductResponse[];
 };
 export type UpdateProductParams = { id: string };
 // PUT uses the backend UpdateProductRequest DTO. It currently has the same

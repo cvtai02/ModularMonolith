@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   FileIcon,
   FolderOpenIcon,
@@ -235,6 +235,7 @@ export default function ContentFilesPage() {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
 
   const contentClient = useContentClient();
+  const queryClient = useQueryClient();
 
   const params: MediaFileListParams = {
     PageNumber: page,
@@ -283,7 +284,7 @@ export default function ContentFilesPage() {
       toast.success(`${selectedIds.size} file${selectedIds.size > 1 ? "s" : ""} deleted`);
       setSelectedIds(new Set());
       setDeleteConfirmOpen(false);
-      refetch();
+      queryClient.invalidateQueries({ queryKey: ["content-files"] });
     } catch {
       toast.error("Failed to delete files. Please try again.");
       setDeleteConfirmOpen(false);

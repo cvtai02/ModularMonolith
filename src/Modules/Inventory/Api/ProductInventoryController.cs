@@ -10,7 +10,7 @@ public class ProductInventoryController(
     InitializeProductInventory initializeProductInventory,
     ImportVariantInventory importVariantInventory) : ControllerBase
 {
-    [HttpPost("products/{productId:int}/initialize")]
+    [HttpPost("products/{productId}/initialize")]
     public async Task<ActionResult<InitializeProductInventoryResponse>> Initialize(
         string productId,
         [FromBody] InitializeProductInventoryRequest request,
