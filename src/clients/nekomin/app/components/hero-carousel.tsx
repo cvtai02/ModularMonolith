@@ -1,6 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { resolveMediaUrl } from "@/app/lib/media";
+
+export type HeroSlide = {
+  imageKey: string;
+  tag: string;
+  link: string;
+};
 
 const PAW_SVG = `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
   <ellipse cx="20" cy="28" rx="8" ry="7"/>
@@ -53,7 +60,8 @@ const SLIDES = [
 
 const DURATION = 5000;
 
-export function HeroCarousel() {
+export function HeroCarousel({ slides: gallerySlides }: { slides?: HeroSlide[] }) {
+  const slides = gallerySlides && gallerySlides.length > 0 ? gallerySlides : SLIDES;
   const [active, setActive] = useState(0);
   const barRef = useRef<HTMLDivElement>(null);
   const pawBgRef = useRef<HTMLDivElement>(null);
@@ -72,7 +80,7 @@ export function HeroCarousel() {
       if (pct < 100) {
         rafRef.current = requestAnimationFrame(tick);
       } else {
-        setActive((i) => (i + 1) % SLIDES.length);
+        setActive((i) => (i + 1) % slides.length);
       }
     };
     rafRef.current = requestAnimationFrame(tick);
@@ -110,28 +118,46 @@ export function HeroCarousel() {
   return (
     <section className="hero" id="hero">
       <div className="hero-slides">
-        {SLIDES.map((slide, i) => (
-          <div key={i} className={`hero-slide${i === active ? " active" : ""}`}>
-            <div className="slide-fill">
-              <svg
-                viewBox="0 0 1440 900"
-                preserveAspectRatio="xMidYMid slice"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <defs>{slide.pattern}</defs>
-                <rect width="1440" height="900" fill={slide.bg} />
-                <rect width="1440" height="900" fill={`url(#s${i + 1})`} opacity="0.45" />
-              </svg>
+        {slides.map((slide, i) => {
+          const isGallery = "imageKey" in slide;
+          const imageUrl = isGallery ? resolveMediaUrl((slide as HeroSlide).imageKey) : "";
+          const tag = isGallery ? (slide as HeroSlide).tag : (slide as typeof SLIDES[0]).tag;
+          const staticSlide = isGallery ? null : (slide as typeof SLIDES[0]);
+          const link = isGallery ? (slide as HeroSlide).link : "";
+          const inner = (
+            <>
+              <div className="slide-fill">
+                {imageUrl ? (
+                  <img src={imageUrl} alt={tag} className="slide-img" />
+                ) : staticSlide ? (
+                  <svg
+                    viewBox="0 0 1440 900"
+                    preserveAspectRatio="xMidYMid slice"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <defs>{staticSlide.pattern}</defs>
+                    <rect width="1440" height="900" fill={staticSlide.bg} />
+                    <rect width="1440" height="900" fill={`url(#s${i + 1})`} opacity="0.45" />
+                  </svg>
+                ) : null}
+              </div>
+              <div className="slide-tag">{tag}</div>
+            </>
+          );
+          return (
+            <div key={i} className={`hero-slide${i === active ? " active" : ""}`}>
+              {link ? (
+                <a href={link} className="slide-link" aria-label={tag}>{inner}</a>
+              ) : inner}
             </div>
-            <div className="slide-tag">{slide.tag}</div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className="shape-bg" ref={pawBgRef} />
 
       <div className="hero-dots">
-        {SLIDES.map((_, i) => (
+        {slides.map((_, i) => (
           <button
             key={i}
             type="button"

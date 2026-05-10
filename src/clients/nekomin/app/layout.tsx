@@ -3,7 +3,6 @@ import { Be_Vietnam_Pro, Lora } from "next/font/google";
 import "./globals.css";
 
 import { ApiClientProvider } from "./components/api-client-provider";
-import { NotificationCenter } from "./components/notification-center";
 
 const beVietnam = Be_Vietnam_Pro({
   variable: "--font-body",
@@ -33,13 +32,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <ApiClientProvider>
-          <header className="sticky top-0 z-10 border-b border-zinc-100 bg-white/80 backdrop-blur-sm">
-            <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-6">
-              <a href="/" className="font-serif text-lg font-medium tracking-tight">Nekomin</a>
-              <NotificationCenter />
-            </div>
-          </header>
-          {children}
+{children}
         </ApiClientProvider>
       </body>
     </html>

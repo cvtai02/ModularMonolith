@@ -6,23 +6,23 @@
 Client contract: [ProductCatalogClient](../../../clients/shared/api/clients/productcatalog.ts), [IProductCatalogClient](../../../clients/shared/api/contracts/productcatalog.ts)
 
 ### Product
-- [GetAll](ProductController.cs#L17)
-- [GetById](ProductController.cs#L22)
-- [Create](ProductController.cs#L29)
-- [Update](ProductController.cs#L37)
+- `GET /api/ProductCatalog/products` - auth: public. DTOs: [ListProductsRequest](../DTOs/Products/ListProductsRequest.cs), [ProductSummaryResponse](../DTOs/Products/ProductResponse.cs).
+- `GET /api/ProductCatalog/products/{id}` - auth: public. DTOs: [ProductResponse](../DTOs/Products/ProductResponse.cs).
+- `POST /api/ProductCatalog/products` - auth: `TenantAdminUp`. DTOs: [CreateProductRequest](../DTOs/Products/CreateProductRequest.cs), [ProductResponse](../DTOs/Products/ProductResponse.cs).
+- `PUT /api/ProductCatalog/products/{id}` - auth: `TenantAdminUp`. DTOs: [UpdateProductRequest](../DTOs/Products/UpdateProductRequest.cs), [ProductResponse](../DTOs/Products/ProductResponse.cs).
 
 
 ### Category
-- [GetAll](CategoryController.cs#L19)
-- [GetByName](CategoryController.cs#L29)
-- [Create](CategoryController.cs#L36)
-- [Update](CategoryController.cs#L44)
-- [Delete](CategoryController.cs#L52)
+- `GET /api/ProductCatalog/categories` - auth: public. DTOs: [CategoryResponse](../DTOs/Categories/CategoryResponse.cs).
+- `GET /api/ProductCatalog/categories/{name}` - auth: public. DTOs: [CategoryResponse](../DTOs/Categories/CategoryResponse.cs).
+- `POST /api/ProductCatalog/categories` - auth: `TenantAdminUp`. DTOs: [CreateCategoryRequest](../DTOs/Categories/CreateCategoryRequest.cs), [CategoryResponse](../DTOs/Categories/CategoryResponse.cs).
+- `PUT /api/ProductCatalog/categories/{name}` - auth: `TenantAdminUp`. DTOs: [UpdateCategoryRequest](../DTOs/Categories/UpdateCategoryRequest.cs), [CategoryResponse](../DTOs/Categories/CategoryResponse.cs).
+- `DELETE /api/ProductCatalog/categories/{name}` - auth: `TenantAdminUp`.
 
 ### Collection
-- [GetAll](CollectionController.cs#L19)
-- [GetById](CollectionController.cs#L29) - returns collection detail with assigned product summaries
-- [Create](CollectionController.cs#L36)
-- [AddProducts](CollectionController.cs#L44)
-- [Update](CollectionController.cs#L52)
-- [Delete](CollectionController.cs#L60)
+- `GET /api/ProductCatalog/collections` - auth: public. DTOs: [CollectionResponse](../DTOs/Collections/CollectionResponse.cs).
+- `GET /api/ProductCatalog/collections/{id}` - auth: public. DTOs: [CollectionResponse](../DTOs/Collections/CollectionResponse.cs).
+- `POST /api/ProductCatalog/collections` - auth: `TenantAdminUp`. DTOs: [CreateCollectionRequest](../DTOs/Collections/CreateCollectionRequest.cs), [CollectionResponse](../DTOs/Collections/CollectionResponse.cs).
+- `POST /api/ProductCatalog/collections/{id}/products` - auth: `TenantAdminUp`. DTOs: [AddCollectionProductsRequest](../DTOs/Collections/AddCollectionProductsRequest.cs), [CollectionResponse](../DTOs/Collections/CollectionResponse.cs).
+- `PUT /api/ProductCatalog/collections/{id}` - auth: `TenantAdminUp`. DTOs: [UpdateCollectionRequest](../DTOs/Collections/UpdateCollectionRequest.cs), [CollectionResponse](../DTOs/Collections/CollectionResponse.cs).
+- `DELETE /api/ProductCatalog/collections/{id}` - auth: `TenantAdminUp`.

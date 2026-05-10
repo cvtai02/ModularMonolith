@@ -13,7 +13,7 @@ Client contract: [PaymentClient](../../../clients/shared/api/clients/payment.ts)
 - `POST /api/Payment/orders/{orderCode}/checkout`
   - Authorization: authenticated user.
   - `orderCode` is the order code string.
-  - Creates or returns an active checkout transaction for a pending-payment order.
+  - Creates or returns an active checkout transaction for a pending-payment order owned by the current user.
 
 - `GET /api/Payment/transactions/{id}`
   - Authorization: authenticated user.

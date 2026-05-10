@@ -10,18 +10,24 @@ import type {
   CreateBlogPostCollectionResponse,
   CreateBlogPostRequest,
   CreateBlogPostResponse,
+  CreateGalleryRequest,
+  CreateGalleryResponse,
   DeleteBlogPostCollectionResponse,
   DeleteBlogPostResponse,
+  DeleteGalleryResponse,
   DeleteMediaFilesRequest,
   DeleteMediaFilesResponse,
+  GalleryResponse,
   GetAllQuery,
   GetAllResponse,
   GetAdminBlogPostByIdResponse,
   GetPresignedUploadBulkUrlRequest,
+  ListAdminGalleriesResponse,
   ListAdminBlogPostsByCollectionQuery,
   ListAdminBlogPostsByCollectionResponse,
   ListBlogPostCollectionsQuery,
   ListBlogPostCollectionsResponse,
+  ListGalleriesQuery,
   ListAdminBlogPostsQuery,
   ListAdminBlogPostsResponse,
   ListPublishedBlogPostsQuery,
@@ -32,6 +38,8 @@ import type {
   UpdateBlogPostCollectionResponse,
   UpdateBlogPostRequest,
   UpdateBlogPostResponse,
+  UpdateGalleryRequest,
+  UpdateGalleryResponse,
 } from "../types/content";
 import type { IContentClient } from "../contracts/content";
 import type { Fetch } from "./shared";
@@ -222,6 +230,62 @@ export class ContentClient implements IContentClient {
   async deleteBlogPostCollection(id: number): Promise<DeleteBlogPostCollectionResponse> {
     return this.requestJson<DeleteBlogPostCollectionResponse>(
       `/api/Content/blog-post-collections/${id}`,
+      { method: "DELETE" },
+      "",
+    );
+  }
+
+  async getPublicGalleryByKey(key: string): Promise<GalleryResponse> {
+    return this.requestJson<GalleryResponse>(
+      `/api/Content/galleries/${encodeURIComponent(key)}`,
+      undefined,
+      "Gallery response was empty.",
+    );
+  }
+
+  async listAdminGalleries(query?: ListGalleriesQuery): Promise<ListAdminGalleriesResponse> {
+    return this.requestJson<ListAdminGalleriesResponse>(
+      `/api/Content/galleries/admin${this.toQueryString(query)}`,
+      undefined,
+      "Admin galleries response was empty.",
+    );
+  }
+
+  async getAdminGalleryById(id: number): Promise<GalleryResponse> {
+    return this.requestJson<GalleryResponse>(
+      `/api/Content/galleries/admin/${id}`,
+      undefined,
+      "Admin gallery response was empty.",
+    );
+  }
+
+  async createGallery(input: CreateGalleryRequest): Promise<CreateGalleryResponse> {
+    return this.requestJson<CreateGalleryResponse>(
+      "/api/Content/galleries",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(input),
+      },
+      "Create gallery response was empty.",
+    );
+  }
+
+  async updateGallery(id: number, input: UpdateGalleryRequest): Promise<UpdateGalleryResponse> {
+    return this.requestJson<UpdateGalleryResponse>(
+      `/api/Content/galleries/${id}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(input),
+      },
+      "Update gallery response was empty.",
+    );
+  }
+
+  async deleteGallery(id: number): Promise<DeleteGalleryResponse> {
+    return this.requestJson<DeleteGalleryResponse>(
+      `/api/Content/galleries/${id}`,
       { method: "DELETE" },
       "",
     );

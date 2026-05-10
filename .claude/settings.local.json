@@ -11,7 +11,13 @@
       "Bash(rm -rf node_modules nekomin/node_modules admin/node_modules shared/node_modules)",
       "Bash(npm install *)",
       "Bash(npx turbo *)",
-      "Bash(npx eslint *)"
+      "Bash(npx eslint *)",
+      "Bash(python3 -c \"import json,sys; errs=json.load\\(sys.stdin\\); [print\\(m['ruleId']\\) for f in errs for m in f['messages']]\")",
+      "Bash(python3 -c \"import json,sys; errs=json.load\\(sys.stdin\\); [print\\(m['line'], m['ruleId']\\) for f in errs for m in f['messages'] if m['severity']==2]\")",
+      "Bash(grep -v \"^npm\\\\|^C:\\\\\\\\\\\\\\\\Users.*node_modules\")",
+      "WebFetch(domain:github.com)",
+      "Skill(shadcn)",
+      "Skill(shadcn:*)"
     ],
     "deny": [
       "Read(.git/**)",

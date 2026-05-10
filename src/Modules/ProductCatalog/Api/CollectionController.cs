@@ -1,7 +1,9 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProductCatalog.DTOs.Collections;
 using ProductCatalog.Core.Usecases.Collections;
+using SharedKernel.Authorization;
 using SharedKernel.DTOs;
 
 namespace ProductCatalog.Api;
@@ -33,6 +35,7 @@ public class CollectionController(
         return result is null ? NotFound() : Ok(result);
     }
 
+    [Authorize(Policy = Policies.TenantAdminUp)]
     [HttpPost]
     public async Task<ActionResult<CollectionResponse>> Create(
         [FromBody] CreateCollectionRequest request, CancellationToken cancellationToken)
@@ -41,6 +44,7 @@ public class CollectionController(
         return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
     }
 
+    [Authorize(Policy = Policies.TenantAdminUp)]
     [HttpPost("{id:int}/products")]
     public async Task<ActionResult<CollectionResponse>> AddProducts(
         int id, [FromBody] AddCollectionProductsRequest request, CancellationToken cancellationToken)
@@ -49,6 +53,7 @@ public class CollectionController(
         return result is null ? NotFound() : Ok(result);
     }
 
+    [Authorize(Policy = Policies.TenantAdminUp)]
     [HttpPut("{id:int}")]
     public async Task<ActionResult<CollectionResponse>> Update(
         int id, [FromBody] UpdateCollectionRequest request, CancellationToken cancellationToken)
@@ -57,6 +62,7 @@ public class CollectionController(
         return result is null ? NotFound() : Ok(result);
     }
 
+    [Authorize(Policy = Policies.TenantAdminUp)]
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
     {

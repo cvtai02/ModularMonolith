@@ -75,10 +75,12 @@ export function VariantPickerModal({
 
   useEffect(() => {
     if (open) {
+      /* eslint-disable react-hooks/set-state-in-effect */
       setSearch("");
       setPage(1);
       setExpandedProduct(null);
       setSelected(new Map());
+      /* eslint-enable react-hooks/set-state-in-effect */
     }
   }, [open]);
 

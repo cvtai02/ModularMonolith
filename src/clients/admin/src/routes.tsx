@@ -28,6 +28,9 @@ const EditBlogPostCollection = LazyPage(() => import("@/pages/content/blog-post-
 const AdminBlogsPage = LazyPage(() => import("@/pages/content/blogs"));
 const AddBlogPostPage = LazyPage(() => import("@/pages/content/blogs/add"));
 const EditBlogPostPage = LazyPage(() => import("@/pages/content/blogs/edit"));
+const AdminGalleriesPage = LazyPage(() => import("@/pages/content/galleries"));
+const AddGalleryPage = LazyPage(() => import("@/pages/content/galleries/add"));
+const EditGalleryPage = LazyPage(() => import("@/pages/content/galleries/edit"));
 const Orders = LazyPage(() => import("@/pages/orders"));
 const OrderDetail = LazyPage(() => import("@/pages/orders/detail"));
 const AdminCreateOrder = LazyPage(() => import("@/pages/orders/create"));
@@ -62,6 +65,9 @@ const AppRoutes: ReactNode =
         <Route path={ROUTES.contentBlogs} element={<AdminBlogsPage />} errorElement={<ErrorPage />} />
         <Route path={ROUTES.contentBlogNew} element={<AddBlogPostPage />} errorElement={<ErrorPage />} />
         <Route path="/content/blogs/:id/edit" element={<EditBlogPostPage />} errorElement={<ErrorPage />} />
+        <Route path={ROUTES.contentGalleries} element={<AdminGalleriesPage />} errorElement={<ErrorPage />} />
+        <Route path={ROUTES.contentGalleryNew} element={<AddGalleryPage />} errorElement={<ErrorPage />} />
+        <Route path="/content/galleries/:id/edit" element={<EditGalleryPage />} errorElement={<ErrorPage />} />
         <Route path={ROUTES.orders} element={<Orders />} errorElement={<ErrorPage />} />
         <Route path="/orders/new" element={<AdminCreateOrder />} errorElement={<ErrorPage />} />
         <Route path="/orders/:id" element={<OrderDetail />} errorElement={<ErrorPage />} />

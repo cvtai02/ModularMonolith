@@ -155,7 +155,7 @@ public class CreateProduct(ProductCatalogDbContext db, IFileManager fileManager,
 
     private static void ValidateVariants(CreateProductRequest request, Dictionary<string, string[]> errors)
     {
-        var optionNameSet = request.Options.Select(x => x.Name.Trim()).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var optionValueLookup = BuildOptionValueLookup(request);
         var variantKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var variantIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
@@ -176,12 +176,18 @@ public class CreateProduct(ProductCatalogDbContext db, IFileManager fileManager,
 
             foreach (var optionValue in variant.OptionValues)
             {
-                if (!optionNameSet.Contains(optionValue.OptionName.Trim()))
+                var optionName = optionValue.OptionName.Trim();
+                var value = optionValue.Value.Trim();
+                if (!optionValueLookup.TryGetValue(optionName, out var allowedValues) ||
+                    !allowedValues.Contains(value))
                 {
-                    errors[nameof(request.Variants)] = ["Variant option values must reference defined product options."];
+                    errors[nameof(request.Variants)] = ["Variant option values must reference defined product option values."];
                     break;
                 }
             }
+
+            if (errors.ContainsKey(nameof(request.Variants)))
+                break;
 
             var variantKey = VariantKey(variant);
             if (!variantKeys.Add(variantKey))
@@ -199,6 +205,15 @@ public class CreateProduct(ProductCatalogDbContext db, IFileManager fileManager,
             }
         }
     }
+
+    private static Dictionary<string, HashSet<string>> BuildOptionValueLookup(CreateProductRequest request)
+        => request.Options.ToDictionary(
+            x => x.Name.Trim(),
+            x => x.Values
+                .Select(v => v.Trim())
+                .Where(v => !string.IsNullOrWhiteSpace(v))
+                .ToHashSet(StringComparer.OrdinalIgnoreCase),
+            StringComparer.OrdinalIgnoreCase);
 
     private static List<ProductMedia> BuildMedias(CreateProductRequest request)
     {
@@ -478,6 +493,7 @@ public class CreateProduct(ProductCatalogDbContext db, IFileManager fileManager,
         normalized = string.Concat(normalized.Select(ch => char.IsLetterOrDigit(ch) ? ch : '-'));
         while (normalized.Contains("--", StringComparison.Ordinal))
             normalized = normalized.Replace("--", "-", StringComparison.Ordinal);
-        return normalized.Trim('-');
+        normalized = normalized.Trim('-');
+        return string.IsNullOrWhiteSpace(normalized) ? null : normalized;
     }
 }

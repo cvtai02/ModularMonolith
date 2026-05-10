@@ -63,9 +63,11 @@ export function BlogPostPickerModal({
 
   useEffect(() => {
     if (open) {
+      /* eslint-disable react-hooks/set-state-in-effect */
       setSearch("");
       setPage(1);
       setSelected(new Map());
+      /* eslint-enable react-hooks/set-state-in-effect */
     }
   }, [open]);
 

@@ -118,8 +118,25 @@ export type ProductResponse = Omit<GeneratedProductResponse, "id" | "variants" |
     highestPrice: number;
     variants: VariantResponse[];
 };
+export type ProductSummaryResponse = {
+    id: string;
+    name: string;
+    slug: string;
+    imageUrl: string;
+    status: ProductResponse["status"];
+    categoryId: number;
+    categoryName: string;
+    price: number;
+    lowestPrice: number;
+    highestPrice: number;
+    currency: ProductResponse["currency"];
+    stock: number;
+    sold: number;
+    created: string;
+    lastModified: string;
+};
 export type ListProductsResponse = Omit<ListProductsResponseBody, "items"> & {
-    items: ProductResponse[];
+    items: ProductSummaryResponse[];
 };
 export type UpdateProductParams = { id: string };
 // PUT uses the backend UpdateProductRequest DTO. It currently has the same

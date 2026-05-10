@@ -221,3 +221,75 @@ export type UpdateBlogPostCollectionResponse =
     BlogPostCollectionResponse;
 
 export type DeleteBlogPostCollectionResponse = void;
+
+export type GalleryItemResponse = {
+    id: number;
+    imageKey: string;
+    displayOrder: number;
+    name: string;
+    note: string;
+    link: string;
+};
+
+export type GalleryResponse = {
+    id: number;
+    key: string;
+    name: string;
+    note: string;
+    isPublic: boolean;
+    items: GalleryItemResponse[];
+    created: string;
+    lastModified: string;
+};
+
+export type GallerySummaryResponse = {
+    id: number;
+    key: string;
+    name: string;
+    note: string;
+    isPublic: boolean;
+    itemCount: number;
+    created: string;
+    lastModified: string;
+};
+
+export type ListGalleriesQuery = {
+    pageNumber?: number;
+    pageSize?: number;
+    search?: string | null;
+    isPublic?: boolean | null;
+    sortBy?: string | null;
+    sortDirection?: string | null;
+};
+
+export type ListAdminGalleriesResponse =
+    PaginatedList<GallerySummaryResponse>;
+
+export type SaveGalleryItemRequest = {
+    imageKey: string;
+    displayOrder: number;
+    name?: string | null;
+    note?: string | null;
+    link?: string | null;
+};
+
+export type CreateGalleryRequest = {
+    key: string;
+    name: string;
+    note?: string | null;
+    isPublic: boolean;
+    items: SaveGalleryItemRequest[];
+};
+
+export type CreateGalleryResponse = GalleryResponse;
+
+export type UpdateGalleryRequest = {
+    name: string;
+    note?: string | null;
+    isPublic: boolean;
+    items: SaveGalleryItemRequest[];
+};
+
+export type UpdateGalleryResponse = GalleryResponse;
+
+export type DeleteGalleryResponse = void;

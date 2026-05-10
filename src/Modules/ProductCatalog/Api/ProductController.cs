@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using ProductCatalog.DTOs.Products;
 using ProductCatalog.Core.Usecases.Products;
+using SharedKernel.Authorization;
 using SharedKernel.DTOs;
 
 namespace ProductCatalog.Api;
@@ -14,7 +16,7 @@ public class ProductController(
     UpdateProduct updateProduct) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<PaginatedList<ProductResponse>>> GetAll(
+    public async Task<ActionResult<PaginatedList<ProductSummaryResponse>>> GetAll(
         [FromQuery] ListProductsRequest request, CancellationToken cancellationToken)
         => Ok(await listProducts.ExecuteAsync(request, cancellationToken));
 
@@ -25,6 +27,7 @@ public class ProductController(
         return result is null ? NotFound() : Ok(result);
     }
 
+    [Authorize(Policy = Policies.TenantAdminUp)]
     [HttpPost]
     public async Task<ActionResult<ProductResponse>> Create(
         [FromBody] CreateProductRequest request, CancellationToken cancellationToken)
@@ -33,6 +36,7 @@ public class ProductController(
         return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
     }
 
+    [Authorize(Policy = Policies.TenantAdminUp)]
     [HttpPut("{id}")]
     public async Task<ActionResult<ProductResponse>> Update(
         string id, [FromBody] UpdateProductRequest request, CancellationToken cancellationToken)

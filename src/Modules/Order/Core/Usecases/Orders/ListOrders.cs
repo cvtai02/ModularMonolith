@@ -1,18 +1,31 @@
 using Microsoft.EntityFrameworkCore;
 using Order.DTOs.Orders;
+using SharedKernel.Abstractions.Services;
 using SharedKernel.DTOs;
 
 namespace Order.Core.Usecases.Orders;
 
 [UsecaseInject]
-public class ListOrders(OrderDbContext db)
+public class ListOrders(OrderDbContext db, IUser user)
 {
-    public async Task<PaginatedList<OrderSummaryResponse>> ExecuteAsync(ListOrdersRequest request, CancellationToken ct)
+    public Task<PaginatedList<OrderSummaryResponse>> ExecuteAsync(ListOrdersRequest request, CancellationToken ct)
+        => ExecuteAsync(request, customerId: user.Id, ct);
+
+    public Task<PaginatedList<OrderSummaryResponse>> ExecuteAdminAsync(ListOrdersRequest request, CancellationToken ct)
+        => ExecuteAsync(request, customerId: null, ct);
+
+    private async Task<PaginatedList<OrderSummaryResponse>> ExecuteAsync(
+        ListOrdersRequest request,
+        string? customerId,
+        CancellationToken ct)
     {
         var query = db.Orders
             .AsNoTracking()
             .Include(x => x.Lines)
             .AsQueryable();
+
+        if (customerId is not null)
+            query = query.Where(x => x.CustomerId == customerId);
 
         if (request.Status is not null)
             query = query.Where(x => x.Status == request.Status);

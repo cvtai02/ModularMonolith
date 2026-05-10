@@ -6,6 +6,34 @@ namespace ProductCatalog.Core.Usecases.Products;
 
 internal static class ProductMapper
 {
+    internal static ProductSummaryResponse ToSummary(
+        Product product,
+        IFileManager fileManager)
+    {
+        var primaryVariant = product.Variants.OrderBy(x => x.Id).FirstOrDefault();
+        var displayPrice = primaryVariant?.Price ?? product.Price;
+        var (lowestPrice, highestPrice) = ResolvePriceRange(product);
+
+        return new ProductSummaryResponse
+        {
+            Id = product.Id,
+            Name = product.Name,
+            Slug = product.Slug,
+            ImageUrl = ResolveImageUrl(product, fileManager),
+            Status = product.Status,
+            CategoryId = product.CategoryId,
+            CategoryName = product.Category?.Name ?? string.Empty,
+            Price = displayPrice,
+            LowestPrice = lowestPrice,
+            HighestPrice = highestPrice,
+            Currency = product.Currency,
+            Stock = product.Metric?.Stock ?? 0,
+            Sold = product.Metric?.Sold ?? 0,
+            Created = product.Created,
+            LastModified = product.LastModified
+        };
+    }
+
     internal static ProductResponse ToResponse(
         Product product,
         IFileManager fileManager)
@@ -17,14 +45,7 @@ internal static class ProductMapper
         var primaryVariant = product.Variants.OrderBy(x => x.Id).FirstOrDefault();
         var primaryVariantShipping = primaryVariant?.ShippingInfo;
         var displayPrice = primaryVariant?.Price ?? product.Price;
-        var hasMetricPriceRange = product.Metric is not null
-            && (product.Metric.LowestPrice > 0 || product.Metric.HighestPrice > 0);
-        var lowestPrice = hasMetricPriceRange
-            ? product.Metric!.LowestPrice
-            : product.Variants.Select(x => x.Price).DefaultIfEmpty(product.Price).Min();
-        var highestPrice = hasMetricPriceRange
-            ? product.Metric!.HighestPrice
-            : product.Variants.Select(x => x.Price).DefaultIfEmpty(product.Price).Max();
+        var (lowestPrice, highestPrice) = ResolvePriceRange(product);
 
         return new ProductResponse
         {
@@ -34,9 +55,7 @@ internal static class ProductMapper
             CategoryId = product.CategoryId,
             CategoryName = product.Category?.Name ?? string.Empty,
             Slug = product.Slug,
-            ImageUrl = string.IsNullOrWhiteSpace(product.ImageUrl)
-                ? product.Medias.OrderBy(x => x.DisplayOrder).Select(x => fileManager.BuildPublicUrl(x.Key)).FirstOrDefault() ?? string.Empty
-                : product.ImageUrl,
+            ImageUrl = ResolveImageUrl(product, fileManager),
             Status = product.Status,
             Price = displayPrice,
             LowestPrice = lowestPrice,
@@ -79,6 +98,24 @@ internal static class ProductMapper
             Variants = variants
         };
     }
+
+    private static (decimal LowestPrice, decimal HighestPrice) ResolvePriceRange(Product product)
+    {
+        var hasMetricPriceRange = product.Metric is not null
+            && (product.Metric.LowestPrice > 0 || product.Metric.HighestPrice > 0);
+        if (hasMetricPriceRange)
+            return (product.Metric!.LowestPrice, product.Metric.HighestPrice);
+
+        var prices = product.Variants.Select(x => x.Price)
+            .DefaultIfEmpty(product.Price)
+            .ToList();
+        return (prices.Min(), prices.Max());
+    }
+
+    private static string ResolveImageUrl(Product product, IFileManager fileManager)
+        => string.IsNullOrWhiteSpace(product.ImageUrl)
+            ? product.Medias.OrderBy(x => x.DisplayOrder).Select(x => fileManager.BuildPublicUrl(x.Key)).FirstOrDefault() ?? string.Empty
+            : product.ImageUrl;
 
     private static VariantResponse MapVariantToResponse(Variant variant)
     {

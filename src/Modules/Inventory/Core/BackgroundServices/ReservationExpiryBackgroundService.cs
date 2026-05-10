@@ -1,5 +1,5 @@
 using Intermediary.Events.Inventory;
-using MediatR;
+using Infrastructure.EventBus;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -40,7 +40,7 @@ public class ReservationExpiryBackgroundService(
         {
             await using var scope = scopeFactory.CreateAsyncScope();
             var db = scope.ServiceProvider.GetRequiredService<InventoryDbContext>();
-            var publisher = scope.ServiceProvider.GetRequiredService<IPublisher>();
+            var eventBus = scope.ServiceProvider.GetRequiredService<IEventBus>();
             var now = DateTimeOffset.UtcNow;
 
             var expiredReservations = await db.Reservations
@@ -57,7 +57,7 @@ public class ReservationExpiryBackgroundService(
 
             foreach (var reservation in expiredReservations)
             {
-                await publisher.Publish(new ReservationExpired
+                await eventBus.Publish(new ReservationExpired
                 {
                     OrderCode = reservation.OrderCode,
                     ReservationId = reservation.Id

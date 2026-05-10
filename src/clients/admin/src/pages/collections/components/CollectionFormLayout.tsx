@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
-import { ArrowLeftIcon, PackageIcon, PlusIcon, XIcon } from "lucide-react";
+import { ArrowLeftIcon, GripVerticalIcon, PackageIcon, PlusIcon, XIcon } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
@@ -85,7 +86,8 @@ function PickedProductRow({
   onRemove: () => void;
 }) {
   return (
-    <div className="flex items-center gap-3 rounded-lg px-2 py-2 hover:bg-muted/50 transition-colors">
+    <div className="flex items-center gap-2 rounded-lg px-2 py-2 hover:bg-muted/50 transition-colors">
+      <GripVerticalIcon className="size-4 shrink-0 cursor-grab text-muted-foreground/40 active:cursor-grabbing" />
       <Avatar className="size-8 shrink-0 rounded-md">
         <AvatarImage src={product.imageUrl ?? undefined} alt={product.name ?? ""} />
         <AvatarFallback className="rounded-md text-[10px] font-medium">
@@ -144,6 +146,7 @@ export function CollectionFormLayout({
   const [productsModified, setProductsModified] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [addPickerOpen, setAddPickerOpen] = useState(false);
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
 
   // Sync from API when initialProducts changes (e.g. after quick-add refetch),
   // but only while the user hasn't locally edited the replace list.
@@ -163,6 +166,16 @@ export function CollectionFormLayout({
     setPickedProducts((prev) => prev.filter((p) => p.id !== id));
     markModified();
   }
+
+  const moveProduct = useCallback((from: number, to: number) => {
+    setPickedProducts((prev) => {
+      const next = [...prev];
+      const [item] = next.splice(from, 1);
+      next.splice(to, 0, item);
+      return next;
+    });
+    markModified();
+  }, []);
 
   function addFromPicker(newProducts: ProductResponse[]) {
     setPickedProducts((prev) => [
@@ -292,8 +305,21 @@ export function CollectionFormLayout({
           {pickedProducts.length > 0 ? (
             <div>
               <div className="divide-y">
-                {pickedProducts.map((p) => (
-                  <div key={p.id} className="px-4">
+                {pickedProducts.map((p, index) => (
+                  <div
+                    key={p.id}
+                    className={cn("px-4", dragIndex === index && "opacity-50")}
+                    draggable
+                    onDragStart={() => setDragIndex(index)}
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      if (dragIndex !== null && dragIndex !== index) {
+                        moveProduct(dragIndex, index);
+                        setDragIndex(index);
+                      }
+                    }}
+                    onDragEnd={() => setDragIndex(null)}
+                  >
                     <PickedProductRow product={p} onRemove={() => removeProduct(p.id)} />
                   </div>
                 ))}

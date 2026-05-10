@@ -18,9 +18,11 @@ export interface IOrderClient {
   // Response: src/Modules/Order/DTOs/Orders/OrderResponse.cs
   createOrder(input: CreateOrderRequest): Promise<CreateOrderResponse>;
 
+  // Auth: AuthenticatedUserUp. Returns only the current user's order.
   // Response: src/Modules/Order/DTOs/Orders/OrderResponse.cs
   getOrderByCode(code: string): Promise<OrderResponse>;
 
+  // Auth: AuthenticatedUserUp. Returns only the current user's orders.
   // Query: src/Modules/Order/DTOs/Orders/ListOrdersRequest.cs
   // Item response: src/Modules/Order/DTOs/Orders/OrderSummaryResponse.cs
   // Wrapper response is generated in src/clients/shared/api/types/order.ts.

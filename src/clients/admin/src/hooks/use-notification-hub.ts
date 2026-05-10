@@ -14,7 +14,8 @@ export function useNotificationHub() {
   // Keep a ref so the SignalR callback always sees the latest client without
   // needing it in the effect dependency array (which would reconnect on every render).
   const accountClientRef = useRef(accountClient);
-  accountClientRef.current = accountClient;
+  // eslint-disable-next-line react-hooks/refs
+  accountClientRef.current = accountClient; // intentional: keeps ref in sync without re-subscribing SignalR
 
   const [notifications, setNotifications] = useState<NotificationResponse[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);

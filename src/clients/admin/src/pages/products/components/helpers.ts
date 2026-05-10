@@ -176,25 +176,17 @@ export function deriveVariants(
       trackInventory: ov?.trackInventory ?? true,
       allowBackorder: ov?.allowBackorder ?? false,
       lowStockThreshold: ov?.lowStockThreshold ?? "",
+      imageKey: ov?.imageKey ?? "",
     };
   });
 }
 
-type BuildVariantsOptions = {
-  // When true, only include variants that already have a backend id (existing variants
-  // on edit). New combos derived from newly-added option values are dropped — the backend
-  // is expected to create variants for those server-side.
-  existingOnly?: boolean;
-};
-
 export function buildVariantsPayload(
   variants: Variant[],
   hasVariants: boolean,
-  options: BuildVariantsOptions = {},
 ) {
   if (!hasVariants) return [];
-  const filtered = options.existingOnly ? variants.filter((v) => !!v.id) : variants;
-  return filtered.map((v) => ({
+  return variants.map((v) => ({
     id: v.id ?? null,
     useProductPricing: v.useProductPrice,
     price: !v.useProductPrice && v.price ? parseFloat(v.price) : null,

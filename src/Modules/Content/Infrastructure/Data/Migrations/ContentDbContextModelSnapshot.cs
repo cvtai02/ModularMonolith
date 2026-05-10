@@ -247,6 +247,121 @@ namespace Content.Infrastructure.Data.Migrations
                     b.ToTable("Files");
                 });
 
+            modelBuilder.Entity("Content.Core.Entities.Gallery", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsPublic")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Note")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("TenantId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("TenantId", "Key")
+                        .IsUnique()
+                        .HasFilter("\"IsDeleted\" = false");
+
+                    b.ToTable("Galleries");
+                });
+
+            modelBuilder.Entity("Content.Core.Entities.GalleryItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("GalleryId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ImageKey")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Link")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Note")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("TenantId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GalleryId");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("TenantId", "GalleryId", "DisplayOrder")
+                        .IsUnique()
+                        .HasFilter("\"IsDeleted\" = false");
+
+                    b.ToTable("GalleryItems");
+                });
+
             modelBuilder.Entity("Content.Core.Entities.Menu", b =>
                 {
                     b.Property<int>("Id")
@@ -367,6 +482,17 @@ namespace Content.Infrastructure.Data.Migrations
                     b.Navigation("BlogPostCollection");
                 });
 
+            modelBuilder.Entity("Content.Core.Entities.GalleryItem", b =>
+                {
+                    b.HasOne("Content.Core.Entities.Gallery", "Gallery")
+                        .WithMany("Items")
+                        .HasForeignKey("GalleryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Gallery");
+                });
+
             modelBuilder.Entity("Content.Core.Entities.Menu", b =>
                 {
                     b.HasOne("Content.Core.Entities.Menu", "Parent")
@@ -377,6 +503,11 @@ namespace Content.Infrastructure.Data.Migrations
                 });
 
             modelBuilder.Entity("Content.Core.Entities.BlogPostCollection", b =>
+                {
+                    b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("Content.Core.Entities.Gallery", b =>
                 {
                     b.Navigation("Items");
                 });

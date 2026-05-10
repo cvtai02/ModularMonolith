@@ -204,10 +204,10 @@ public class CreateOrder(
     private static string NormalizePaymentProvider(string? paymentProvider) =>
         string.IsNullOrWhiteSpace(paymentProvider) ? "CashOnDelivery" : paymentProvider.Trim();
 
-    private static string GenerateOrderCode()
+    private string GenerateOrderCode()
     {
         Span<byte> bytes = stackalloc byte[1];
         RandomNumberGenerator.Fill(bytes);
-        return $"{DateTime.UtcNow:yyyyMMddHHmm}{Convert.ToHexString(bytes)}";
+        return $"{DateTime.UtcNow:yyMMddHHmmss}{Convert.ToHexString(bytes)}";
     }
 }

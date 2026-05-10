@@ -90,6 +90,8 @@ export default function AdminCreateOrderPage() {
     },
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const { mutateAsync: createOrder, isPending } = useMutation({
     mutationFn: orderClient.adminCreateOrder.bind(orderClient),
   });
@@ -141,6 +143,7 @@ export default function AdminCreateOrderPage() {
       return;
     }
 
+    setIsSubmitting(true);
     let orderCode: string;
     try {
       const result = await createOrder({
@@ -169,6 +172,7 @@ export default function AdminCreateOrderPage() {
         toast.error("Out of stock. Adjust quantities and try again.");
         return;
       }
+      setIsSubmitting(false);
       if (!applyValidationErrors(err, setError)) {
         toast.error("Failed to place order. Please check the form and try again.");
       }
@@ -241,8 +245,8 @@ export default function AdminCreateOrderPage() {
           <Button variant="ghost" size="sm" type="button" onClick={() => navigate(ROUTES.orders)}>
             Discard
           </Button>
-          <Button size="sm" type="button" disabled={isPending} onClick={doSubmit}>
-            {isPending ? "Placing…" : "Place order"}
+          <Button size="sm" type="button" disabled={isPending || isSubmitting} onClick={doSubmit}>
+            {isPending || isSubmitting ? "Placing…" : "Place order"}
           </Button>
         </div>
       </div>

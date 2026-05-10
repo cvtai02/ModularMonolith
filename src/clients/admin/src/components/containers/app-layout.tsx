@@ -83,6 +83,7 @@ const navItems: NavItem[] = [
       { label: "Menus",             to: ROUTES.contentMenus },
       { label: "Blogs Post",        to: ROUTES.contentBlogs },
       { label: "Blog Collections",  to: ROUTES.contentBlogCollections },
+      { label: "Galleries",         to: ROUTES.contentGalleries },
       { label: "Metaobjects",       to: ROUTES.contentMetaobjects },
     ],
   },
@@ -280,7 +281,7 @@ export default function AppLayout() {
                       <p className="text-xs text-muted-foreground">No notifications</p>
                     </div>
                   ) : (
-                    notifications.map((n, i) => (
+                    notifications.map((n) => (
                       <div
                         key={n.id}
                         className={`flex items-start gap-3 px-3 py-2.5 cursor-pointer border-b last:border-0 transition-colors ${n.isRead ? "hover:bg-muted/50" : "bg-primary/5 hover:bg-primary/10"}`}

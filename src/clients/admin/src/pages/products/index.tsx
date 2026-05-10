@@ -19,6 +19,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
+  Combobox,
+  ComboboxContent,
+  ComboboxItem,
+  ComboboxList,
+  ComboboxTrigger,
+} from "@/components/ui/combobox";
+import { cn } from "@/lib/utils";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -37,7 +45,7 @@ import {
 import { useProductCatalogClient } from "@/components/containers/api-client-provider";
 import { AdminErrorState } from "@/components/admin/admin-page";
 import { ROUTES } from "@/configs/routes";
-import type { ProductResponse } from "@shared/api/types/productcatalog";
+import type { ProductSummaryResponse } from "@shared/api/types/productcatalog";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -54,17 +62,13 @@ function formatPrice(amount: number | null | undefined, currency: string | null 
   return new Intl.NumberFormat(locale, { style: "currency", currency: cur }).format(Number(amount));
 }
 
-function priceDisplay(product: ProductResponse) {
-  const variants = product.variants ?? [];
-  if (variants.length === 0) return formatPrice(product.price, product.currency);
-  const prices = variants
-    .map((v) => Number(v.useProductPricing ? product.price : v.price))
-    .filter((p) => !isNaN(p) && p > 0);
-  if (prices.length === 0) return formatPrice(product.price, product.currency);
-  const min = Math.min(...prices);
-  const max = Math.max(...prices);
-  if (min === max) return formatPrice(min, product.currency);
-  return `${formatPrice(min, product.currency)} – ${formatPrice(max, product.currency)}`;
+function priceDisplay(product: ProductSummaryResponse) {
+  const { lowestPrice, highestPrice, price, currency } = product;
+  const lo = lowestPrice ?? price;
+  const hi = highestPrice ?? price;
+  if (!lo && !hi) return formatPrice(price, currency);
+  if (lo === hi) return formatPrice(lo, currency);
+  return `${formatPrice(lo, currency)} – ${formatPrice(hi, currency)}`;
 }
 
 function StatusBadge({ status }: { status?: string | null }) {
@@ -78,6 +82,56 @@ function StatusBadge({ status }: { status?: string | null }) {
   if (status === "Draft") return <Badge variant="secondary" className="text-xs font-normal">Draft</Badge>;
   if (status === "Unlisted") return <Badge variant="outline" className="text-xs font-normal">Unlisted</Badge>;
   return <Badge variant="outline" className="text-xs font-normal">{status ?? "—"}</Badge>;
+}
+
+// ─── Filter combobox ──────────────────────────────────────────────────────
+
+type FilterOption = { value: string; label: string };
+
+function FilterCombobox({
+  value,
+  onChange,
+  options,
+  placeholder = "Select…",
+  searchable = false,
+  className,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  options: FilterOption[];
+  placeholder?: string;
+  searchable?: boolean;
+  className?: string;
+}) {
+  const displayLabel = options.find((o) => o.value === value)?.label ?? placeholder;
+
+  return (
+    <Combobox value={value} onValueChange={onChange}>
+      <Button
+        variant="outline"
+        size="sm"
+        render={
+          <ComboboxTrigger
+            className={cn("justify-between gap-1.5 font-normal", className)}
+          />
+        }
+      >
+        <span className="truncate">{displayLabel}</span>
+      </Button>
+      <ComboboxContent>
+        {searchable && (
+          <ComboboxInput showTrigger={false} placeholder="Search…" />
+        )}
+        <ComboboxList>
+          {options.map((opt) => (
+            <ComboboxItem key={opt.value} value={opt.value}>
+              {opt.label}
+            </ComboboxItem>
+          ))}
+        </ComboboxList>
+      </ComboboxContent>
+    </Combobox>
+  );
 }
 
 // ─── Sort header cell ──────────────────────────────────────────────────────
@@ -214,43 +268,44 @@ export default function ProductsPage() {
           </div>
 
           {/* Status filter */}
-          <select
+          <FilterCombobox
             value={statusFilter}
-            onChange={(e) => handleStatusFilter(e.target.value as StatusFilter)}
-            className="rounded-md border bg-background px-2.5 py-1.5 text-sm outline-none focus:ring-1 focus:ring-ring"
-          >
-            <option value="">All statuses</option>
-            <option value="Active">Active</option>
-            <option value="Draft">Draft</option>
-            <option value="Unlisted">Unlisted</option>
-          </select>
+            onChange={(v) => handleStatusFilter(v as StatusFilter)}
+            options={[
+              { value: "", label: "All statuses" },
+              { value: "Active", label: "Active" },
+              { value: "Draft", label: "Draft" },
+              { value: "Unlisted", label: "Unlisted" },
+            ]}
+            placeholder="All statuses"
+            className="w-36"
+          />
 
           {/* Category filter */}
           {categories.length > 0 && (
-            <select
+            <FilterCombobox
               value={categoryFilter}
-              onChange={(e) => handleCategoryFilter(e.target.value)}
-              className="rounded-md border bg-background px-2.5 py-1.5 text-sm outline-none focus:ring-1 focus:ring-ring max-w-40"
-            >
-              <option value="">All categories</option>
-              {categories.map((cat) => (
-                <option key={cat.name} value={cat.name ?? ""}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
+              onChange={handleCategoryFilter}
+              options={[
+                { value: "", label: "All categories" },
+                ...categories.map((cat) => ({
+                  value: cat.name ?? "",
+                  label: cat.name ?? "",
+                })),
+              ]}
+              placeholder="All categories"
+              className="w-40"
+            />
           )}
 
           {/* Page size */}
-          <select
-            value={pageSize}
-            onChange={(e) => { setPageSize(Number(e.target.value)); setPage(1); }}
-            className="rounded-md border bg-background px-2.5 py-1.5 text-sm outline-none focus:ring-1 focus:ring-ring"
-          >
-            {PAGE_SIZES.map((s) => (
-              <option key={s} value={s}>{s} / page</option>
-            ))}
-          </select>
+          <FilterCombobox
+            value={String(pageSize)}
+            onChange={(v) => { setPageSize(Number(v)); setPage(1); }}
+            options={PAGE_SIZES.map((s) => ({ value: String(s), label: `${s} / page` }))}
+            placeholder={`${pageSize} / page`}
+            className="w-28"
+          />
         </div>
 
         {/* Table */}
@@ -273,7 +328,6 @@ export default function ProductsPage() {
                   <SortHead field="price" label="Price" sort={sort} onSort={handleSort} />
                   <SortHead field="stock" label="Stock" sort={sort} onSort={handleSort} />
                   <TableHead>Sold</TableHead>
-                  <TableHead>Variants</TableHead>
                   <TableHead className="w-10" />
                 </TableRow>
               </TableHeader>
@@ -288,13 +342,12 @@ export default function ProductsPage() {
                       <TableCell><Skeleton className="h-4 w-20" /></TableCell>
                       <TableCell><Skeleton className="h-4 w-10" /></TableCell>
                       <TableCell><Skeleton className="h-4 w-10" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-8" /></TableCell>
                       <TableCell />
                     </TableRow>
                   ))
                 ) : products.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={9}>
+                    <TableCell colSpan={8}>
                       <div className="flex flex-col items-center gap-3 py-16 text-center">
                         <PackageIcon className="size-10 text-muted-foreground/40" />
                         <div className="flex flex-col gap-1">
@@ -377,12 +430,10 @@ function ProductRow({
   onView,
   onEdit,
 }: {
-  product: ProductResponse;
+  product: ProductSummaryResponse;
   onView: () => void;
   onEdit: () => void;
 }) {
-  const variantCount = product.variants?.length ?? 0;
-  const tracked = product.trackInventory ?? false;
   const stock = product.stock ?? 0;
 
   return (
@@ -413,15 +464,10 @@ function ProductRow({
         {priceDisplay(product)}
       </TableCell>
       <TableCell className="text-sm tabular-nums">
-        {tracked
-          ? <span className={stock === 0 ? "text-destructive font-medium" : ""}>{stock}</span>
-          : <span className="italic text-muted-foreground">—</span>}
+        <span className={stock === 0 ? "text-destructive font-medium" : ""}>{stock}</span>
       </TableCell>
       <TableCell className="text-sm tabular-nums text-muted-foreground">
         {product.sold ?? 0}
-      </TableCell>
-      <TableCell className="text-sm text-muted-foreground">
-        {variantCount > 0 ? variantCount : <span className="italic opacity-50">—</span>}
       </TableCell>
       <TableCell onClick={(e) => e.stopPropagation()}>
         <DropdownMenu>

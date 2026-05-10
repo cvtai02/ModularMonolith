@@ -14,6 +14,7 @@ export interface IPaymentClient {
   // Wrapper response is generated in src/clients/shared/api/types/payment.ts.
   listPaymentMethods(): Promise<ListPaymentMethodsResponse>;
 
+  // Auth: AuthenticatedUserUp. Order must belong to the current user.
   // Request: src/Modules/Payment/DTOs/CreateCheckoutRequest.cs
   // Response: src/Modules/Payment/DTOs/PaymentTransactionResponse.cs
   createCheckout(orderCode: string, input: CreatePaymentCheckoutRequest): Promise<CreatePaymentCheckoutResponse>;

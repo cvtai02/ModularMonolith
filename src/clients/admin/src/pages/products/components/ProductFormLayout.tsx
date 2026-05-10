@@ -18,7 +18,6 @@ import { VariantsSection } from "./VariantsSection";
 import { InventoryCard } from "./InventoryCard";
 import { PricingCard } from "./PricingCard";
 import { ShippingCard } from "./ShippingCard";
-import { VariantImageCard } from "./VariantImageCard";
 
 type Props = {
   title: string;
@@ -73,6 +72,10 @@ export function ProductFormLayout({
 
   const [options, setOptions] = useState<OptionEntry[]>(initialOptions ?? []);
   const [variantOverrides, setVariantOverrides] = useState<Record<string, VariantOverride>>(initialVariantOverrides ?? {});
+  // Stays true from the moment async submit work starts until the component unmounts
+  // (navigation) or an error lets the user retry. Prevents the button flashing enabled
+  // between useMutation isPending → false and the subsequent navigate() call.
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   const variants = useMemo(() => deriveVariants(options, variantOverrides), [options, variantOverrides]);
@@ -170,6 +173,18 @@ export function ProductFormLayout({
     );
   }, []);
 
+  const reorderValues = useCallback((optId: string, from: number, to: number) => {
+    setOptions((p) =>
+      p.map((opt) => {
+        if (opt.localId !== optId) return opt;
+        const next = [...opt.values];
+        const [item] = next.splice(from, 1);
+        next.splice(to, 0, item);
+        return { ...opt, values: next };
+      })
+    );
+  }, []);
+
   // ── Variant override ──
   const updateVariant = useCallback((localId: string, update: Partial<VariantOverride>) => {
     setVariantOverrides((p) => ({
@@ -256,9 +271,11 @@ export function ProductFormLayout({
       return;
     }
 
+    setIsSubmitting(true);
     try {
       await onSubmit(values, flushed, flushedVariants, statusOverride);
     } catch (err) {
+      setIsSubmitting(false);
       if (!applyValidationErrors(err, setError, FIELD_MAP)) {
         // Show the raw message for section-level errors (e.g. "options", "variants")
         // that don't bind to a single field.
@@ -286,10 +303,10 @@ export function ProductFormLayout({
           <Button variant="ghost" size="sm" type="button" onClick={onDiscard}>
             Discard
           </Button>
-          <Button variant="outline" size="sm" type="button" disabled={isPending} onClick={handleSaveDraft}>
+          <Button variant="outline" size="sm" type="button" disabled={isPending || isSubmitting} onClick={handleSaveDraft}>
             Save draft
           </Button>
-          <Button size="sm" type="button" disabled={isPending} onClick={handleSave}>
+          <Button size="sm" type="button" disabled={isPending || isSubmitting} onClick={handleSave}>
             {isPending ? "Saving…" : "Save"}
           </Button>
         </div>
@@ -319,6 +336,7 @@ export function ProductFormLayout({
             onPendingChange={updatePending}
             onCommitPending={commitPending}
             onRemoveValue={removeValue}
+            onReorderValues={reorderValues}
             duplicateNameIds={duplicateNameIds}
           />
           <VariantsSection
@@ -329,16 +347,11 @@ export function ProductFormLayout({
             variantGroups={variantGroups}
             productPrice={watchPrice}
             onBulkUpdateVariants={bulkUpdateVariants}
+            onUpdateVariantImage={updateVariantImage}
           />
         </div>
 
         <div className="flex flex-col gap-4 lg:sticky lg:top-14 lg:self-start lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto *:shrink-0">
-          {selectedVariant && (
-            <VariantImageCard
-              selectedVariant={selectedVariant}
-              onChangeImage={(imageKey) => updateVariantImage(selectedVariant.localId, imageKey)}
-            />
-          )}
           <PricingCard
             register={register}
             control={control}

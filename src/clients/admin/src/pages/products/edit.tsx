@@ -143,9 +143,9 @@ export default function EditProductPage() {
         displayOrder,
         values: opt.values,
       })),
-      // Edit page only sends variants the backend already knows about. New combos
-      // derived from newly-added option values are skipped — backend creates them.
-      variants: buildVariantsPayload(variants, hasVariants, { existingOnly: true }),
+      // All variants are submitted — existing ones carry their id, new combos
+      // (from newly-added option values) omit id and the backend generates one.
+      variants: buildVariantsPayload(variants, hasVariants),
     });
 
     // Second call: Inventory — uses IDs returned by the catalog.

@@ -12,6 +12,8 @@ public class ContentDbContext: TenancyDbContext
     public DbSet<BlogPost> BlogPosts => Set<BlogPost>();
     public DbSet<BlogPostCollection> BlogPostCollections => Set<BlogPostCollection>();
     public DbSet<BlogPostCollectionItem> BlogPostCollectionItems => Set<BlogPostCollectionItem>();
+    public DbSet<Gallery> Galleries => Set<Gallery>();
+    public DbSet<GalleryItem> GalleryItems => Set<GalleryItem>();
     public DbSet<MetaObject> MetaObjects => Set<MetaObject>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -45,6 +47,21 @@ public class ContentDbContext: TenancyDbContext
 
         modelBuilder.Entity<BlogPostCollectionItem>()
             .HasIndex(x => new { x.TenantId, x.BlogPostCollectionId, x.DisplayOrder })
+            .IsUnique()
+            .HasFilter("\"IsDeleted\" = false");
+
+        modelBuilder.Entity<Gallery>()
+            .HasIndex(x => new { x.TenantId, x.Key })
+            .IsUnique()
+            .HasFilter("\"IsDeleted\" = false");
+
+        modelBuilder.Entity<GalleryItem>()
+            .HasOne(x => x.Gallery)
+            .WithMany(x => x.Items)
+            .HasForeignKey(x => x.GalleryId);
+
+        modelBuilder.Entity<GalleryItem>()
+            .HasIndex(x => new { x.TenantId, x.GalleryId, x.DisplayOrder })
             .IsUnique()
             .HasFilter("\"IsDeleted\" = false");
     }

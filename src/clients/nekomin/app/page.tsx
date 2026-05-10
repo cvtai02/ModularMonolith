@@ -1,98 +1,13 @@
 import Image from "next/image";
 import "./landing.css";
+import { ContentClient } from "@modular-monolith/clients-shared/api/clients";
+import { appFetch } from "@/app/configs/appFetch";
 import { HeroCarousel } from "./components/hero-carousel";
+import type { HeroSlide } from "./components/hero-carousel";
 import { PawCursor } from "./components/paw-cursor";
 import { RevealOnScroll } from "./components/reveal-on-scroll";
+import { resolveMediaUrl } from "./lib/media";
 
-const PIECES = [
-  {
-    bg: "oklch(92% 0.03 60)",
-    patternId: "p1",
-    patternEl: (
-      <pattern id="p1" width="16" height="16" patternUnits="userSpaceOnUse">
-        <line x1="0" y1="16" x2="16" y2="0" stroke="oklch(80% 0.04 60)" strokeWidth="0.8" />
-      </pattern>
-    ),
-    fill: "oklch(92% 0.03 60)",
-    label: "phụ kiện",
-    name: "Túi Tote Linen",
-    desc: "Vải linen dệt tay, quai da mộc. Tối giản mà tinh tế.",
-  },
-  {
-    bg: "oklch(90% 0.04 50)",
-    patternId: "p2",
-    patternEl: (
-      <pattern id="p2" width="20" height="20" patternUnits="userSpaceOnUse">
-        <circle cx="10" cy="10" r="1.5" fill="oklch(78% 0.05 50)" />
-      </pattern>
-    ),
-    fill: "oklch(90% 0.04 50)",
-    label: "detox",
-    name: "Bộ Nghi Thức Sáng",
-    desc: "Cọ khô, con lăn ngọc & trà thảo mộc. Mười phút cho bản thân.",
-  },
-  {
-    bg: "oklch(94% 0.025 75)",
-    patternId: "p3",
-    patternEl: (
-      <pattern id="p3" width="24" height="24" patternUnits="userSpaceOnUse">
-        <rect x="0" y="0" width="12" height="12" fill="oklch(88% 0.03 75)" />
-        <rect x="12" y="12" width="12" height="12" fill="oklch(88% 0.03 75)" />
-      </pattern>
-    ),
-    fill: "oklch(94% 0.025 75)",
-    label: "decor",
-    name: "Nến Amber Glow",
-    desc: "Sáp ong nguyên chất, hương đàn hương & bergamot.",
-  },
-  {
-    bg: "oklch(91% 0.03 55)",
-    patternId: "p4",
-    patternEl: (
-      <pattern id="p4" width="18" height="18" patternUnits="userSpaceOnUse">
-        <line x1="0" y1="0" x2="18" y2="18" stroke="oklch(80% 0.04 55)" strokeWidth="0.7" />
-      </pattern>
-    ),
-    fill: "oklch(91% 0.03 55)",
-    label: "decor",
-    name: "Kệ Mây Treo Tường",
-    desc: "Đan tay từ mây tự nhiên. Đặt cây, gốm, hay những khoảnh khắc tĩnh.",
-  },
-  {
-    bg: "oklch(93% 0.022 65)",
-    patternId: "p5",
-    patternEl: (
-      <pattern id="p5" width="14" height="14" patternUnits="userSpaceOnUse">
-        <circle cx="7" cy="0" r="1" fill="oklch(82% 0.03 65)" />
-        <circle cx="0" cy="7" r="1" fill="oklch(82% 0.03 65)" />
-        <circle cx="14" cy="7" r="1" fill="oklch(82% 0.03 65)" />
-        <circle cx="7" cy="14" r="1" fill="oklch(82% 0.03 65)" />
-      </pattern>
-    ),
-    fill: "oklch(93% 0.022 65)",
-    label: "detox",
-    name: "Trà Detox Rừng Xanh",
-    desc: "Tầm ma, bồ công anh & húng quế thánh. Pha, nhấm nháp, buông bỏ.",
-  },
-  {
-    bg: "oklch(89% 0.04 52)",
-    patternId: "p6",
-    patternEl: (
-      <pattern id="p6" width="22" height="22" patternUnits="userSpaceOnUse">
-        <polygon
-          points="11,1 13,8 20,8 14,13 16,20 11,15 6,20 8,13 2,8 9,8"
-          fill="none"
-          stroke="oklch(76% 0.05 52)"
-          strokeWidth="0.6"
-        />
-      </pattern>
-    ),
-    fill: "oklch(89% 0.04 52)",
-    label: "decor",
-    name: "Bình Gốm Wabi-Sabi",
-    desc: "Gốm thủ công men tự nhiên. Không hoàn hảo theo chủ ý.",
-  },
-];
 
 const MARQUEE_ITEMS = [
   "Sống chậm · Sống đẹp",
@@ -102,25 +17,26 @@ const MARQUEE_ITEMS = [
   "Vẻ đẹp trong sự tối giản",
 ];
 
-const CATEGORIES = [
-  {
-    icon: "🪢",
-    name: "Phụ Kiện",
-    desc: "Túi, trang sức & những thứ mang theo mỗi ngày — đẹp từ bên ngoài lẫn bên trong.",
-  },
-  {
-    icon: "🌿",
-    name: "Detox",
-    desc: "Trà thảo mộc, dụng cụ nghi thức & skincare thanh lọc cơ thể, làm dịu tâm trí.",
-  },
-  {
-    icon: "🕯️",
-    name: "Decor",
-    desc: "Nến, gốm & mây tre cho một ngôi nhà biết thở cùng bạn.",
-  },
-];
 
-export default function Home() {
+export default async function Home() {
+  const contentClient = new ContentClient(appFetch, process.env.NEXT_PUBLIC_API_BASE_URL ?? "");
+
+  const [heroGallery, bestSellerGallery] = await Promise.all([
+    contentClient.getPublicGalleryByKey("herro").catch((err) => { console.error("[hero gallery]", err); return null; }),
+    contentClient.getPublicGalleryByKey("best-seller").catch((err) => { console.error("[best-seller gallery]", err); return null; }),
+  ]);
+
+  const heroSlides: HeroSlide[] = (heroGallery?.items ?? [])
+    .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0))
+    .map((item) => ({
+      imageKey: item.imageKey ?? "",
+      tag: item.note || item.name || "",
+      link: item.link ?? "",
+    }));
+
+  const bestSellerItems = (bestSellerGallery?.items ?? [])
+    .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0));
+
   const marqueeItems = [...MARQUEE_ITEMS, ...MARQUEE_ITEMS];
 
   return (
@@ -132,7 +48,7 @@ export default function Home() {
         <span className="site-logo-name">Nekomin</span>
       </a>
 
-      <HeroCarousel />
+      <HeroCarousel slides={heroSlides.length > 0 ? heroSlides : undefined} />
       <PawCursor />
 
       <div className="marquee-strip">
@@ -146,47 +62,41 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="categories">
-        {CATEGORIES.map((cat) => (
-          <a key={cat.name} href={`#${cat.name}`} className="cat-pill">
-            <div className="cat-pill-icon">{cat.icon}</div>
-            <div className="cat-pill-name">{cat.name}</div>
-            <div className="cat-pill-desc">{cat.desc}</div>
-          </a>
-        ))}
-      </div>
-
-      <section className="shop" id="lookbook">
-        <RevealOnScroll>
-          <div className="products-grid">
-            {PIECES.map((p, i) => (
-              <div key={i} className="product-card">
-                <div className="product-image" style={{ background: p.bg }}>
-                  <svg
-                    viewBox="0 0 320 480"
-                    xmlns="http://www.w3.org/2000/svg"
-                    preserveAspectRatio="xMidYMid slice"
-                  >
-                    <defs>{p.patternEl}</defs>
-                    <rect width="320" height="480" fill={p.fill} />
-                    <rect width="320" height="480" fill={`url(#${p.patternId})`} />
-                  </svg>
-                  <div className="product-img-label">{p.label}</div>
-                </div>
-                <div className="product-overlay">
-                  <div className="product-name">{p.name}</div>
-                  <div className="product-desc">{p.desc}</div>
-                </div>
+      {bestSellerItems.length > 0 && (() => {
+        const cols: typeof bestSellerItems[] = [[], [], []];
+        bestSellerItems.forEach((item, i) => cols[i % 3].push(item));
+        return (
+          <section className="shop" id="lookbook">
+            <RevealOnScroll>
+              <div className="products-grid">
+                {cols.map((col, ci) => (
+                  <div key={ci} className="products-col">
+                    {col.map((item, i) => {
+                      const imageUrl = resolveMediaUrl(item.imageKey ?? "");
+                      const card = (
+                        <div className="product-card">
+                          <div className="product-image">
+                            {imageUrl && <img src={imageUrl} alt={item.name ?? ""} className="product-img" />}
+                          </div>
+                          <div className="product-overlay">
+                            <div className="product-name">{item.name}</div>
+                            {item.note && <div className="product-desc">{item.note}</div>}
+                          </div>
+                        </div>
+                      );
+                      return item.link ? (
+                        <a key={i} href={item.link} className="product-card-link">{card}</a>
+                      ) : <div key={i}>{card}</div>;
+                    })}
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </RevealOnScroll>
-      </section>
+            </RevealOnScroll>
+          </section>
+        );
+      })()}
 
       <section className="blog" id="blog">
-        <div className="blog-header">
-          <h2 className="section-title">✦ Trải nghiệm ✦</h2>
-        </div>
         <div className="blog-grid">
           <article className="blog-card">
             <div className="blog-img" style={{ background: "oklch(88% 0.04 62)" }}>

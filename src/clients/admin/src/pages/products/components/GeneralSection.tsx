@@ -17,9 +17,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import type { CategoryResponse } from "@shared/api/types/productcatalog";
 import { ImagePickerField } from "@/components/admin/image-picker-field";
+import { MarkdownEditor } from "@/components/admin/markdown-editor";
 import type { FormValues } from "./types";
 
 type Props = {
@@ -88,12 +88,17 @@ export function GeneralSection({ register, control, errors, categories }: Props)
 
           <Field>
             <FieldLabel>Description</FieldLabel>
-            <Textarea
-              {...register("description", {
-                maxLength: { value: 2000, message: "Max 2000 characters" },
-              })}
-              placeholder="Describe your product…"
-              rows={4}
+            <Controller
+              control={control}
+              name="description"
+              render={({ field }) => (
+                <MarkdownEditor
+                  value={field.value}
+                  onChange={field.onChange}
+                  placeholder="Describe your product…"
+                  rows={10}
+                />
+              )}
             />
             {errors.description && <FieldError>{errors.description.message}</FieldError>}
           </Field>

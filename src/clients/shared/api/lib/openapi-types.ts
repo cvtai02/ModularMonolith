@@ -1724,6 +1724,235 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/Content/galleries/{key}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    key: components["schemas"]["System.String"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["Content.DTOs.Galleries.GalleryResponse"];
+                        "application/json": components["schemas"]["Content.DTOs.Galleries.GalleryResponse"];
+                        "text/json": components["schemas"]["Content.DTOs.Galleries.GalleryResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Content/galleries/admin": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    PageNumber?: components["schemas"]["System.Int32"];
+                    PageSize?: components["schemas"]["System.Int32"];
+                    Search?: components["schemas"]["System.String"];
+                    IsPublic?: components["schemas"]["System.Nullable`1[[System.Boolean, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
+                    SortBy?: components["schemas"]["System.String"];
+                    SortDirection?: components["schemas"]["System.String"];
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["SharedKernel.DTOs.PaginatedList`1[[Content.DTOs.Galleries.GallerySummaryResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+                        "application/json": components["schemas"]["SharedKernel.DTOs.PaginatedList`1[[Content.DTOs.Galleries.GallerySummaryResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+                        "text/json": components["schemas"]["SharedKernel.DTOs.PaginatedList`1[[Content.DTOs.Galleries.GallerySummaryResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Content/galleries/admin/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: components["schemas"]["System.Int32"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["Content.DTOs.Galleries.GalleryResponse"];
+                        "application/json": components["schemas"]["Content.DTOs.Galleries.GalleryResponse"];
+                        "text/json": components["schemas"]["Content.DTOs.Galleries.GalleryResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Content/galleries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["Content.DTOs.Galleries.CreateGalleryRequest"];
+                    "text/json": components["schemas"]["Content.DTOs.Galleries.CreateGalleryRequest"];
+                    "application/*+json": components["schemas"]["Content.DTOs.Galleries.CreateGalleryRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["Content.DTOs.Galleries.GalleryResponse"];
+                        "application/json": components["schemas"]["Content.DTOs.Galleries.GalleryResponse"];
+                        "text/json": components["schemas"]["Content.DTOs.Galleries.GalleryResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Content/galleries/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: components["schemas"]["System.Int32"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["Content.DTOs.Galleries.UpdateGalleryRequest"];
+                    "text/json": components["schemas"]["Content.DTOs.Galleries.UpdateGalleryRequest"];
+                    "application/*+json": components["schemas"]["Content.DTOs.Galleries.UpdateGalleryRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["Content.DTOs.Galleries.GalleryResponse"];
+                        "application/json": components["schemas"]["Content.DTOs.Galleries.GalleryResponse"];
+                        "text/json": components["schemas"]["Content.DTOs.Galleries.GalleryResponse"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: components["schemas"]["System.Int32"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/setup/seed-admin": {
         parameters: {
             query?: never;
@@ -2651,9 +2880,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["SharedKernel.DTOs.PaginatedList`1[[ProductCatalog.DTOs.Products.ProductResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
-                        "application/json": components["schemas"]["SharedKernel.DTOs.PaginatedList`1[[ProductCatalog.DTOs.Products.ProductResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
-                        "text/json": components["schemas"]["SharedKernel.DTOs.PaginatedList`1[[ProductCatalog.DTOs.Products.ProductResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+                        "text/plain": components["schemas"]["SharedKernel.DTOs.PaginatedList`1[[ProductCatalog.DTOs.Products.ProductSummaryResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+                        "application/json": components["schemas"]["SharedKernel.DTOs.PaginatedList`1[[ProductCatalog.DTOs.Products.ProductSummaryResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+                        "text/json": components["schemas"]["SharedKernel.DTOs.PaginatedList`1[[ProductCatalog.DTOs.Products.ProductSummaryResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
                     };
                 };
             };
@@ -2982,6 +3211,54 @@ export interface components {
             contentType: components["schemas"]["System.String"];
             size: components["schemas"]["System.Int64"];
             publicUrl: components["schemas"]["System.String"];
+        };
+        "Content.DTOs.Galleries.CreateGalleryRequest": {
+            key: components["schemas"]["System.String"];
+            name: components["schemas"]["System.String"];
+            note?: null | components["schemas"]["System.String"];
+            isPublic?: components["schemas"]["System.Boolean"];
+            items?: components["schemas"]["System.Collections.Generic.List`1[[Content.DTOs.Galleries.SaveGalleryItemRequest, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+        };
+        "Content.DTOs.Galleries.GalleryItemResponse": {
+            id: components["schemas"]["System.Int32"];
+            imageKey: components["schemas"]["System.String"];
+            displayOrder: components["schemas"]["System.Int32"];
+            name: components["schemas"]["System.String"];
+            note: components["schemas"]["System.String"];
+            link: components["schemas"]["System.String"];
+        };
+        "Content.DTOs.Galleries.GalleryResponse": {
+            id: components["schemas"]["System.Int32"];
+            key: components["schemas"]["System.String"];
+            name: components["schemas"]["System.String"];
+            note: components["schemas"]["System.String"];
+            isPublic: components["schemas"]["System.Boolean"];
+            items: components["schemas"]["System.Collections.Generic.List`1[[Content.DTOs.Galleries.GalleryItemResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+            created: components["schemas"]["System.DateTimeOffset"];
+            lastModified: components["schemas"]["System.DateTimeOffset"];
+        };
+        "Content.DTOs.Galleries.GallerySummaryResponse": {
+            id: components["schemas"]["System.Int32"];
+            key: components["schemas"]["System.String"];
+            name: components["schemas"]["System.String"];
+            note: components["schemas"]["System.String"];
+            isPublic: components["schemas"]["System.Boolean"];
+            itemCount: components["schemas"]["System.Int32"];
+            created: components["schemas"]["System.DateTimeOffset"];
+            lastModified: components["schemas"]["System.DateTimeOffset"];
+        };
+        "Content.DTOs.Galleries.SaveGalleryItemRequest": {
+            imageKey: components["schemas"]["System.String"];
+            displayOrder?: components["schemas"]["System.Int32"];
+            name?: null | components["schemas"]["System.String"];
+            note?: null | components["schemas"]["System.String"];
+            link?: null | components["schemas"]["System.String"];
+        };
+        "Content.DTOs.Galleries.UpdateGalleryRequest": {
+            name: components["schemas"]["System.String"];
+            note?: null | components["schemas"]["System.String"];
+            isPublic?: components["schemas"]["System.Boolean"];
+            items?: components["schemas"]["System.Collections.Generic.List`1[[Content.DTOs.Galleries.SaveGalleryItemRequest, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
         };
         "Identity.Api.AdminAccountInput": {
             email: components["schemas"]["System.String"];
@@ -3313,7 +3590,6 @@ export interface components {
             useProductInventory: components["schemas"]["System.Boolean"];
             quantity: components["schemas"]["System.Int32"];
             trackInventory: null | components["schemas"]["System.Nullable`1[[System.Boolean, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
-            lowStockThreshold: null | components["schemas"]["System.Nullable`1[[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
             allowBackorder: null | components["schemas"]["System.Nullable`1[[System.Boolean, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
             useProductShipping: components["schemas"]["System.Boolean"];
             physicalProduct: null | components["schemas"]["System.Nullable`1[[System.Boolean, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"];
@@ -3365,6 +3641,23 @@ export interface components {
             medias: components["schemas"]["System.Collections.Generic.List`1[[ProductCatalog.DTOs.Products.ProductMediaResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
             options: components["schemas"]["System.Collections.Generic.List`1[[ProductCatalog.DTOs.Products.OptionResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
             variants: components["schemas"]["System.Collections.Generic.List`1[[ProductCatalog.DTOs.Products.VariantResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+        };
+        "ProductCatalog.DTOs.Products.ProductSummaryResponse": {
+            id: components["schemas"]["System.String"];
+            name: components["schemas"]["System.String"];
+            slug: components["schemas"]["System.String"];
+            imageUrl: components["schemas"]["System.String"];
+            status: components["schemas"]["ProductCatalog.Core.Entities.ProductStatus"];
+            categoryId: components["schemas"]["System.Int32"];
+            categoryName: components["schemas"]["System.String"];
+            price: components["schemas"]["System.Decimal"];
+            lowestPrice: components["schemas"]["System.Decimal"];
+            highestPrice: components["schemas"]["System.Decimal"];
+            currency: components["schemas"]["SharedKernel.Enums.Currency"];
+            stock: components["schemas"]["System.Int32"];
+            sold: components["schemas"]["System.Int32"];
+            created: components["schemas"]["System.DateTimeOffset"];
+            lastModified: components["schemas"]["System.DateTimeOffset"];
         };
         "ProductCatalog.DTOs.Products.UpdateProductRequest": {
             id?: null | components["schemas"]["System.String"];
@@ -3479,6 +3772,14 @@ export interface components {
             hasPreviousPage: components["schemas"]["System.Boolean"];
             hasNextPage: components["schemas"]["System.Boolean"];
         };
+        "SharedKernel.DTOs.PaginatedList`1[[Content.DTOs.Galleries.GallerySummaryResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": {
+            items: components["schemas"]["System.Collections.Generic.List`1[[Content.DTOs.Galleries.GallerySummaryResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+            pageNumber: components["schemas"]["System.Int32"];
+            totalPages: components["schemas"]["System.Int32"];
+            totalCount: components["schemas"]["System.Int32"];
+            hasPreviousPage: components["schemas"]["System.Boolean"];
+            hasNextPage: components["schemas"]["System.Boolean"];
+        };
         "SharedKernel.DTOs.PaginatedList`1[[Order.DTOs.Orders.OrderSummaryResponse, Order, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": {
             items: components["schemas"]["System.Collections.Generic.List`1[[Order.DTOs.Orders.OrderSummaryResponse, Order, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
             pageNumber: components["schemas"]["System.Int32"];
@@ -3503,8 +3804,8 @@ export interface components {
             hasPreviousPage: components["schemas"]["System.Boolean"];
             hasNextPage: components["schemas"]["System.Boolean"];
         };
-        "SharedKernel.DTOs.PaginatedList`1[[ProductCatalog.DTOs.Products.ProductResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": {
-            items: components["schemas"]["System.Collections.Generic.List`1[[ProductCatalog.DTOs.Products.ProductResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
+        "SharedKernel.DTOs.PaginatedList`1[[ProductCatalog.DTOs.Products.ProductSummaryResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": {
+            items: components["schemas"]["System.Collections.Generic.List`1[[ProductCatalog.DTOs.Products.ProductSummaryResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"];
             pageNumber: components["schemas"]["System.Int32"];
             totalPages: components["schemas"]["System.Int32"];
             totalCount: components["schemas"]["System.Int32"];
@@ -3532,6 +3833,9 @@ export interface components {
         "System.Collections.Generic.List`1[[Content.DTOs.FileObjects.MediaFileResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["Content.DTOs.FileObjects.MediaFileResponse"][];
         "System.Collections.Generic.List`1[[Content.DTOs.FileObjects.PresignedUploadUrlResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["Content.DTOs.FileObjects.PresignedUploadUrlResponse"][];
         "System.Collections.Generic.List`1[[Content.DTOs.FileObjects.UploadResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["Content.DTOs.FileObjects.UploadResponse"][];
+        "System.Collections.Generic.List`1[[Content.DTOs.Galleries.GalleryItemResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["Content.DTOs.Galleries.GalleryItemResponse"][];
+        "System.Collections.Generic.List`1[[Content.DTOs.Galleries.GallerySummaryResponse, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["Content.DTOs.Galleries.GallerySummaryResponse"][];
+        "System.Collections.Generic.List`1[[Content.DTOs.Galleries.SaveGalleryItemRequest, Content, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["Content.DTOs.Galleries.SaveGalleryItemRequest"][];
         "System.Collections.Generic.List`1[[Inventory.DTOs.Inventory.ImportVariantInventoryRowRequest, Inventory, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["Inventory.DTOs.Inventory.ImportVariantInventoryRowRequest"][];
         "System.Collections.Generic.List`1[[Inventory.DTOs.Inventory.ImportVariantInventoryRowResponse, Inventory, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["Inventory.DTOs.Inventory.ImportVariantInventoryRowResponse"][];
         "System.Collections.Generic.List`1[[Inventory.DTOs.Inventory.VariantInventoryConfig, Inventory, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["Inventory.DTOs.Inventory.VariantInventoryConfig"][];
@@ -3547,7 +3851,7 @@ export interface components {
         "System.Collections.Generic.List`1[[ProductCatalog.DTOs.Products.CreateVariantRequest, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["ProductCatalog.DTOs.Products.CreateVariantRequest"][];
         "System.Collections.Generic.List`1[[ProductCatalog.DTOs.Products.OptionResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["ProductCatalog.DTOs.Products.OptionResponse"][];
         "System.Collections.Generic.List`1[[ProductCatalog.DTOs.Products.ProductMediaResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["ProductCatalog.DTOs.Products.ProductMediaResponse"][];
-        "System.Collections.Generic.List`1[[ProductCatalog.DTOs.Products.ProductResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["ProductCatalog.DTOs.Products.ProductResponse"][];
+        "System.Collections.Generic.List`1[[ProductCatalog.DTOs.Products.ProductSummaryResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["ProductCatalog.DTOs.Products.ProductSummaryResponse"][];
         "System.Collections.Generic.List`1[[ProductCatalog.DTOs.Products.VariantOptionValueDto, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["ProductCatalog.DTOs.Products.VariantOptionValueDto"][];
         "System.Collections.Generic.List`1[[ProductCatalog.DTOs.Products.VariantResponse, ProductCatalog, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]": components["schemas"]["ProductCatalog.DTOs.Products.VariantResponse"][];
         "System.Collections.Generic.List`1[[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]": components["schemas"]["System.Int32"][];

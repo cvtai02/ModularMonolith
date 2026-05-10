@@ -6,5 +6,5 @@
 Client contract: [InventoryClient](../../../clients/shared/api/clients/inventory.ts), [IInventoryClient](../../../clients/shared/api/contracts/inventory.ts)
 
 ### ProductInventory
-- [Initialize](ProductInventoryController.cs#L13)
-- [ImportVariants](ProductInventoryController.cs#L20)
+- `POST /api/Inventory/products/{productId}/initialize` - auth: `TenantAdminUp`. DTOs: [InitializeProductInventoryRequest](../DTOs/Inventory/InitializeProductInventoryRequest.cs), [InitializeProductInventoryResponse](../DTOs/Inventory/InitializeProductInventoryResponse.cs).
+- `POST /api/Inventory/variants/import` - auth: `TenantAdminUp`. DTOs: [ImportVariantInventoryRequest](../DTOs/Inventory/ImportVariantInventoryRequest.cs), [ImportVariantInventoryResponse](../DTOs/Inventory/ImportVariantInventoryResponse.cs).

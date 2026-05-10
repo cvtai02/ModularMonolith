@@ -36,6 +36,25 @@ public class ProductResponse
     public List<VariantResponse> Variants { get; set; } = [];
 }
 
+public class ProductSummaryResponse
+{
+    public string Id { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public string Slug { get; set; } = string.Empty;
+    public string ImageUrl { get; set; } = string.Empty;
+    public ProductStatus Status { get; set; }
+    public int CategoryId { get; set; }
+    public string CategoryName { get; set; } = string.Empty;
+    public decimal Price { get; set; }
+    public decimal LowestPrice { get; set; }
+    public decimal HighestPrice { get; set; }
+    public Currency Currency { get; set; }
+    public int Stock { get; set; }
+    public int Sold { get; set; }
+    public DateTimeOffset Created { get; set; }
+    public DateTimeOffset LastModified { get; set; }
+}
+
 public class ProductMediaResponse
 {
     public int Id { get; set; }

@@ -10,8 +10,8 @@ Client contract: [OrderClient](../../../clients/shared/api/clients/order.ts), [I
 - `POST /api/Order/orders/admin` - auth: `TenantAdminUp`. DTOs: [AdminCreateOrderRequest](../DTOs/Orders/AdminCreateOrderRequest.cs), [OrderResponse](../DTOs/Orders/OrderResponse.cs). Creates an order for a selected customer profile.
 - `GET /api/Order/orders/admin` - auth: `TenantAdminUp`. DTOs: [ListOrdersRequest](../DTOs/Orders/ListOrdersRequest.cs), [OrderSummaryResponse](../DTOs/Orders/OrderSummaryResponse.cs). Lists tenant orders for admin.
 - `GET /api/Order/orders/admin/{code}` - auth: `TenantAdminUp`. DTOs: [OrderResponse](../DTOs/Orders/OrderResponse.cs). Gets admin order detail by code.
-- `GET /api/Order/orders/{code}` - auth: none currently. DTOs: [OrderResponse](../DTOs/Orders/OrderResponse.cs). Gets order detail by code.
-- `GET /api/Order/orders` - auth: none currently. DTOs: [ListOrdersRequest](../DTOs/Orders/ListOrdersRequest.cs), [OrderSummaryResponse](../DTOs/Orders/OrderSummaryResponse.cs). Lists orders.
+- `GET /api/Order/orders/{code}` - auth: `AuthenticatedUserUp`. DTOs: [OrderResponse](../DTOs/Orders/OrderResponse.cs). Gets current user's order detail by code.
+- `GET /api/Order/orders` - auth: `AuthenticatedUserUp`. DTOs: [ListOrdersRequest](../DTOs/Orders/ListOrdersRequest.cs), [OrderSummaryResponse](../DTOs/Orders/OrderSummaryResponse.cs). Lists current user's orders.
 
 ### Realtime Order Notifications
 - Hub `/hubs/orders` - auth: authenticated user. Methods: `JoinOrder(orderCode: string)`, `LeaveOrder(orderCode: string)`, `JoinMyOrders()`, `LeaveMyOrders()`.

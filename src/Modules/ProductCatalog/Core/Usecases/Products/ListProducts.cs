@@ -9,18 +9,14 @@ namespace ProductCatalog.Core.Usecases.Products;
 [UsecaseInject]
 public class ListProducts(ProductCatalogDbContext db, IFileManager fileManager)
 {
-    public async Task<PaginatedList<ProductResponse>> ExecuteAsync(
+    public async Task<PaginatedList<ProductSummaryResponse>> ExecuteAsync(
         ListProductsRequest request, CancellationToken ct)
     {
         var query = db.Products
             .AsNoTracking()
             .Include(x => x.Category)
-            .Include(x => x.ShippingInfo)
             .Include(x => x.Medias)
-            .Include(x => x.Options).ThenInclude(x => x.OptionValues)
-            .Include(x => x.Variants).ThenInclude(x => x.OptionValues)
-            .Include(x => x.Variants).ThenInclude(x => x.ShippingInfo)
-            .Include(x => x.Variants).ThenInclude(x => x.Metric)
+            .Include(x => x.Variants)
             .Include(x => x.Metric)
             .AsQueryable();
 
@@ -47,8 +43,8 @@ public class ListProducts(ProductCatalogDbContext db, IFileManager fileManager)
             .Take(request.PageSize)
             .ToListAsync(ct);
 
-        var items = products.Select(p => ProductMapper.ToResponse(p, fileManager)).ToList();
-        return new PaginatedList<ProductResponse>(items, totalCount, request.PageNumber, request.PageSize);
+        var items = products.Select(p => ProductMapper.ToSummary(p, fileManager)).ToList();
+        return new PaginatedList<ProductSummaryResponse>(items, totalCount, request.PageNumber, request.PageSize);
     }
 
     private static IQueryable<Product> ApplySorting(IQueryable<Product> query, ListProductsRequest request)

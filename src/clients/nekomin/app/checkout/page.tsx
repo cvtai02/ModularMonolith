@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
+import { ValidationError } from "@modular-monolith/clients-shared/api/contracts";
 import {
   useOrderClient,
   usePaymentClient,
@@ -136,6 +137,14 @@ export default function CheckoutPage() {
         message: `Unexpected checkout state for ${checkout.provider}: ${checkout.status}`,
       });
     } catch (err: unknown) {
+      // Show orderCode-specific validation errors near the payment action.
+      if (err instanceof ValidationError) {
+        const orderCodeMsgs = err.errors?.OrderCode ?? err.errors?.orderCode;
+        if (orderCodeMsgs?.length) {
+          setResult({ kind: "error", message: orderCodeMsgs[0] });
+          return;
+        }
+      }
       const message = err instanceof Error ? err.message : "Order placement failed.";
       // Sepay backend currently throws NotImplementedException — surface a friendlier message.
       if (/not\s*implement/i.test(message)) {

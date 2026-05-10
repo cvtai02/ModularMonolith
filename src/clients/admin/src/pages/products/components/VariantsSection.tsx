@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MoreHorizontalIcon } from "lucide-react";
+import { ImageIcon, MoreHorizontalIcon } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -22,7 +22,48 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
+import { resolveMediaUrl, urlToMediaKey } from "@/lib/media";
 import type { Variant, VariantOverride } from "./types";
+import { MediaPickerModal } from "./MediaPickerModal";
+
+// ─── Variant image button ────────────────────────────────────────────────────
+
+function VariantImageButton({
+  imageKey,
+  label,
+  onChangeImage,
+}: {
+  imageKey: string;
+  label: string;
+  onChangeImage: (key: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const displayUrl = resolveMediaUrl(imageKey);
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={(e) => { e.stopPropagation(); setOpen(true); }}
+        className="size-8 shrink-0 overflow-hidden rounded border bg-muted flex items-center justify-center text-muted-foreground hover:border-muted-foreground/40 transition-colors"
+      >
+        {displayUrl ? (
+          <img src={displayUrl} alt={label} className="size-full object-cover" />
+        ) : (
+          <ImageIcon className="size-3.5 opacity-40" />
+        )}
+      </button>
+      <MediaPickerModal
+        open={open}
+        onOpenChange={setOpen}
+        selectedUrls={displayUrl ? [displayUrl] : []}
+        onSelect={(urls) => onChangeImage(urlToMediaKey(urls[0] ?? ""))}
+      />
+    </>
+  );
+}
+
+// ─── Variant row ─────────────────────────────────────────────────────────────
 
 type VariantRowProps = {
   variant: Variant;
@@ -30,6 +71,7 @@ type VariantRowProps = {
   onSelect: (ctrl: boolean) => void;
   productPrice: string;
   indent?: boolean;
+  onChangeImage?: (key: string) => void;
 };
 
 function fmtPrice(raw: string, productPrice: string) {
@@ -38,7 +80,7 @@ function fmtPrice(raw: string, productPrice: string) {
   return `${n.toLocaleString("vi-VN")} ₫`;
 }
 
-function VariantRow({ variant, isSelected, onSelect, productPrice, indent }: VariantRowProps) {
+function VariantRow({ variant, isSelected, onSelect, productPrice, indent, onChangeImage }: VariantRowProps) {
   const priceInherited = variant.useProductPrice;
   const price = fmtPrice(priceInherited ? productPrice : variant.price, productPrice);
 
@@ -58,19 +100,28 @@ function VariantRow({ variant, isSelected, onSelect, productPrice, indent }: Var
   return (
     <div
       className={cn(
-        "flex cursor-pointer flex-col gap-0.5 rounded-md px-2 py-2 transition-colors",
+        "flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 transition-colors",
         indent && "ml-6",
         isSelected ? "bg-accent" : "hover:bg-muted/50"
       )}
       onClick={(e) => onSelect(e.ctrlKey || e.metaKey)}
     >
-      <span className="text-sm">{variant.label}</span>
-      <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
-        <span className={cn("font-mono", !priceInherited && "text-foreground font-medium")}>{price}</span>
-        <span>·</span>
-        <span>qty {stock}</span>
-        <span>·</span>
-        <span>{shipping}</span>
+      {onChangeImage && (
+        <VariantImageButton
+          imageKey={variant.imageKey}
+          label={variant.label}
+          onChangeImage={onChangeImage}
+        />
+      )}
+      <div className="flex flex-1 min-w-0 flex-col gap-0.5">
+        <span className="text-sm">{variant.label}</span>
+        <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
+          <span className={cn("font-mono", !priceInherited && "text-foreground font-medium")}>{price}</span>
+          <span>·</span>
+          <span>qty {stock}</span>
+          <span>·</span>
+          <span>{shipping}</span>
+        </div>
       </div>
     </div>
   );
@@ -235,6 +286,7 @@ type Props = {
   variantGroups: Map<string, Variant[]> | null;
   productPrice: string;
   onBulkUpdateVariants: (ids: Set<string>, update: Partial<VariantOverride>) => void;
+  onUpdateVariantImage: (localId: string, imageKey: string) => void;
 };
 
 export function VariantsSection({
@@ -245,6 +297,7 @@ export function VariantsSection({
   variantGroups,
   productPrice,
   onBulkUpdateVariants,
+  onUpdateVariantImage,
 }: Props) {
   const hasVariants = variants.length > 0;
   const [bulkMode, setBulkMode] = useState<BulkEditMode | null>(null);
@@ -288,10 +341,11 @@ export function VariantsSection({
           <div className="flex flex-col gap-0.5">
             {Array.from(variantGroups.entries()).map(([groupKey, groupVariants]) => {
               const allGroupSelected = groupVariants.every((v) => selectedIds.has(v.localId));
+              const groupRepresentative = groupVariants[0];
               return (
                 <div key={groupKey}>
                   <div
-                    className="flex cursor-pointer items-center gap-3 rounded-md px-2 py-2 hover:bg-muted/50"
+                    className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-2 hover:bg-muted/50"
                     onClick={(e) => {
                       setSelectedIds((prev) => {
                         const next = new Set(prev);
@@ -308,6 +362,11 @@ export function VariantsSection({
                       });
                     }}
                   >
+                    <VariantImageButton
+                      imageKey={groupRepresentative.imageKey}
+                      label={groupKey}
+                      onChangeImage={(key) => onUpdateVariantImage(groupRepresentative.localId, key)}
+                    />
                     <span className="flex-1 text-sm font-medium">{groupKey}</span>
                     <span className="text-xs text-muted-foreground">{groupVariants.length} variants</span>
                   </div>
@@ -338,6 +397,7 @@ export function VariantsSection({
                 isSelected={selectedIds.has(v.localId)}
                 onSelect={(ctrl) => onVariantClick(v.localId, ctrl)}
                 productPrice={productPrice}
+                onChangeImage={(key) => onUpdateVariantImage(v.localId, key)}
               />
             ))}
             <p className="mt-1 text-xs text-muted-foreground">

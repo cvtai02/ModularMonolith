@@ -1,7 +1,9 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProductCatalog.DTOs.Categories;
 using ProductCatalog.Core.Usecases.Categories;
+using SharedKernel.Authorization;
 using SharedKernel.DTOs;
 
 namespace ProductCatalog.Api;
@@ -32,6 +34,7 @@ public class CategoryController(
         return result is null ? NotFound() : Ok(result);
     }
 
+    [Authorize(Policy = Policies.TenantAdminUp)]
     [HttpPost]
     public async Task<ActionResult<CategoryResponse>> Create(
         [FromBody] CreateCategoryRequest request, CancellationToken cancellationToken)
@@ -40,6 +43,7 @@ public class CategoryController(
         return CreatedAtAction(nameof(GetByName), new { name = result.Name }, result);
     }
 
+    [Authorize(Policy = Policies.TenantAdminUp)]
     [HttpPut("{name}")]
     public async Task<ActionResult<CategoryResponse>> Update(
         string name, [FromBody] UpdateCategoryRequest request, CancellationToken cancellationToken)
@@ -48,6 +52,7 @@ public class CategoryController(
         return result is null ? NotFound() : Ok(result);
     }
 
+    [Authorize(Policy = Policies.TenantAdminUp)]
     [HttpDelete("{name}")]
     public async Task<IActionResult> Delete(string name, CancellationToken cancellationToken)
     {

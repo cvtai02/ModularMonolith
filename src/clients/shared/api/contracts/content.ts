@@ -8,18 +8,24 @@ import type {
   CreateBlogPostCollectionResponse,
   CreateBlogPostRequest,
   CreateBlogPostResponse,
+  CreateGalleryRequest,
+  CreateGalleryResponse,
   DeleteBlogPostCollectionResponse,
   DeleteBlogPostResponse,
+  DeleteGalleryResponse,
   DeleteMediaFilesRequest,
   DeleteMediaFilesResponse,
+  GalleryResponse,
   GetAllQuery,
   GetAllResponse,
   GetAdminBlogPostByIdResponse,
   GetPresignedUploadBulkUrlRequest,
+  ListAdminGalleriesResponse,
   ListAdminBlogPostsByCollectionQuery,
   ListAdminBlogPostsByCollectionResponse,
   ListBlogPostCollectionsQuery,
   ListBlogPostCollectionsResponse,
+  ListGalleriesQuery,
   ListAdminBlogPostsQuery,
   ListAdminBlogPostsResponse,
   ListPublishedBlogPostsQuery,
@@ -30,6 +36,8 @@ import type {
   UpdateBlogPostCollectionResponse,
   UpdateBlogPostRequest,
   UpdateBlogPostResponse,
+  UpdateGalleryRequest,
+  UpdateGalleryResponse,
 } from "../types/content";
 
 export * from "../types/content"
@@ -118,4 +126,31 @@ export interface IContentClient {
   // Contract method: deleteBlogPostCollection. Soft deletes the collection.
   // No response body. Alias is generated in src/clients/shared/api/types/content.ts.
   deleteBlogPostCollection(id: number): Promise<DeleteBlogPostCollectionResponse>;
+
+  // Contract method: getPublicGalleryByKey. Public full gallery lookup by key.
+  // Response: src/Modules/Content/DTOs/Galleries/GalleryResponse.cs
+  getPublicGalleryByKey(key: string): Promise<GalleryResponse>;
+
+  // Contract method: listAdminGalleries. Admin gallery listing.
+  // Query: src/Modules/Content/DTOs/Galleries/ListGalleriesRequest.cs
+  // Item response: src/Modules/Content/DTOs/Galleries/GallerySummaryResponse.cs
+  listAdminGalleries(query?: ListGalleriesQuery): Promise<ListAdminGalleriesResponse>;
+
+  // Contract method: getAdminGalleryById. Admin gallery detail.
+  // Response: src/Modules/Content/DTOs/Galleries/GalleryResponse.cs
+  getAdminGalleryById(id: number): Promise<GalleryResponse>;
+
+  // Contract method: createGallery. Creates a keyed gallery with ordered image items.
+  // Request: src/Modules/Content/DTOs/Galleries/CreateGalleryRequest.cs
+  // Response: src/Modules/Content/DTOs/Galleries/GalleryResponse.cs
+  createGallery(input: CreateGalleryRequest): Promise<CreateGalleryResponse>;
+
+  // Contract method: updateGallery. Updates gallery metadata and replaces ordered image items.
+  // Request: src/Modules/Content/DTOs/Galleries/UpdateGalleryRequest.cs
+  // Response: src/Modules/Content/DTOs/Galleries/GalleryResponse.cs
+  updateGallery(id: number, input: UpdateGalleryRequest): Promise<UpdateGalleryResponse>;
+
+  // Contract method: deleteGallery. Soft deletes the gallery.
+  // No response body.
+  deleteGallery(id: number): Promise<DeleteGalleryResponse>;
 }

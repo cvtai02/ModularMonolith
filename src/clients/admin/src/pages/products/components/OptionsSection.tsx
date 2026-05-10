@@ -1,4 +1,5 @@
-import { PlusIcon, Trash2Icon, XIcon } from "lucide-react";
+import { useRef } from "react";
+import { GripVerticalIcon, PlusIcon, Trash2Icon, XIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,6 +16,7 @@ type Props = {
   onPendingChange: (optId: string, val: string) => void;
   onCommitPending: (optId: string) => void;
   onRemoveValue: (optId: string, idx: number) => void;
+  onReorderValues: (optId: string, from: number, to: number) => void;
   duplicateNameIds?: Set<string>;
 };
 
@@ -27,8 +29,10 @@ export function OptionsSection({
   onPendingChange,
   onCommitPending,
   onRemoveValue,
+  onReorderValues,
   duplicateNameIds,
 }: Props) {
+  const dragRef = useRef<{ optId: string; idx: number } | null>(null);
   return (
     <Card>
       <CardHeader>
@@ -117,13 +121,25 @@ export function OptionsSection({
                           return (
                             <span
                               key={`${idx}-${val}`}
+                              draggable
+                              onDragStart={() => { dragRef.current = { optId: opt.localId, idx }; }}
+                              onDragOver={(e) => {
+                                e.preventDefault();
+                                const d = dragRef.current;
+                                if (d && d.optId === opt.localId && d.idx !== idx) {
+                                  onReorderValues(opt.localId, d.idx, idx);
+                                  dragRef.current = { optId: opt.localId, idx };
+                                }
+                              }}
+                              onDragEnd={() => { dragRef.current = null; }}
                               className={cn(
-                                "inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-medium",
+                                "inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-medium cursor-grab active:cursor-grabbing select-none",
                                 removable
                                   ? "bg-background"
                                   : "bg-muted text-muted-foreground"
                               )}
                             >
+                              <GripVerticalIcon className="size-3 text-muted-foreground/50 -ml-0.5" />
                               {val}
                               {removable && (
                                 <button

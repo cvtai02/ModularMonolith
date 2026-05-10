@@ -30,3 +30,11 @@ Client contract: [ContentClient](../../../clients/shared/api/clients/content.ts)
 - [Create](BlogPostCollectionController.cs#L56)
 - [Update](BlogPostCollectionController.cs#L66)
 - [Delete](BlogPostCollectionController.cs#L77)
+
+### Gallery
+- [GetPublicByKey](GalleryController.cs#L21)
+- [GetAdmin](GalleryController.cs#L31)
+- [GetAdminById](GalleryController.cs#L38)
+- [Create](GalleryController.cs#L48)
+- [Update](GalleryController.cs#L58)
+- [Delete](GalleryController.cs#L69)

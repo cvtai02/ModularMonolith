@@ -12,7 +12,6 @@ public class CreateVariantRequest
     public bool UseProductInventory { get; set; } = true;
     public int Quantity { get; set; }
     public bool? TrackInventory { get; set; }
-    public int? LowStockThreshold { get; set; }
     public bool? AllowBackorder { get; set; }
     public bool UseProductShipping { get; set; } = true;
     public bool? PhysicalProduct { get; set; }

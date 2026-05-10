@@ -1,22 +1,6 @@
-import { type ReactNode, useRef, useState } from "react";
-import ReactMarkdown from "react-markdown";
-import type { Components } from "react-markdown";
+import { type ReactNode } from "react";
 import { Controller, useForm } from "react-hook-form";
-import {
-  ArrowLeftIcon,
-  Bold,
-  Code,
-  EyeIcon,
-  Heading1,
-  Heading2,
-  ImageIcon,
-  Italic,
-  Link,
-  List,
-  ListOrdered,
-  PencilIcon,
-  Strikethrough,
-} from "lucide-react";
+import { ArrowLeftIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
@@ -25,16 +9,8 @@ import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Textarea } from "@/components/ui/textarea";
 import { SingleImagePickerField } from "@/components/admin/image-picker-field";
-import { resolveMediaUrl } from "@/lib/media";
-
-const markdownComponents: Components = {
-  img({ src, alt, ...props }) {
-    const resolved = resolveMediaUrl(src ?? "");
-    return <img src={resolved} alt={alt} {...props} />;
-  },
-};
+import { MarkdownEditor } from "@/components/admin/markdown-editor";
 import { applyValidationErrors } from "@/lib/form-error";
-import { cn } from "@/lib/utils";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -56,46 +32,6 @@ interface Props {
   onSubmit: (values: BlogPostFormValues) => Promise<void>;
 }
 
-// ─── Markdown preview ─────────────────────────────────────────────────────────
-
-function MarkdownPreview({ content }: { content: string }) {
-  if (!content.trim()) {
-    return (
-      <p className="text-sm text-muted-foreground italic">Nothing to preview yet.</p>
-    );
-  }
-  return (
-    <div className="prose prose-sm max-w-none dark:prose-invert">
-      <ReactMarkdown components={markdownComponents}>{content}</ReactMarkdown>
-    </div>
-  );
-}
-
-// ─── Toolbar ─────────────────────────────────────────────────────────────────
-
-type WrapAction = { type: "wrap"; prefix: string; suffix: string; placeholder: string };
-type LineAction = { type: "line"; prefix: string };
-type ToolbarItem =
-  | { icon: React.ElementType; label: string; action: WrapAction | LineAction }
-  | "sep";
-
-const TOOLBAR: ToolbarItem[] = [
-  { icon: Bold, label: "Bold", action: { type: "wrap", prefix: "**", suffix: "**", placeholder: "bold text" } },
-  { icon: Italic, label: "Italic", action: { type: "wrap", prefix: "*", suffix: "*", placeholder: "italic text" } },
-  { icon: Strikethrough, label: "Strikethrough", action: { type: "wrap", prefix: "~~", suffix: "~~", placeholder: "strikethrough" } },
-  "sep",
-  { icon: Heading1, label: "Heading 1", action: { type: "line", prefix: "# " } },
-  { icon: Heading2, label: "Heading 2", action: { type: "line", prefix: "## " } },
-  "sep",
-  { icon: List, label: "Bullet list", action: { type: "line", prefix: "- " } },
-  { icon: ListOrdered, label: "Numbered list", action: { type: "line", prefix: "1. " } },
-  "sep",
-  { icon: Link, label: "Link", action: { type: "wrap", prefix: "[", suffix: "](url)", placeholder: "link text" } },
-  { icon: ImageIcon, label: "Image", action: { type: "wrap", prefix: "![", suffix: "](url)", placeholder: "alt text" } },
-  "sep",
-  { icon: Code, label: "Inline code", action: { type: "wrap", prefix: "`", suffix: "`", placeholder: "code" } },
-];
-
 // ─── Layout ───────────────────────────────────────────────────────────────────
 
 export function BlogPostFormLayout({
@@ -110,7 +46,6 @@ export function BlogPostFormLayout({
   const {
     register,
     handleSubmit,
-    setValue,
     setError,
     control,
     formState: { errors },
@@ -123,46 +58,6 @@ export function BlogPostFormLayout({
       ...defaultValues,
     },
   });
-
-  const [contentTab, setContentTab] = useState<"write" | "preview">("write");
-  const [contentPreview, setContentPreview] = useState(defaultValues?.content ?? "");
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-  const { ref: registerRef, ...contentRest } = register("content");
-
-  function applyToolbarAction(action: WrapAction | LineAction) {
-    const el = textareaRef.current;
-    if (!el) return;
-
-    const start = el.selectionStart;
-    const end = el.selectionEnd;
-    const value = el.value;
-
-    let newValue: string;
-    let newStart: number;
-    let newEnd: number;
-
-    if (action.type === "wrap") {
-      const selected = value.slice(start, end) || action.placeholder;
-      newValue = value.slice(0, start) + action.prefix + selected + action.suffix + value.slice(end);
-      newStart = start + action.prefix.length;
-      newEnd = newStart + selected.length;
-    } else {
-      const lineStart = value.lastIndexOf("\n", start - 1) + 1;
-      newValue = value.slice(0, lineStart) + action.prefix + value.slice(lineStart);
-      newStart = start + action.prefix.length;
-      newEnd = newStart;
-    }
-
-    el.value = newValue;
-    setValue("content", newValue, { shouldDirty: true });
-    setContentPreview(newValue);
-
-    requestAnimationFrame(() => {
-      el.focus();
-      el.setSelectionRange(newStart, newEnd);
-    });
-  }
 
   const doSubmit = handleSubmit(async (values) => {
     try {
@@ -239,86 +134,29 @@ export function BlogPostFormLayout({
           </FieldGroup>
         </div>
 
-        {/* Content card with write/preview tabs */}
+        {/* Content */}
         <div className="rounded-xl border bg-card overflow-hidden">
-          <div className="flex items-center justify-between px-6 py-3 border-b">
+          <div className="px-6 py-3 border-b">
             <h2 className="text-sm font-semibold">Content</h2>
-            <div className="flex items-center gap-1 rounded-md border p-0.5">
-              <button
-                type="button"
-                onClick={() => setContentTab("write")}
-                className={cn(
-                  "flex items-center gap-1.5 rounded px-2.5 py-1 text-xs font-medium transition-colors",
-                  contentTab === "write"
-                    ? "bg-background shadow-sm text-foreground"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                <PencilIcon className="size-3" />
-                Write
-              </button>
-              <button
-                type="button"
-                onClick={() => setContentTab("preview")}
-                className={cn(
-                  "flex items-center gap-1.5 rounded px-2.5 py-1 text-xs font-medium transition-colors",
-                  contentTab === "preview"
-                    ? "bg-background shadow-sm text-foreground"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                <EyeIcon className="size-3" />
-                Preview
-              </button>
-            </div>
           </div>
-
-          {/* Toolbar — write mode only */}
-          {contentTab === "write" && (
-            <div className="flex flex-wrap items-center gap-0.5 border-b bg-muted/30 px-2 py-1.5">
-              {TOOLBAR.map((item, i) =>
-                item === "sep" ? (
-                  <div key={i} className="mx-1 h-4 w-px bg-border" />
-                ) : (
-                  <button
-                    key={item.label}
-                    type="button"
-                    title={item.label}
-                    onClick={() => applyToolbarAction(item.action)}
-                    className="flex h-7 w-7 items-center justify-center rounded text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-                  >
-                    <item.icon className="size-3.5" />
-                  </button>
-                )
+          <div className="p-4">
+            <Controller
+              control={control}
+              name="content"
+              render={({ field }) => (
+                <MarkdownEditor
+                  value={field.value}
+                  onChange={field.onChange}
+                  placeholder="Write your post in Markdown…"
+                  rows={24}
+                  className="border-0 rounded-none"
+                />
               )}
-            </div>
-          )}
-
-          {contentTab === "write" ? (
-            <div className="p-4">
-              <textarea
-                {...contentRest}
-                ref={(el) => {
-                  textareaRef.current = el;
-                  registerRef(el);
-                }}
-                placeholder="Write your post in Markdown…"
-                rows={24}
-                onChange={(e) => {
-                  contentRest.onChange(e);
-                  setContentPreview(e.target.value);
-                }}
-                className="w-full resize-y rounded-md border bg-transparent px-3 py-2 font-mono text-sm leading-relaxed placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
-              />
-              {errors.content && (
-                <p className="mt-1 text-xs text-destructive">{errors.content.message}</p>
-              )}
-            </div>
-          ) : (
-            <div className="min-h-[20rem] px-6 py-4">
-              <MarkdownPreview content={contentPreview} />
-            </div>
-          )}
+            />
+            {errors.content && (
+              <p className="mt-1 text-xs text-destructive">{errors.content.message}</p>
+            )}
+          </div>
         </div>
       </div>
     </div>

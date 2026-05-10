@@ -39,16 +39,17 @@ public class OrderController(
     public async Task<ActionResult<PaginatedList<OrderSummaryResponse>>> GetAdmin(
         [FromQuery] ListOrdersRequest request,
         CancellationToken cancellationToken)
-        => Ok(await listOrders.ExecuteAsync(request, cancellationToken));
+        => Ok(await listOrders.ExecuteAdminAsync(request, cancellationToken));
 
     [Authorize(Policy = Policies.TenantAdminUp)]
     [HttpGet("admin/{code}")]
     public async Task<ActionResult<OrderResponse>> GetAdminByCode(string code, CancellationToken cancellationToken)
     {
-        var result = await getOrderByCode.ExecuteAsync(code, cancellationToken);
+        var result = await getOrderByCode.ExecuteAdminAsync(code, cancellationToken);
         return result is null ? NotFound() : Ok(result);
     }
 
+    [Authorize(Policy = Policies.AuthenticatedUserUp)]
     [HttpGet("{code}")]
     public async Task<ActionResult<OrderResponse>> GetByCode(string code, CancellationToken cancellationToken)
     {
@@ -56,6 +57,7 @@ public class OrderController(
         return result is null ? NotFound() : Ok(result);
     }
 
+    [Authorize(Policy = Policies.AuthenticatedUserUp)]
     [HttpGet]
     public async Task<ActionResult<PaginatedList<OrderSummaryResponse>>> GetAll(
         [FromQuery] ListOrdersRequest request,

@@ -46,7 +46,7 @@ public class UpdateProduct(ProductCatalogDbContext db, IFileManager fileManager)
         product.ShippingInfo.ApplyShipping(request.PhysicalProduct, request.Weight, request.Width, request.Height, request.Length);
 
         await ReplaceMediasAsync(product, request, ct);
-        AddNewOptionValues(product, request);
+        ApplyOptionValues(product, request);
         ApplyVariantUpdates(product, request);
 
         foreach (var variant in product.Variants.Where(x => x.UseProductPricing))
@@ -139,10 +139,18 @@ public class UpdateProduct(ProductCatalogDbContext db, IFileManager fileManager)
 
         foreach (var option in product.Options)
         {
-            var requestedValues = requestByName[option.Name].Values
+            var normalizedRequestedValues = requestByName[option.Name].Values
                 .Select(x => x.Trim())
                 .Where(x => !string.IsNullOrWhiteSpace(x))
-                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+                .ToList();
+
+            if (normalizedRequestedValues.Count != normalizedRequestedValues.Distinct(StringComparer.OrdinalIgnoreCase).Count())
+            {
+                errors[nameof(request.Options)] = [$"Option '{option.Name}' values must be unique."];
+                return;
+            }
+
+            var requestedValues = normalizedRequestedValues.ToHashSet(StringComparer.OrdinalIgnoreCase);
             var existingValues = option.OptionValues.Select(x => x.Value).ToHashSet(StringComparer.OrdinalIgnoreCase);
             var removedValues = existingValues.Except(requestedValues, StringComparer.OrdinalIgnoreCase).ToList();
             if (removedValues.Count > 0)
@@ -157,40 +165,66 @@ public class UpdateProduct(ProductCatalogDbContext db, IFileManager fileManager)
     {
         var existingById = product.Variants.ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase);
         var requestedIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var optionValueLookup = BuildOptionValueLookup(request);
+        var variantKeys = product.Variants
+            .Select(VariantKey)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
         foreach (var variantRequest in request.Variants)
         {
             var variantId = NormalizeId(variantRequest.Id);
-            if (variantId is null)
-            {
-                errors[nameof(request.Variants)] = ["Variant id is required when editing variants."];
-                return;
-            }
-
-            if (!requestedIds.Add(variantId))
+            if (variantId is not null && !requestedIds.Add(variantId))
             {
                 errors[nameof(request.Variants)] = ["Duplicate variant ids are not allowed."];
                 return;
             }
 
-            if (!existingById.TryGetValue(variantId, out var variant))
+            if (variantId is not null && existingById.TryGetValue(variantId, out var variant))
             {
-                errors[nameof(request.Variants)] = [$"Variant '{variantId}' does not exist on this product."];
-                return;
+                if (variantRequest.OptionValues.Count > 0 && !MatchesExistingOptionValues(variantRequest, variant))
+                {
+                    errors[nameof(request.Variants)] = ["Variant option values cannot be edited on product update."];
+                    return;
+                }
             }
-
-            if (variantRequest.OptionValues.Count > 0 && !MatchesExistingOptionValues(variantRequest, variant))
+            else
             {
-                errors[nameof(request.Variants)] = ["Variant option values cannot be edited on product update."];
-                return;
+                if (request.Options.Count > 0 && variantRequest.OptionValues.Count != request.Options.Count)
+                {
+                    errors[nameof(request.Variants)] = ["Each new variant must provide a value for every option."];
+                    return;
+                }
+
+                foreach (var optionValue in variantRequest.OptionValues)
+                {
+                    var optionName = optionValue.OptionName.Trim();
+                    var value = optionValue.Value.Trim();
+                    if (!optionValueLookup.TryGetValue(optionName, out var allowedValues) ||
+                        !allowedValues.Contains(value))
+                    {
+                        errors[nameof(request.Variants)] = ["New variant option values must reference defined product option values."];
+                        return;
+                    }
+                }
+
+                var variantKey = VariantKey(variantRequest);
+                if (!variantKeys.Add(variantKey))
+                {
+                    errors[nameof(request.Variants)] = ["Duplicate variant combinations are not allowed."];
+                    return;
+                }
             }
 
             var variantPrice = variantRequest.UseProductPricing
                 ? request.Price
-                : variantRequest.Price ?? variant.Price;
+                : variantRequest.Price ?? (variantId is not null && existingById.TryGetValue(variantId, out var pricedVariant)
+                    ? pricedVariant.Price
+                    : request.Price);
             var variantCompareAtPrice = variantRequest.UseProductPricing
                 ? request.CompareAtPrice
-                : variantRequest.CompareAtPrice ?? variant.CompareAtPrice ?? 0;
+                : variantRequest.CompareAtPrice ?? (variantId is not null && existingById.TryGetValue(variantId, out var comparedVariant)
+                    ? comparedVariant.CompareAtPrice
+                    : request.CompareAtPrice) ?? 0;
             if (variantCompareAtPrice > 0 && variantCompareAtPrice < variantPrice)
             {
                 errors[nameof(request.Variants)] = ["Variant compare-at price must be greater than or equal to price."];
@@ -198,6 +232,15 @@ public class UpdateProduct(ProductCatalogDbContext db, IFileManager fileManager)
             }
         }
     }
+
+    private static Dictionary<string, HashSet<string>> BuildOptionValueLookup(UpdateProductRequest request)
+        => request.Options.ToDictionary(
+            x => x.Name.Trim(),
+            x => x.Values
+                .Select(v => v.Trim())
+                .Where(v => !string.IsNullOrWhiteSpace(v))
+                .ToHashSet(StringComparer.OrdinalIgnoreCase),
+            StringComparer.OrdinalIgnoreCase);
 
     private async Task ReplaceMediasAsync(Product product, UpdateProductRequest request, CancellationToken ct)
     {
@@ -211,31 +254,36 @@ public class UpdateProduct(ProductCatalogDbContext db, IFileManager fileManager)
             ?? request.ImageUrl.Trim();
     }
 
-    private static void AddNewOptionValues(Product product, UpdateProductRequest request)
+    private static void ApplyOptionValues(Product product, UpdateProductRequest request)
     {
         var requestByName = request.Options.ToDictionary(x => x.Name.Trim(), StringComparer.OrdinalIgnoreCase);
         foreach (var option in product.Options)
         {
-            var existingValues = option.OptionValues.Select(x => x.Value).ToHashSet(StringComparer.OrdinalIgnoreCase);
-            var newValues = requestByName[option.Name].Values
+            var existingByValue = option.OptionValues.ToDictionary(x => x.Value, StringComparer.OrdinalIgnoreCase);
+            var requestedValues = requestByName[option.Name].Values
                 .Select(x => x.Trim())
-                .Where(x => !string.IsNullOrWhiteSpace(x) && !existingValues.Contains(x))
-                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .Where(x => !string.IsNullOrWhiteSpace(x))
                 .ToList();
 
-            var nextDisplayOrder = option.OptionValues.Count == 0 ? 0 : option.OptionValues.Max(x => x.DisplayOrder) + 1;
-            foreach (var value in newValues)
+            for (var index = 0; index < requestedValues.Count; index++)
             {
+                var value = requestedValues[index];
+                if (existingByValue.TryGetValue(value, out var existing))
+                {
+                    existing.DisplayOrder = index;
+                    continue;
+                }
+
                 option.OptionValues.Add(new OptionValue
                 {
                     Value = value,
-                    DisplayOrder = nextDisplayOrder++
+                    DisplayOrder = index
                 });
             }
         }
     }
 
-    private static void ApplyVariantUpdates(Product product, UpdateProductRequest request)
+    private void ApplyVariantUpdates(Product product, UpdateProductRequest request)
     {
         var existingById = product.Variants.ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase);
         var imageKeyByFirstOptionValue = BuildImageKeyByFirstOptionValue(product, request, existingById);
@@ -244,57 +292,102 @@ public class UpdateProduct(ProductCatalogDbContext db, IFileManager fileManager)
         {
             var variantId = NormalizeId(variantRequest.Id);
             if (variantId is null || !existingById.TryGetValue(variantId, out var variant))
+            {
+                var newVariant = CreateVariant(product, request, variantRequest, imageKeyByFirstOptionValue);
+                product.Variants.Add(newVariant);
                 continue;
-
-            if (TryGetSharedImageKey(variant, product, imageKeyByFirstOptionValue, out var sharedImageKey))
-            {
-                variant.ImageKey = sharedImageKey;
-            }
-            else if (variantRequest.ImageKey is not null)
-            {
-                variant.ImageKey = string.IsNullOrWhiteSpace(variantRequest.ImageKey)
-                    ? null
-                    : NormalizeMediaKey(variantRequest.ImageKey);
             }
 
-            if (variantRequest.UseProductPricing)
-            {
-                variant.ApplyProductPricing(product);
-            }
-            else
-            {
-                variant.ApplyVariantPricing(
-                    variantRequest.Price ?? variant.Price,
-                    variantRequest.CompareAtPrice ?? variant.CompareAtPrice,
-                    variantRequest.CostPrice ?? variant.CostPrice,
-                    variantRequest.ChargeTax ?? variant.ChargeTax);
-            }
+            ApplyVariantRequest(product, request, variant, variantRequest, imageKeyByFirstOptionValue);
+        }
+    }
 
-            variant.SetInventoryPolicy(
-                variantRequest.TrackInventory ?? variant.TrackInventory,
-                variantRequest.AllowBackorder ?? variant.AllowBackorder);
-
-            if (variant.Metric is null)
-                variant.Metric = new VariantMetric { VariantId = variant.Id };
-            variant.Metric.Stock = variantRequest.Quantity;
-
-            if (variant.ShippingInfo is null)
-                variant.ShippingInfo = new VariantShipping { VariantId = variant.Id };
-
-            if (variantRequest.UseProductShipping)
+    private static Variant CreateVariant(
+        Product product,
+        UpdateProductRequest request,
+        CreateVariantRequest variantRequest,
+        IReadOnlyDictionary<string, string?> imageKeyByFirstOptionValue)
+    {
+        var variant = new Variant
+        {
+            Id = ResolveVariantId(variantRequest.Id, product.Id, variantRequest),
+            ProductId = product.Id,
+            OptionValues = variantRequest.OptionValues.Select(optionValue =>
             {
-                if (product.ShippingInfo is not null)
-                    variant.ShippingInfo.ApplyProductShipping(product.ShippingInfo);
-            }
-            else
-            {
-                variant.ShippingInfo.ApplyVariantShipping(
-                    variantRequest.PhysicalProduct ?? product.ShippingInfo?.Physical ?? request.PhysicalProduct,
-                    variantRequest.Weight ?? variant.ShippingInfo.Weight,
-                    variantRequest.Width ?? variant.ShippingInfo.Width,
-                    variantRequest.Height ?? variant.ShippingInfo.Height,
-                    variantRequest.Length ?? variant.ShippingInfo.Length);
-            }
+                var option = product.Options.First(x =>
+                    string.Equals(x.Name.Trim(), optionValue.OptionName.Trim(), StringComparison.OrdinalIgnoreCase));
+                return new VariantOptionValue
+                {
+                    OptionId = option.Id,
+                    OptionName = option.Name,
+                    Value = optionValue.Value.Trim()
+                };
+            }).ToList(),
+            Metric = new VariantMetric { Stock = variantRequest.Quantity },
+            ShippingInfo = new VariantShipping()
+        };
+        variant.Metric.VariantId = variant.Id;
+        variant.ShippingInfo.VariantId = variant.Id;
+
+        ApplyVariantRequest(product, request, variant, variantRequest, imageKeyByFirstOptionValue);
+        return variant;
+    }
+
+    private static void ApplyVariantRequest(
+        Product product,
+        UpdateProductRequest request,
+        Variant variant,
+        CreateVariantRequest variantRequest,
+        IReadOnlyDictionary<string, string?> imageKeyByFirstOptionValue)
+    {
+        if (TryGetSharedImageKey(variant, product, imageKeyByFirstOptionValue, out var sharedImageKey))
+        {
+            variant.ImageKey = sharedImageKey;
+        }
+        else if (variantRequest.ImageKey is not null)
+        {
+            variant.ImageKey = string.IsNullOrWhiteSpace(variantRequest.ImageKey)
+                ? null
+                : NormalizeMediaKey(variantRequest.ImageKey);
+        }
+
+        if (variantRequest.UseProductPricing)
+        {
+            variant.ApplyProductPricing(product);
+        }
+        else
+        {
+            variant.ApplyVariantPricing(
+                variantRequest.Price ?? variant.Price,
+                variantRequest.CompareAtPrice ?? variant.CompareAtPrice,
+                variantRequest.CostPrice ?? variant.CostPrice,
+                variantRequest.ChargeTax ?? variant.ChargeTax);
+        }
+
+        variant.SetInventoryPolicy(
+            variantRequest.TrackInventory ?? variant.TrackInventory,
+            variantRequest.AllowBackorder ?? variant.AllowBackorder);
+
+        if (variant.Metric is null)
+            variant.Metric = new VariantMetric { VariantId = variant.Id };
+        variant.Metric.Stock = variantRequest.Quantity;
+
+        if (variant.ShippingInfo is null)
+            variant.ShippingInfo = new VariantShipping { VariantId = variant.Id };
+
+        if (variantRequest.UseProductShipping)
+        {
+            if (product.ShippingInfo is not null)
+                variant.ShippingInfo.ApplyProductShipping(product.ShippingInfo);
+        }
+        else
+        {
+            variant.ShippingInfo.ApplyVariantShipping(
+                variantRequest.PhysicalProduct ?? product.ShippingInfo?.Physical ?? request.PhysicalProduct,
+                variantRequest.Weight ?? variant.ShippingInfo.Weight,
+                variantRequest.Width ?? variant.ShippingInfo.Width,
+                variantRequest.Height ?? variant.ShippingInfo.Height,
+                variantRequest.Length ?? variant.ShippingInfo.Length);
         }
     }
 
@@ -442,6 +535,26 @@ public class UpdateProduct(ProductCatalogDbContext db, IFileManager fileManager)
 
     private sealed record MediaInput(string Key, float DisplayOrder);
 
+    private static string ResolveVariantId(string? requestedId, string productId, CreateVariantRequest request)
+        => NormalizeId(requestedId) ?? GenerateVariantId(productId, VariantKey(request));
+
+    private static string GenerateVariantId(string productId, string key)
+        => $"{productId}-{NormalizeId(key) ?? Guid.NewGuid().ToString("N")[..8]}";
+
+    private static string VariantKey(CreateVariantRequest request)
+        => request.OptionValues.Count == 0
+            ? "variant"
+            : string.Join("-", request.OptionValues
+                .OrderBy(x => x.OptionName, StringComparer.OrdinalIgnoreCase)
+                .Select(x => $"{x.OptionName.Trim().First()}-{x.Value.Trim()}"));
+
+    private static string VariantKey(Variant variant)
+        => variant.OptionValues.Count == 0
+            ? "variant"
+            : string.Join("-", variant.OptionValues
+                .OrderBy(x => x.OptionName, StringComparer.OrdinalIgnoreCase)
+                .Select(x => $"{x.OptionName.Trim().First()}-{x.Value.Trim()}"));
+
     private static bool MatchesExistingOptionValues(CreateVariantRequest request, Variant variant)
     {
         var requestValues = request.OptionValues
@@ -461,6 +574,7 @@ public class UpdateProduct(ProductCatalogDbContext db, IFileManager fileManager)
         normalized = string.Concat(normalized.Select(ch => char.IsLetterOrDigit(ch) ? ch : '-'));
         while (normalized.Contains("--", StringComparison.Ordinal))
             normalized = normalized.Replace("--", "-", StringComparison.Ordinal);
-        return normalized.Trim('-');
+        normalized = normalized.Trim('-');
+        return string.IsNullOrWhiteSpace(normalized) ? null : normalized;
     }
 }

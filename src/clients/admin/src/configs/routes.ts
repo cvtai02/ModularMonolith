@@ -29,6 +29,9 @@ export const ROUTES = {
   contentBlogCollections: "/content/blog-collections",
   contentBlogCollectionNew: "/content/blog-collections/new",
   contentBlogCollectionEdit: (id: number | string) => `/content/blog-collections/${id}/edit`,
+  contentGalleries: "/content/galleries",
+  contentGalleryNew: "/content/galleries/new",
+  contentGalleryEdit: (id: number | string) => `/content/galleries/${id}/edit`,
 
   // Customers
   customers: "/customers",
