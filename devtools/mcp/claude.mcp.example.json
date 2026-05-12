@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "nekomin-app-agent": {
+      "command": "node",
+      "args": ["devtools/mcp/app-agent-server.mjs"],
+      "env": {
+        "NEKOMIN_API_BASE_URL": "http://localhost:5000"
+      }
+    }
+  }
+}

@@ -127,7 +127,7 @@ export function BlogPostFormLayout({
                 control={control}
                 name="imageKey"
                 render={({ field }) => (
-                  <SingleImagePickerField value={field.value} onChange={field.onChange} />
+                  <SingleImagePickerField value={field.value} onChange={field.onChange} category="content" />
                 )}
               />
             </Field>

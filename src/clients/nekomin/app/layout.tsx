@@ -18,6 +18,7 @@ const lora = Lora({
 export const metadata: Metadata = {
   title: "Nekomin — Sống chậm, sống đẹp",
   description: "Phụ kiện, detox & decor được chọn lọc cho lối sống có chủ ý.",
+  icons: { icon: "/favicon.svg" },
 };
 
 export default function RootLayout({

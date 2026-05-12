@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 import { ValidationError } from "@modular-monolith/clients-shared/api/contracts";
@@ -55,7 +55,15 @@ function readItemsFromSearch(params: URLSearchParams) {
     .filter((it) => it.variantId);
 }
 
-export default function CheckoutPage() {
+export default function CheckoutPageWrapper() {
+  return (
+    <Suspense>
+      <CheckoutPage />
+    </Suspense>
+  );
+}
+
+function CheckoutPage() {
   const searchParams = useSearchParams();
   const orderClient = useOrderClient();
   const paymentClient = usePaymentClient();

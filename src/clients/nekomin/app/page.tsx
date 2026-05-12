@@ -10,10 +10,9 @@ import { resolveMediaUrl } from "./lib/media";
 
 
 const MARQUEE_ITEMS = [
-  "Sống chậm · Sống đẹp",
-  "Phụ kiện · Detox · Decor",
-  "Không gian sống có chủ ý",
-  "Nghi thức hàng ngày",
+  "Nhẹ nhàng · Đơn giản · Tinh tế ",
+  "Phụ kiện · Decor · Heo thỳ",
+  "Chi tiết nhỏ tạo nên phong cách sống",
   "Vẻ đẹp trong sự tối giản",
 ];
 
@@ -21,9 +20,10 @@ const MARQUEE_ITEMS = [
 export default async function Home() {
   const contentClient = new ContentClient(appFetch, process.env.NEXT_PUBLIC_API_BASE_URL ?? "");
 
-  const [heroGallery, bestSellerGallery] = await Promise.all([
+  const [heroGallery, bestSellerGallery, blogCollection] = await Promise.all([
     contentClient.getPublicGalleryByKey("herro").catch((err) => { console.error("[hero gallery]", err); return null; }),
     contentClient.getPublicGalleryByKey("best-seller").catch((err) => { console.error("[best-seller gallery]", err); return null; }),
+    contentClient.getPublicBlogPostCollectionByKey("landingpage").catch((err) => { console.error("[blog collection]", err); return null; }),
   ]);
 
   const heroSlides: HeroSlide[] = (heroGallery?.items ?? [])
@@ -37,15 +37,14 @@ export default async function Home() {
   const bestSellerItems = (bestSellerGallery?.items ?? [])
     .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0));
 
+  const blogPosts = blogCollection?.items ?? [];
+
   const marqueeItems = [...MARQUEE_ITEMS, ...MARQUEE_ITEMS];
 
   return (
     <div className="landing-root">
       <a href="/" className="site-logo">
-        <div className="site-logo-circle">
-          <Image src="/logo.png" alt="Nekomin" width={30} height={30} />
-        </div>
-        <span className="site-logo-name">Nekomin</span>
+        <Image src="/nekomin.svg" alt="Nekomin" width={108} height={108} />
       </a>
 
       <HeroCarousel slides={heroSlides.length > 0 ? heroSlides : undefined} />
@@ -96,109 +95,44 @@ export default async function Home() {
         );
       })()}
 
-      <section className="blog" id="blog">
-        <div className="blog-grid">
-          <article className="blog-card">
-            <div className="blog-img" style={{ background: "oklch(88% 0.04 62)" }}>
-              <svg viewBox="0 0 800 500" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                  <pattern id="b1" width="22" height="22" patternUnits="userSpaceOnUse">
-                    <line x1="0" y1="22" x2="22" y2="0" stroke="oklch(78% 0.05 62)" strokeWidth="0.8" />
-                  </pattern>
-                </defs>
-                <rect width="800" height="500" fill="oklch(88% 0.04 62)" />
-                <rect width="800" height="500" fill="url(#b1)" />
-              </svg>
-              <div className="blog-img-tag">ảnh editorial</div>
-            </div>
-            <div className="blog-body">
-              <div className="blog-meta">
-                <span className="blog-cat">Nghi thức</span>
-                <span className="blog-date">01 tháng 5, 2026</span>
-              </div>
-              <h3 className="blog-title">Nghi Thức Buổi Sáng Đã Thay Đổi Cách Tôi Bắt Đầu Mỗi Ngày</h3>
-              <p className="blog-excerpt">
-                Mười phút. Chỉ vậy thôi để chuyển từ phản ứng sang chủ động. Một chiếc cọ khô, một tách trà thảo mộc ấm, và sự yên tĩnh trước khi thế giới thức dậy.
-              </p>
-              <a href="#" className="blog-read">
-                Đọc tiếp{" "}
-                <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-                  <path d="M2 6.5h9M7 2.5l4 4-4 4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </a>
-            </div>
-          </article>
-
-          <div className="blog-side">
-            <article className="blog-card">
-              <div className="blog-img blog-img--sm" style={{ background: "oklch(86% 0.05 50)" }}>
-                <svg viewBox="0 0 400 260" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-                  <defs>
-                    <pattern id="b2" width="18" height="18" patternUnits="userSpaceOnUse">
-                      <circle cx="9" cy="9" r="1.5" fill="oklch(74% 0.06 50)" />
-                    </pattern>
-                  </defs>
-                  <rect width="400" height="260" fill="oklch(86% 0.05 50)" />
-                  <rect width="400" height="260" fill="url(#b2)" />
-                </svg>
-                <div className="blog-img-tag">hướng dẫn phong cách</div>
-              </div>
-              <div className="blog-body blog-body--sm">
-                <div className="blog-meta">
-                  <span className="blog-cat">Phong cách</span>
-                  <span className="blog-date">22 tháng 4, 2026</span>
-                </div>
-                <h3 className="blog-title blog-title--sm">Xây Dựng Tủ Phụ Kiện Tối Giản Với 6 Món Đồ</h3>
-                <a href="#" className="blog-read">
-                  Đọc tiếp{" "}
-                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-                    <path d="M2 6.5h9M7 2.5l4 4-4 4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
+      {blogPosts.length > 0 && (
+        <section className="blog" id="blog">
+          <div className="blog-flat-grid">
+            {blogPosts.map((post) => {
+              const imageUrl = post.imageKey ? resolveMediaUrl(post.imageKey) : null;
+              return (
+                <a key={post.id} href={`/blog/${post.slug}`} className="blog-card" style={{ textDecoration: "none", color: "inherit", display: "block", position: "relative" }}>
+                  {imageUrl ? (
+                    <>
+                      <div className="blog-img blog-img--sm">
+                        <img src={imageUrl} alt={post.title} style={{ width: "100%", height: "auto", display: "block" }} />
+                      </div>
+                      <div className="blog-overlay blog-overlay--sm">
+                        <h3 className="blog-title blog-title--sm">{post.title}</h3>
+                        {post.summary && <p className="blog-excerpt">{post.summary}</p>}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="blog-body blog-body--sm">
+                      <h3 className="blog-title blog-title--sm">{post.title}</h3>
+                      {post.summary && <p className="blog-excerpt">{post.summary}</p>}
+                    </div>
+                  )}
                 </a>
-              </div>
-            </article>
-
-            <article className="blog-card">
-              <div className="blog-img blog-img--sm" style={{ background: "oklch(91% 0.035 75)" }}>
-                <svg viewBox="0 0 400 260" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-                  <defs>
-                    <pattern id="b3" width="20" height="20" patternUnits="userSpaceOnUse">
-                      <rect x="0" y="0" width="10" height="10" fill="oklch(84% 0.04 75)" />
-                      <rect x="10" y="10" width="10" height="10" fill="oklch(84% 0.04 75)" />
-                    </pattern>
-                  </defs>
-                  <rect width="400" height="260" fill="oklch(91% 0.035 75)" />
-                  <rect width="400" height="260" fill="url(#b3)" />
-                </svg>
-                <div className="blog-img-tag">trang trí nhà</div>
-              </div>
-              <div className="blog-body blog-body--sm">
-                <div className="blog-meta">
-                  <span className="blog-cat">Decor</span>
-                  <span className="blog-date">14 tháng 4, 2026</span>
-                </div>
-                <h3 className="blog-title blog-title--sm">5 Cách Wabi-Sabi Biến Bất Kỳ Căn Phòng Nào Thành Chốn Bình Yên</h3>
-                <a href="#" className="blog-read">
-                  Đọc tiếp{" "}
-                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-                    <path d="M2 6.5h9M7 2.5l4 4-4 4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </a>
-              </div>
-            </article>
+              );
+            })}
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <footer>
         <div className="footer-top">
           <div>
             <div className="footer-brand">
-              <Image src="/logo.png" alt="Nekomin" width={36} height={36} className="footer-logo" />
-              <span className="footer-brand-name">Nekomin</span>
+              <Image src="/nekomin.svg" alt="Nekomin" width={108} height={108} className="footer-logo" />
             </div>
             <p className="footer-tagline">
-              Dành cho những ai chọn sống chậm, sống đẹp và sống có chủ ý.
+              Sống chill, minimalism - mình sống vì mình.
             </p>
           </div>
           <div className="footer-links">
@@ -222,7 +156,7 @@ export default async function Home() {
         </div>
         <div className="footer-bottom">
           <span>© 2026 Nekomin. Bảo lưu mọi quyền.</span>
-          <span>Làm với tâm huyết 🌿</span>
+          <span>Sản phẩm từ tâm 🌿</span>
         </div>
       </footer>
     </div>

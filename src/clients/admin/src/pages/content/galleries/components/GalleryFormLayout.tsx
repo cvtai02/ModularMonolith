@@ -126,6 +126,7 @@ function GalleryItemCard({
         name={`items.${index}.imageKey`}
         render={({ field }) => (
           <MediaPickerModal
+            category="content"
             open={pickerOpen}
             onOpenChange={setPickerOpen}
             selectedUrls={displayUrl ? [displayUrl] : []}
@@ -315,6 +316,7 @@ export function GalleryFormLayout({
 
       {/* Multi-image picker for adding new items */}
       <MediaPickerModal
+        category="content"
         open={addPickerOpen}
         onOpenChange={setAddPickerOpen}
         selectedUrls={[]}

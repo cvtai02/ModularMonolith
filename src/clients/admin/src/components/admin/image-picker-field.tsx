@@ -8,9 +8,11 @@ import { resolveMediaUrl, urlToMediaKey } from "@/lib/media";
 export function ImagePickerField({
   value,
   onChange,
+  category = "product",
 }: {
   value: string[];
   onChange: (urls: string[]) => void;
+  category?: "product" | "content" | "avatar" | "review";
 }) {
   const [open, setOpen] = useState(false);
 
@@ -81,6 +83,7 @@ export function ImagePickerField({
         selectedUrls={[]}
         onSelect={handleSelect}
         multiple
+        category={category}
       />
     </>
   );
@@ -89,9 +92,11 @@ export function ImagePickerField({
 export function SingleImagePickerField({
   value,
   onChange,
+  category = "product",
 }: {
   value: string;
   onChange: (key: string) => void;
+  category?: "product" | "content" | "avatar" | "review";
 }) {
   const [open, setOpen] = useState(false);
   const displayUrl = resolveMediaUrl(value);
@@ -136,6 +141,7 @@ export function SingleImagePickerField({
         onOpenChange={setOpen}
         selectedUrls={displayUrl ? [displayUrl] : []}
         onSelect={(urls) => onChange(urlToMediaKey(urls[0] ?? ""))}
+        category={category}
       />
     </>
   );

@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "nekomin-app-agent": {
+      "command": "node",
+      "args": ["devtools/mcp/app-agent-server.mjs"],
+      "env": {
+        "NEKOMIN_API_BASE_URL": "http://localhost:5265",
+        "NEKOMIN_API_TOKEN": "CfDJ8MIOHfC1CPBKr5LJcm0T0Frly917K20-e4f_D00rwVsYaDDnhqzsCDEMAf_2hY_tB6WXtUGG4QLbvUPj3_EZgRGmDVFDRW-bwKW9MpNpNndEkCbZuBVlXjlDzEeHTg0PmACVDx1ntRt4njezbwGktrJhO5o1f_9XGQYYC5MLyBo-ksgp4y6JQjkc4KffobQMvRdzAa2i6S6XlLZwNDon3aPbBgrydV3myZ2j6UADlHKD9HyEGw2q4RiY85bhvMoKaGEw38NtZWDNLBOY311uG2bCIiuIYz8nPCCgvAn_gQ7V7nTPZkSX7sQYst9BwzfRGwIPB6HsUznqofkRbGRSmZWT_uwl5-IaD79nDlk6eyS0Lrz6C5oen_plGtHQ8eSA6862zbBAlMRFqbvlDLQUrGLgj0yVPFrMjKPL9n7Lph8kJztfKqYEzFfKKXNYk4070fdLia4aR8UVRcxYECXI3EvQ_Lhijhev2XfGb6z3c79rgTANdw5uQiAEN_Rgk12h_3hX2ZHM8zSwrMTZkgW5S8dVUUH2WKAUG8A6SpGlkNPeh2gFrOJlSn_TDOB2jvpS2Ho906YtEZVhOvkyCjI4Y-_8u8DYxAx2Kpw-QjkrRUcohlcGUgFU9wMg8sFgU9aYDl2RcccyUDfM8IYNkh6RkEAd01G73DvFXkbR5rIO1b4bWBGvJBfVOrsm_HZuU5wysiT4vKrLF6YsABOAgBH7SAjHTGWGWbTFon3gKJI1DBl0gtra0k0V-_8ESW3o2nhBvS9Y9wPiul_4nimHH-3Xme_FeV8MIy7d_kOVFhY1UrI5Hy_M5GEfXzlRyBIxP-0RYw"
+      }
+    }
+  }
+}

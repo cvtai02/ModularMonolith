@@ -27,9 +27,11 @@ type Props = {
   onSelect: (urls: string[]) => void;
   /** Allow selecting more than one image. Defaults to false. */
   multiple?: boolean;
+  /** Media category bucket. Defaults to "product". */
+  category?: "product" | "content" | "avatar" | "review";
 };
 
-export function MediaPickerModal({ open, onOpenChange, selectedUrls, onSelect, multiple = false }: Props) {
+export function MediaPickerModal({ open, onOpenChange, selectedUrls, onSelect, multiple = false, category = "product" }: Props) {
   const queryClient = useQueryClient();
   const contentClient = useContentClient();
   const [prevOpen, setPrevOpen] = useState(open);
@@ -52,7 +54,7 @@ export function MediaPickerModal({ open, onOpenChange, selectedUrls, onSelect, m
       PageNumber: page,
       PageSize: PAGE_SIZE,
       Search: search || undefined,
-      Category: "product",
+      Category: category,
       SortBy: "created",
       SortDirection: "desc",
     }),
@@ -112,7 +114,7 @@ export function MediaPickerModal({ open, onOpenChange, selectedUrls, onSelect, m
         {/* Upload zone */}
         <div className="shrink-0 px-4 pb-3">
           <FileUploader
-            category="product"
+            category={category}
             accept="image/*,video/mp4"
             multiple
             value={[]}

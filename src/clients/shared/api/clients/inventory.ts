@@ -31,7 +31,7 @@ export class InventoryClient implements IInventoryClient {
   ): Promise<InitializeProductInventoryResponse> {
     const { data, error } = await this.client.POST("/api/Inventory/products/{productId}/initialize", {
       params: { path: { productId } },
-      body: input,
+      body: input as never,
     });
     if (error) throw error;
     return requireData(data, "Initialize product inventory response was empty.");
