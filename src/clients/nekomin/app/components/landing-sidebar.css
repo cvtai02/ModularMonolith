@@ -1,0 +1,153 @@
+/* ── Landing page hover-reveal sidebar ─────────────────────────────────────
+   Orb: top-right corner, sage-green color (distinct from blog's terra orb).
+   Panel: slides in from the right on hover, full screen height.
+   Pure CSS hover — no JS.
+──────────────────────────────────────────────────────────────────────────── */
+
+.landing-sidebar {
+  position: fixed;
+  right: 0;
+  top: 0;
+  height: 100vh;
+  width: 50px; /* hover zone */
+  z-index: 200;
+}
+
+/* ── Orb ── */
+.landing-sidebar-orb {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, oklch(45% 0 0), oklch(8% 0 0));
+  box-shadow:
+    0 0 6px 2px oklch(8% 0 0 / 0.35),
+    0 0 16px 6px oklch(8% 0 0 / 0.15);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  animation: landingOrbPulse 3s ease-in-out infinite;
+}
+
+@keyframes landingOrbPulse {
+  0%, 100% {
+    box-shadow:
+      0 0 6px 2px oklch(8% 0 0 / 0.35),
+      0 0 16px 6px oklch(8% 0 0 / 0.15);
+  }
+  55% {
+    box-shadow:
+      0 0 10px 4px oklch(8% 0 0 / 0.5),
+      0 0 24px 10px oklch(8% 0 0 / 0.22);
+  }
+}
+
+.landing-sidebar:hover .landing-sidebar-orb {
+  opacity: 0;
+  transform: scale(0.3);
+  pointer-events: none;
+}
+
+/* ── Panel ── */
+.landing-sidebar-panel {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100vh;
+  width: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition:
+    width 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.28s ease;
+  background: oklch(97% 0.018 68 / 0.97);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-left: 1px solid oklch(88% 0.035 68 / 0.8);
+}
+
+.landing-sidebar:hover .landing-sidebar-panel {
+  width: 240px;
+  opacity: 1;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.landing-sidebar-panel::-webkit-scrollbar { display: none; }
+
+/* ── Inner ── */
+.landing-sidebar-inner {
+  width: 240px;
+  padding: 40px 20px 40px;
+}
+
+/* ── Icon row ── */
+.landing-sidebar-icons {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  margin-bottom: 4px;
+}
+
+.landing-sidebar-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  color: oklch(38% 0 0);
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+
+.landing-sidebar-icon-btn:hover {
+  background: oklch(91% 0.03 68 / 0.8);
+  color: oklch(48% 0.1 185);
+}
+
+/* ── Divider ── */
+.landing-sidebar-divider {
+  height: 1px;
+  background: oklch(88% 0.035 68);
+  margin: 16px 0;
+}
+
+/* ── Sections ── */
+.landing-sidebar-section {
+  margin-bottom: 24px;
+}
+
+.landing-sidebar-section-heading {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: oklch(48% 0.1 185);
+  margin-bottom: 8px;
+}
+
+.landing-sidebar-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.landing-sidebar-link {
+  display: block;
+  padding: 7px 10px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  color: oklch(38% 0 0);
+  text-decoration: none;
+  line-height: 1.4;
+  transition: background 0.14s, color 0.14s;
+}
+
+.landing-sidebar-link:hover {
+  background: oklch(91% 0.03 68 / 0.8);
+  color: oklch(8% 0 0);
+}

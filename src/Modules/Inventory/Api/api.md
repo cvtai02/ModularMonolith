@@ -7,4 +7,5 @@ Client contract: [InventoryClient](../../../clients/shared/api/clients/inventory
 
 ### ProductInventory
 - `POST /api/Inventory/products/{productId}/initialize` - auth: `TenantAdminUp`. DTOs: [InitializeProductInventoryRequest](../DTOs/Inventory/InitializeProductInventoryRequest.cs), [InitializeProductInventoryResponse](../DTOs/Inventory/InitializeProductInventoryResponse.cs).
+- `DELETE /api/Inventory/products/{productId}` - auth: `TenantAdminUp`.
 - `POST /api/Inventory/variants/import` - auth: `TenantAdminUp`. DTOs: [ImportVariantInventoryRequest](../DTOs/Inventory/ImportVariantInventoryRequest.cs), [ImportVariantInventoryResponse](../DTOs/Inventory/ImportVariantInventoryResponse.cs).

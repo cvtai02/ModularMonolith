@@ -6,22 +6,32 @@
 Client contract: [ProductCatalogClient](../../../clients/shared/api/clients/productcatalog.ts), [IProductCatalogClient](../../../clients/shared/api/contracts/productcatalog.ts)
 
 ### Product
-- `GET /api/ProductCatalog/products` - auth: public. DTOs: [ListProductsRequest](../DTOs/Products/ListProductsRequest.cs), [ProductSummaryResponse](../DTOs/Products/ProductResponse.cs).
-- `GET /api/ProductCatalog/products/{id}` - auth: public. DTOs: [ProductResponse](../DTOs/Products/ProductResponse.cs).
+- `GET /api/ProductCatalog/customer/products` - auth: public. DTOs: [ListCustomerProductsRequest](../DTOs/Products/ListCustomerProductsRequest.cs), [CustomerProductSummaryResponse](../DTOs/Products/CustomerProductResponse.cs).
+- `GET /api/ProductCatalog/customer/products/{id}` - auth: public. DTOs: [CustomerProductResponse](../DTOs/Products/CustomerProductResponse.cs).
+- `GET /api/ProductCatalog/customer/products/by-slug/{slug}` - auth: public. DTOs: [CustomerProductResponse](../DTOs/Products/CustomerProductResponse.cs).
+- `GET /api/ProductCatalog/products` - auth: `TenantModeratorUp`. DTOs: [ListProductsRequest](../DTOs/Products/ListProductsRequest.cs), [ProductSummaryResponse](../DTOs/Products/ProductResponse.cs).
+- `GET /api/ProductCatalog/products/{id}` - auth: `TenantModeratorUp`. DTOs: [ProductResponse](../DTOs/Products/ProductResponse.cs).
 - `POST /api/ProductCatalog/products` - auth: `TenantAdminUp`. DTOs: [CreateProductRequest](../DTOs/Products/CreateProductRequest.cs), [ProductResponse](../DTOs/Products/ProductResponse.cs).
 - `PUT /api/ProductCatalog/products/{id}` - auth: `TenantAdminUp`. DTOs: [UpdateProductRequest](../DTOs/Products/UpdateProductRequest.cs), [ProductResponse](../DTOs/Products/ProductResponse.cs).
+- `DELETE /api/ProductCatalog/products/{id}` - auth: `TenantAdminUp`.
 
 
 ### Category
-- `GET /api/ProductCatalog/categories` - auth: public. DTOs: [CategoryResponse](../DTOs/Categories/CategoryResponse.cs).
-- `GET /api/ProductCatalog/categories/{name}` - auth: public. DTOs: [CategoryResponse](../DTOs/Categories/CategoryResponse.cs).
+- `GET /api/ProductCatalog/customer/categories` - auth: public. DTOs: [CustomerCategoryResponse](../DTOs/Categories/CustomerCategoryResponse.cs).
+- `GET /api/ProductCatalog/customer/categories/{name}` - auth: public. DTOs: [CustomerCategoryResponse](../DTOs/Categories/CustomerCategoryResponse.cs).
+- `GET /api/ProductCatalog/customer/categories/by-slug/{slug}` - auth: public. DTOs: [CustomerCategoryResponse](../DTOs/Categories/CustomerCategoryResponse.cs).
+- `GET /api/ProductCatalog/categories` - auth: `TenantModeratorUp`. DTOs: [CategoryResponse](../DTOs/Categories/CategoryResponse.cs).
+- `GET /api/ProductCatalog/categories/{name}` - auth: `TenantModeratorUp`. DTOs: [CategoryResponse](../DTOs/Categories/CategoryResponse.cs).
 - `POST /api/ProductCatalog/categories` - auth: `TenantAdminUp`. DTOs: [CreateCategoryRequest](../DTOs/Categories/CreateCategoryRequest.cs), [CategoryResponse](../DTOs/Categories/CategoryResponse.cs).
 - `PUT /api/ProductCatalog/categories/{name}` - auth: `TenantAdminUp`. DTOs: [UpdateCategoryRequest](../DTOs/Categories/UpdateCategoryRequest.cs), [CategoryResponse](../DTOs/Categories/CategoryResponse.cs).
 - `DELETE /api/ProductCatalog/categories/{name}` - auth: `TenantAdminUp`.
 
 ### Collection
-- `GET /api/ProductCatalog/collections` - auth: public. DTOs: [CollectionResponse](../DTOs/Collections/CollectionResponse.cs).
-- `GET /api/ProductCatalog/collections/{id}` - auth: public. DTOs: [CollectionResponse](../DTOs/Collections/CollectionResponse.cs).
+- `GET /api/ProductCatalog/customer/collections` - auth: public. DTOs: [CustomerCollectionResponse](../DTOs/Collections/CustomerCollectionResponse.cs).
+- `GET /api/ProductCatalog/customer/collections/{id}` - auth: public. DTOs: [CustomerCollectionDetailResponse](../DTOs/Collections/CustomerCollectionResponse.cs).
+- `GET /api/ProductCatalog/customer/collections/by-slug/{slug}` - auth: public. DTOs: [CustomerCollectionDetailResponse](../DTOs/Collections/CustomerCollectionResponse.cs).
+- `GET /api/ProductCatalog/collections` - auth: `TenantModeratorUp`. DTOs: [CollectionResponse](../DTOs/Collections/CollectionResponse.cs).
+- `GET /api/ProductCatalog/collections/{id}` - auth: `TenantModeratorUp`. DTOs: [CollectionDetailResponse](../DTOs/Collections/CollectionResponse.cs).
 - `POST /api/ProductCatalog/collections` - auth: `TenantAdminUp`. DTOs: [CreateCollectionRequest](../DTOs/Collections/CreateCollectionRequest.cs), [CollectionResponse](../DTOs/Collections/CollectionResponse.cs).
 - `POST /api/ProductCatalog/collections/{id}/products` - auth: `TenantAdminUp`. DTOs: [AddCollectionProductsRequest](../DTOs/Collections/AddCollectionProductsRequest.cs), [CollectionResponse](../DTOs/Collections/CollectionResponse.cs).
 - `PUT /api/ProductCatalog/collections/{id}` - auth: `TenantAdminUp`. DTOs: [UpdateCollectionRequest](../DTOs/Collections/UpdateCollectionRequest.cs), [CollectionResponse](../DTOs/Collections/CollectionResponse.cs).

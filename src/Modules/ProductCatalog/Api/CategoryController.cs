@@ -17,6 +17,7 @@ public class CategoryController(
     UpdateCategory updateCategory,
     DeleteCategory deleteCategory) : ControllerBase
 {
+    [Authorize(Policy = Policies.TenantModeratorUp)]
     [HttpGet]
     public async Task<ActionResult<PaginatedList<CategoryResponse>>> GetAll(
         [Range(1, int.MaxValue)]
@@ -27,6 +28,7 @@ public class CategoryController(
         CancellationToken cancellationToken = default)
         => Ok(await listCategories.ExecuteAsync(pageNumber, pageSize, search, cancellationToken));
 
+    [Authorize(Policy = Policies.TenantModeratorUp)]
     [HttpGet("{name}")]
     public async Task<ActionResult<CategoryResponse>> GetByName(string name, CancellationToken cancellationToken)
     {

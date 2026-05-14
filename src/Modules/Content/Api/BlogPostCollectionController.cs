@@ -11,6 +11,7 @@ namespace Content.Api;
 [Route($"api/{ModuleConstants.Key}/blog-post-collections")]
 public class BlogPostCollectionController(
     GetPublicBlogPostCollectionByKey getPublicBlogPostCollectionByKey,
+    ListPublicBlogPostCollections listPublicBlogPostCollections,
     ListAdminBlogPostCollections listAdminBlogPostCollections,
     ListAdminBlogPostsByCollection listAdminBlogPostsByCollection,
     GetAdminBlogPostCollectionById getAdminBlogPostCollectionById,
@@ -18,6 +19,12 @@ public class BlogPostCollectionController(
     UpdateBlogPostCollection updateBlogPostCollection,
     DeleteBlogPostCollection deleteBlogPostCollection) : ControllerBase
 {
+    [HttpGet("public")]
+    public async Task<ActionResult<PaginatedList<PublicBlogPostCollectionGroupResponse>>> GetPublic(
+        [FromQuery] ListPublicBlogPostCollectionsRequest request,
+        CancellationToken cancellationToken)
+        => Ok(await listPublicBlogPostCollections.ExecuteAsync(request, cancellationToken));
+
     [HttpGet("{key}")]
     public async Task<ActionResult<BlogPostCollectionResponse>> GetPublicByKey(
         string key,

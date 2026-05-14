@@ -13,13 +13,16 @@ public class ProductController(
     ListProducts listProducts,
     GetProductById getProductById,
     CreateProduct createProduct,
-    UpdateProduct updateProduct) : ControllerBase
+    UpdateProduct updateProduct,
+    DeleteProduct deleteProduct) : ControllerBase
 {
+    [Authorize(Policy = Policies.TenantModeratorUp)]
     [HttpGet]
     public async Task<ActionResult<PaginatedList<ProductSummaryResponse>>> GetAll(
         [FromQuery] ListProductsRequest request, CancellationToken cancellationToken)
         => Ok(await listProducts.ExecuteAsync(request, cancellationToken));
 
+    [Authorize(Policy = Policies.TenantModeratorUp)]
     [HttpGet("{id}")]
     public async Task<ActionResult<ProductResponse>> GetById(string id, CancellationToken cancellationToken)
     {
@@ -43,5 +46,13 @@ public class ProductController(
     {
         var result = await updateProduct.ExecuteAsync(id, request, cancellationToken);
         return result is null ? NotFound() : Ok(result);
+    }
+
+    [Authorize(Policy = Policies.TenantAdminUp)]
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(string id, CancellationToken cancellationToken)
+    {
+        var result = await deleteProduct.ExecuteAsync(id, cancellationToken);
+        return result ? NoContent() : NotFound();
     }
 }

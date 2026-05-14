@@ -199,6 +199,24 @@ export type AdminBlogPostCollectionGroupResponse = {
 export type ListAdminBlogPostsByCollectionResponse =
     PaginatedList<AdminBlogPostCollectionGroupResponse>;
 
+export type ListPublicBlogPostCollectionsQuery = {
+    pageNumber?: number;
+    pageSize?: number;
+};
+
+export type PublicBlogPostCollectionGroupResponse = {
+    collectionId: number;
+    key: string;
+    title: string;
+    description: string;
+    isPublic: true;
+    itemCount: number;
+    items: BlogPostSummary[];
+};
+
+export type ListPublicBlogPostCollectionsResponse =
+    PaginatedList<PublicBlogPostCollectionGroupResponse>;
+
 export type CreateBlogPostCollectionRequest = {
     key: string;
     title: string;

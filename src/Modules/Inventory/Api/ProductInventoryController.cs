@@ -10,7 +10,8 @@ namespace Inventory.Api;
 [Route($"api/{ModuleConstants.Key}")]
 public class ProductInventoryController(
     InitializeProductInventory initializeProductInventory,
-    ImportVariantInventory importVariantInventory) : ControllerBase
+    ImportVariantInventory importVariantInventory,
+    DeleteProductInventory deleteProductInventory) : ControllerBase
 {
     [Authorize(Policy = Policies.TenantAdminUp)]
     [HttpPost("products/{productId}/initialize")]
@@ -26,4 +27,14 @@ public class ProductInventoryController(
         [FromBody] ImportVariantInventoryRequest request,
         CancellationToken cancellationToken)
         => Ok(await importVariantInventory.ExecuteAsync(request, cancellationToken));
+
+    [Authorize(Policy = Policies.TenantAdminUp)]
+    [HttpDelete("products/{productId}")]
+    public async Task<IActionResult> DeleteProduct(
+        string productId,
+        CancellationToken cancellationToken)
+    {
+        await deleteProductInventory.ExecuteAsync(productId, cancellationToken);
+        return NoContent();
+    }
 }

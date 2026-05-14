@@ -1,11 +1,21 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeftIcon, PencilIcon } from "lucide-react";
+import { ArrowLeftIcon, PencilIcon, Trash2Icon } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useProductCatalogClient } from "@/components/containers/api-client-provider";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { useProductCatalogClient, useInventoryClient } from "@/components/containers/api-client-provider";
 import { ROUTES } from "@/configs/routes";
 import { AdminErrorState } from "@/components/admin/admin-page";
 import { ProductDetailHeader } from "./view/ProductDetailHeader";
@@ -22,7 +32,33 @@ export default function ProductViewPage() {
   const productId = id!;
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<Tab>("overview");
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   const productCatalogClient = useProductCatalogClient();
+  const inventoryClient = useInventoryClient();
+
+  async function handleDelete() {
+    setDeleting(true);
+    setDeleteError(null);
+    try {
+      await inventoryClient.deleteProductInventory(productId);
+    } catch {
+      // inventory rows may already be missing — continue
+    }
+    try {
+      await productCatalogClient.deleteProduct(productId);
+      navigate(ROUTES.products);
+    } catch (e: unknown) {
+      const status = (e as { status?: number })?.status;
+      if (status === 404) {
+        navigate(ROUTES.products);
+      } else {
+        setDeleteError("Failed to delete product. Please try again.");
+        setDeleting(false);
+      }
+    }
+  }
 
   const { data: product, isLoading, isError } = useQuery({
     queryKey: ["product", productId],
@@ -58,12 +94,48 @@ export default function ProductViewPage() {
           Products
         </Button>
         {product && (
-          <Button size="sm" onClick={() => navigate(ROUTES.productEdit(productId))}>
-            <PencilIcon data-icon="inline-start" />
-            Edit
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-destructive hover:text-destructive hover:bg-destructive/10"
+              onClick={() => setDeleteOpen(true)}
+            >
+              <Trash2Icon data-icon="inline-start" />
+              Delete
+            </Button>
+            <Button size="sm" onClick={() => navigate(ROUTES.productEdit(productId))}>
+              <PencilIcon data-icon="inline-start" />
+              Edit
+            </Button>
+          </div>
         )}
       </div>
+
+      <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete product?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete <strong>{product?.name}</strong> and all its variants,
+              media, and inventory records. This action cannot be undone.
+              {deleteError && (
+                <span className="block mt-2 text-destructive">{deleteError}</span>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => { e.preventDefault(); handleDelete(); }}
+              disabled={deleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleting ? "Deleting…" : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Header */}
       {isLoading ? (

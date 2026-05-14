@@ -4,6 +4,8 @@ import type {
   AddCollectionProductsRequest,
   AddCollectionProductsResponse,
   CategoryResponse,
+  CustomerCategoryResponse,
+  CustomerCollectionDetailResponse,
   CollectionDetailResponse,
   CreateCategoryRequest,
   CreateCategoryResponse,
@@ -11,8 +13,16 @@ import type {
   CreateCollectionResponse,
   CreateProductRequest,
   CreateProductResponse,
+  CustomerProductResponse,
   DeleteCategoryResponse,
   DeleteCollectionResponse,
+  DeleteProductResponse,
+  ListCustomerCategoriesQuery,
+  ListCustomerCategoriesResponse,
+  ListCustomerCollectionsQuery,
+  ListCustomerCollectionsResponse,
+  ListCustomerProductsQuery,
+  ListCustomerProductsResponse,
   ListCategoriesQuery,
   ListCategoriesResponse,
   ListCollectionsQuery,
@@ -55,6 +65,78 @@ export class ProductCatalogClient implements IProductCatalogClient {
     });
   }
 
+  async listCustomerCategory(query?: ListCustomerCategoriesQuery): Promise<ListCustomerCategoriesResponse> {
+    return this.requestJson<ListCustomerCategoriesResponse>(
+      `/api/ProductCatalog/customer/categories${this.toQueryString(query)}`,
+      undefined,
+      "Customer categories response was empty.",
+    );
+  }
+
+  async getCustomerCategory(name: string): Promise<CustomerCategoryResponse> {
+    return this.requestJson<CustomerCategoryResponse>(
+      `/api/ProductCatalog/customer/categories/${encodeURIComponent(name)}`,
+      undefined,
+      "Customer category response was empty.",
+    );
+  }
+
+  async getCustomerCategoryBySlug(slug: string): Promise<CustomerCategoryResponse> {
+    return this.requestJson<CustomerCategoryResponse>(
+      `/api/ProductCatalog/customer/categories/by-slug/${encodeURIComponent(slug)}`,
+      undefined,
+      "Customer category response was empty.",
+    );
+  }
+
+  async listCustomerCollection(query?: ListCustomerCollectionsQuery): Promise<ListCustomerCollectionsResponse> {
+    return this.requestJson<ListCustomerCollectionsResponse>(
+      `/api/ProductCatalog/customer/collections${this.toQueryString(query)}`,
+      undefined,
+      "Customer collections response was empty.",
+    );
+  }
+
+  async getCustomerCollection(id: number): Promise<CustomerCollectionDetailResponse> {
+    return this.requestJson<CustomerCollectionDetailResponse>(
+      `/api/ProductCatalog/customer/collections/${id}`,
+      undefined,
+      "Customer collection detail response was empty.",
+    );
+  }
+
+  async getCustomerCollectionBySlug(slug: string): Promise<CustomerCollectionDetailResponse> {
+    return this.requestJson<CustomerCollectionDetailResponse>(
+      `/api/ProductCatalog/customer/collections/by-slug/${encodeURIComponent(slug)}`,
+      undefined,
+      "Customer collection detail response was empty.",
+    );
+  }
+
+  async listCustomerProduct(query?: ListCustomerProductsQuery): Promise<ListCustomerProductsResponse> {
+    return this.requestJson<ListCustomerProductsResponse>(
+      `/api/ProductCatalog/customer/products${this.toQueryString(query)}`,
+      undefined,
+      "Customer products response was empty.",
+    );
+  }
+
+  async getCustomerProduct(id: string): Promise<CustomerProductResponse> {
+    return this.requestJson<CustomerProductResponse>(
+      `/api/ProductCatalog/customer/products/${encodeURIComponent(id)}`,
+      undefined,
+      "Customer product response was empty.",
+    );
+  }
+
+  async getCustomerProductBySlug(slug: string): Promise<CustomerProductResponse> {
+    return this.requestJson<CustomerProductResponse>(
+      `/api/ProductCatalog/customer/products/by-slug/${encodeURIComponent(slug)}`,
+      undefined,
+      "Customer product response was empty.",
+    );
+  }
+
   async listProduct(query?: ListProductsQuery): Promise<ListProductsResponse> {
     const { data, error } = await this.client.GET("/api/ProductCatalog/products", { params: { query } });
     if (error) throw error;
@@ -87,6 +169,15 @@ export class ProductCatalogClient implements IProductCatalogClient {
       },
       "Update product response was empty.",
     );
+  }
+
+  async deleteProduct(id: string): Promise<DeleteProductResponse> {
+    const response = await this.fetch(`${this.apiBaseUrl}/api/ProductCatalog/products/${encodeURIComponent(id)}`, {
+      method: "DELETE",
+    });
+    if (!response.ok) {
+      throw await this.readError(response);
+    }
   }
 
   async listCategory(query?: ListCategoriesQuery): Promise<ListCategoriesResponse> {
@@ -189,6 +280,24 @@ export class ProductCatalogClient implements IProductCatalogClient {
 
     const data = await response.json() as T | undefined;
     return requireData(data, emptyMessage);
+  }
+
+  private toQueryString(query?: Record<string, unknown>): string {
+    if (!query) {
+      return "";
+    }
+
+    const params = new URLSearchParams();
+    for (const [key, value] of Object.entries(query)) {
+      if (value === undefined || value === null || value === "") {
+        continue;
+      }
+
+      params.set(key, String(value));
+    }
+
+    const serialized = params.toString();
+    return serialized ? `?${serialized}` : "";
   }
 
   private async readError(response: Response): Promise<unknown> {

@@ -30,6 +30,8 @@ import type {
   ListAdminBlogPostsResponse,
   ListPublishedBlogPostsQuery,
   ListPublishedBlogPostsResponse,
+  ListPublicBlogPostCollectionsQuery,
+  ListPublicBlogPostCollectionsResponse,
   PresignedUploadBulkUrlResponse,
   PublishBlogPostResponse,
   UpdateBlogPostCollectionRequest,
@@ -96,6 +98,13 @@ export interface IContentClient {
   // Contract method: getPublicBlogPostCollectionByKey. Public collection lookup by key.
   // Response: src/Modules/Content/DTOs/BlogPostCollections/BlogPostCollectionResponse.cs
   getPublicBlogPostCollectionByKey(key: string): Promise<BlogPostCollectionResponse>;
+
+  // Contract method: listPublicBlogPostCollections. Public collection listing with ordered published post summaries.
+  // Query: src/Modules/Content/DTOs/BlogPostCollections/ListPublicBlogPostCollectionsRequest.cs
+  // Item response: src/Modules/Content/DTOs/BlogPostCollections/PublicBlogPostCollectionGroupResponse.cs
+  listPublicBlogPostCollections(
+    query?: ListPublicBlogPostCollectionsQuery,
+  ): Promise<ListPublicBlogPostCollectionsResponse>;
 
   // Contract method: listAdminBlogPostCollections. Admin collection listing.
   // Query: src/Modules/Content/DTOs/BlogPostCollections/ListBlogPostCollectionsRequest.cs

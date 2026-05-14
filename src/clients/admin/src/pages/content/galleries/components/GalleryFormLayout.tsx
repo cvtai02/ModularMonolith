@@ -33,28 +33,31 @@ export type GalleryFormValues = {
   items: GalleryItemFormValues[];
 };
 
+export type GalleryItemCardProps = {
+  index: number;
+  control: ReturnType<typeof useForm<GalleryFormValues>>["control"];
+  register: ReturnType<typeof useForm<GalleryFormValues>>["register"];
+  onRemove: () => void;
+};
+
 interface Props {
   pageTitle: string;
   defaultValues?: Partial<GalleryFormValues>;
   isPending: boolean;
   showKeyField?: boolean;
+  ItemCard?: React.ComponentType<GalleryItemCardProps>;
   onDiscard: () => void;
   onSubmit: (values: GalleryFormValues) => Promise<void>;
 }
 
-// ─── Item card ────────────────────────────────────────────────────────────────
+// ─── Default item card ────────────────────────────────────────────────────────
 
 function GalleryItemCard({
   index,
   control,
   register,
   onRemove,
-}: {
-  index: number;
-  control: ReturnType<typeof useForm<GalleryFormValues>>["control"];
-  register: ReturnType<typeof useForm<GalleryFormValues>>["register"];
-  onRemove: () => void;
-}) {
+}: GalleryItemCardProps) {
   const [pickerOpen, setPickerOpen] = useState(false);
   const imageKey = useWatch({ control, name: `items.${index}.imageKey` });
   const displayUrl = resolveMediaUrl(imageKey ?? "");
@@ -145,6 +148,7 @@ export function GalleryFormLayout({
   defaultValues,
   isPending,
   showKeyField = false,
+  ItemCard = GalleryItemCard,
   onDiscard,
   onSubmit,
 }: Props) {
@@ -198,10 +202,11 @@ export function GalleryFormLayout({
     try {
       await onSubmit(values);
     } catch (err) {
-      setIsSubmitting(false);
       if (!applyValidationErrors(err, setError)) {
         throw err;
       }
+    } finally {
+      setIsSubmitting(false);
     }
   });
 
@@ -291,7 +296,7 @@ export function GalleryFormLayout({
                   onDragEnd={() => setDragIndex(null)}
                   className={cn(dragIndex === index && "opacity-50")}
                 >
-                  <GalleryItemCard
+                  <ItemCard
                     index={index}
                     control={control}
                     register={register}

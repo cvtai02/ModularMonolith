@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import "./landing.css";
 import { ContentClient } from "@modular-monolith/clients-shared/api/clients";
 import { appFetch } from "@/app/configs/appFetch";
@@ -6,12 +7,14 @@ import { HeroCarousel } from "./components/hero-carousel";
 import type { HeroSlide } from "./components/hero-carousel";
 import { PawCursor } from "./components/paw-cursor";
 import { RevealOnScroll } from "./components/reveal-on-scroll";
+import { SectionLabel } from "./components/section-label";
 import { resolveMediaUrl } from "./lib/media";
 
 
 const MARQUEE_ITEMS = [
   "Nhẹ nhàng · Đơn giản · Tinh tế ",
-  "Phụ kiện · Decor · Heo thỳ",
+  "Phụ kiện · Decor · Fashion",
+  "Minimalism · Perfectionism",
   "Chi tiết nhỏ tạo nên phong cách sống",
   "Vẻ đẹp trong sự tối giản",
 ];
@@ -43,21 +46,29 @@ export default async function Home() {
 
   return (
     <div className="landing-root">
-      <a href="/" className="site-logo">
-        <Image src="/nekomin.svg" alt="Nekomin" width={108} height={108} />
-      </a>
+      <div className="site-logo-bar">
+        <Link href="/" className="site-logo">
+          <Image src="/nekomin.svg" alt="Nekomin" width={108} height={108} />
+        </Link>
+        <SectionLabel sections={[
+          { watchId: "lookbook", label: "Nổi bật" },
+          { watchId: "blog", label: "Chia sẻ" },
+        ]} />
+      </div>
 
-      <HeroCarousel slides={heroSlides.length > 0 ? heroSlides : undefined} />
-      <PawCursor />
+      <div className="hero-viewport">
+        <HeroCarousel slides={heroSlides.length > 0 ? heroSlides : undefined} />
+        <PawCursor />
 
-      <div className="marquee-strip">
-        <div className="marquee-inner">
-          {marqueeItems.map((t, i) => (
-            <span key={i} style={{ display: "contents" }}>
-              <span>{t}</span>
-              <span className="dot">✦</span>
-            </span>
-          ))}
+        <div className="marquee-strip">
+          <div className="marquee-inner">
+            {marqueeItems.map((t, i) => (
+              <span key={i} style={{ display: "contents" }}>
+                <span>{t}</span>
+                <span className="dot">✦</span>
+              </span>
+            ))}
+          </div>
         </div>
       </div>
 

@@ -1,0 +1,200 @@
+/* ── Blog post hover-reveal sidebar ── */
+
+.blog-sidebar {
+  position: fixed;
+  right: 0;
+  top: 0;
+  height: 100vh;
+  width: 46px; /* hover zone */
+  z-index: 200;
+}
+
+/* Orb — top-right corner */
+.blog-sidebar-orb {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 35%,
+    oklch(82% 0.09 55),
+    oklch(57% 0.11 47));
+  box-shadow:
+    0 0 6px 2px oklch(72% 0.09 47 / 0.55),
+    0 0 16px 6px oklch(57% 0.11 47 / 0.22);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  animation: orbPulse 2.8s ease-in-out infinite;
+}
+
+@keyframes orbPulse {
+  0%, 100% {
+    box-shadow:
+      0 0 6px 2px oklch(72% 0.09 47 / 0.55),
+      0 0 16px 6px oklch(57% 0.11 47 / 0.22);
+  }
+  50% {
+    box-shadow:
+      0 0 10px 4px oklch(72% 0.09 47 / 0.75),
+      0 0 24px 10px oklch(57% 0.11 47 / 0.35);
+  }
+}
+
+/* Sidebar panel — full height, hidden until hover */
+.blog-sidebar-panel {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100vh;
+  width: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition:
+    width 0.42s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.3s ease;
+  background: oklch(97% 0.018 68 / 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-left: 1px solid oklch(88% 0.035 68 / 0.8);
+}
+
+.blog-sidebar:hover .blog-sidebar-orb {
+  opacity: 0;
+  transform: scale(0.3);
+  pointer-events: none;
+}
+
+.blog-sidebar:hover .blog-sidebar-panel {
+  width: 268px;
+  opacity: 1;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.blog-sidebar-panel::-webkit-scrollbar {
+  display: none;
+}
+
+/* Inner — fixed width so content doesn't reflow during width transition */
+.blog-sidebar-inner {
+  width: 268px;
+  padding: 40px 16px 40px 18px;
+}
+
+/* Heading */
+.blog-sidebar-heading {
+  font-family: monospace;
+  font-size: 0.63rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--terra);
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid oklch(88% 0.035 68);
+}
+
+/* ── Accordion section ─────────────────────────────────── */
+.blog-sidebar-section {
+  border-bottom: 1px solid oklch(91% 0.025 68 / 0.7);
+}
+
+.blog-sidebar-section:first-child {
+  border-top: 1px solid oklch(91% 0.025 68 / 0.7);
+}
+
+/* Collection title button */
+.blog-sidebar-section-title {
+  all: unset;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  box-sizing: border-box;
+  cursor: pointer;
+  padding: 9px 4px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: oklch(50% 0.04 55);
+  user-select: none;
+  transition: color 0.18s;
+}
+
+.blog-sidebar-section-title:hover,
+.blog-sidebar-section-title.open { color: var(--terra); }
+
+/* Chevron */
+.blog-sidebar-chevron {
+  display: inline-block;
+  width: 9px; height: 9px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 0.26s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+  margin-right: 2px;
+}
+
+.blog-sidebar-section-title.open .blog-sidebar-chevron {
+  transform: rotate(-135deg);
+}
+
+/* ── Animated content wrapper (grid 0fr → 1fr trick) ──── */
+.blog-sidebar-list-wrap {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.blog-sidebar-list-wrap.open {
+  grid-template-rows: 1fr;
+}
+
+/* Post list — must have overflow:hidden + min-height:0 for the grid trick */
+.blog-sidebar-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.blog-sidebar-list-wrap.open > .blog-sidebar-list {
+  padding-bottom: 8px;
+}
+
+.blog-sidebar-item a {
+  display: block;
+  padding: 7px 10px;
+  border-radius: 8px;
+  font-size: 0.79rem;
+  color: oklch(40% 0.02 60);
+  text-decoration: none;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background 0.14s, color 0.14s;
+}
+
+.blog-sidebar-item a:hover {
+  background: oklch(91% 0.03 68 / 0.8);
+  color: var(--brown);
+}
+
+/* Active = current post */
+.blog-sidebar-item.active a {
+  background: oklch(88% 0.045 52 / 0.55);
+  color: var(--terra);
+  font-weight: 500;
+}
+
+.blog-sidebar-item.active a::before {
+  content: "▸ ";
+  font-size: 0.65em;
+  opacity: 0.7;
+}

@@ -52,6 +52,25 @@ export type DeleteCategoryParams = PathParams<DeleteCategoryOperation>;
 // No content
 export type DeleteCategoryResponse = void;
 
+export type CustomerCategoryResponse = {
+    id: number;
+    name: string;
+    description: string;
+    imageUrl?: string | null;
+    parentName?: string | null;
+    slug: string;
+};
+
+export type ListCustomerCategoriesQuery = {
+    pageNumber?: number;
+    pageSize?: number;
+    search?: string | null;
+};
+
+export type ListCustomerCategoriesResponse = Omit<ListCategoriesResponse, "items"> & {
+    items: CustomerCategoryResponse[];
+};
+
 export type ListCollectionsQuery = QueryParams<ListCollectionsOperation>;
 // 200 OK
 type ListCollectionsResponseBody = JsonResponse<ListCollectionsOperation>;
@@ -99,6 +118,33 @@ export type DeleteCollectionParams = PathParams<DeleteCollectionOperation>;
 // No content
 export type DeleteCollectionResponse = void;
 
+export type CustomerCollectionResponse = {
+    id: number;
+    title: string;
+    description: string;
+    slug: string;
+    imageUrl?: string | null;
+    productCount: number;
+};
+
+export type CustomerCollectionProductResponse = CustomerProductSummaryResponse & {
+    displayOrder: number;
+};
+
+export type CustomerCollectionDetailResponse = CustomerCollectionResponse & {
+    products: CustomerCollectionProductResponse[];
+};
+
+export type ListCustomerCollectionsQuery = {
+    pageNumber?: number;
+    pageSize?: number;
+    search?: string | null;
+};
+
+export type ListCustomerCollectionsResponse = Omit<ListCollectionsResponseBody, "items"> & {
+    items: CustomerCollectionResponse[];
+};
+
 export type ListProductsQuery = QueryParams<ListProductsOperation>;
 // 200 OK
 type ListProductsResponseBody = JsonResponse<ListProductsOperation>;
@@ -144,3 +190,47 @@ export type UpdateProductParams = { id: string };
 export type UpdateProductRequest = CreateProductRequest;
 // 200 OK
 export type UpdateProductResponse = ProductResponse;
+// No content
+export type DeleteProductResponse = void;
+
+export type ListCustomerProductsQuery = {
+    pageNumber?: number;
+    pageSize?: number;
+    search?: string | null;
+    categoryName?: string | null;
+    sortBy?: string | null;
+    sortDirection?: string | null;
+};
+
+export type CustomerProductSummaryResponse = {
+    id: string;
+    name: string;
+    slug: string;
+    imageUrl: string;
+    categoryId: number;
+    categoryName: string;
+    price: number;
+    lowestPrice: number;
+    highestPrice: number;
+    currency: ProductResponse["currency"];
+};
+
+export type CustomerVariantResponse = {
+    id: string;
+    price: number;
+    compareAtPrice: number;
+    imageUrl: string;
+    optionValues: VariantResponse["optionValues"];
+};
+
+export type CustomerProductResponse = CustomerProductSummaryResponse & {
+    description: string;
+    compareAtPrice: number;
+    medias: ProductResponse["medias"];
+    options: ProductResponse["options"];
+    variants: CustomerVariantResponse[];
+};
+
+export type ListCustomerProductsResponse = Omit<ListProductsResponseBody, "items"> & {
+    items: CustomerProductSummaryResponse[];
+};

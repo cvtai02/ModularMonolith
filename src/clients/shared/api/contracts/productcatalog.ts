@@ -2,6 +2,8 @@ import type {
   AddCollectionProductsRequest,
   AddCollectionProductsResponse,
   CategoryResponse,
+  CustomerCategoryResponse,
+  CustomerCollectionDetailResponse,
   CollectionDetailResponse,
   CreateCategoryRequest,
   CreateCategoryResponse,
@@ -9,10 +11,18 @@ import type {
   CreateCollectionResponse,
   CreateProductRequest,
   CreateProductResponse,
+  CustomerProductResponse,
+  DeleteProductResponse,
   DeleteCategoryResponse,
   DeleteCollectionResponse,
+  ListCustomerProductsQuery,
+  ListCustomerProductsResponse,
   ListCategoriesQuery,
   ListCategoriesResponse,
+  ListCustomerCategoriesQuery,
+  ListCustomerCategoriesResponse,
+  ListCustomerCollectionsQuery,
+  ListCustomerCollectionsResponse,
   ListCollectionsQuery,
   ListCollectionsResponse,
   ListProductsQuery,
@@ -29,11 +39,50 @@ import type {
 export * from "../types/productcatalog"
 
 export interface IProductCatalogClient {
+  // Contract method: listCustomerCategory. Public storefront category list; active categories only.
+  // Item response: src/Modules/ProductCatalog/DTOs/Categories/CustomerCategoryResponse.cs
+  listCustomerCategory(query?: ListCustomerCategoriesQuery): Promise<ListCustomerCategoriesResponse>;
+
+  // Contract method: getCustomerCategory. Public storefront category detail; active categories only.
+  // Response: src/Modules/ProductCatalog/DTOs/Categories/CustomerCategoryResponse.cs
+  getCustomerCategory(name: string): Promise<CustomerCategoryResponse>;
+
+  // Contract method: getCustomerCategoryBySlug. Public storefront category detail by slug.
+  // Response: src/Modules/ProductCatalog/DTOs/Categories/CustomerCategoryResponse.cs
+  getCustomerCategoryBySlug(slug: string): Promise<CustomerCategoryResponse>;
+
+  // Contract method: listCustomerCollection. Public storefront collection list.
+  // Item response: src/Modules/ProductCatalog/DTOs/Collections/CustomerCollectionResponse.cs
+  listCustomerCollection(query?: ListCustomerCollectionsQuery): Promise<ListCustomerCollectionsResponse>;
+
+  // Contract method: getCustomerCollection. Public storefront collection detail with active products only.
+  // Response: src/Modules/ProductCatalog/DTOs/Collections/CustomerCollectionResponse.cs
+  getCustomerCollection(id: number): Promise<CustomerCollectionDetailResponse>;
+
+  // Contract method: getCustomerCollectionBySlug. Public storefront collection detail by slug with active products only.
+  // Response: src/Modules/ProductCatalog/DTOs/Collections/CustomerCollectionResponse.cs
+  getCustomerCollectionBySlug(slug: string): Promise<CustomerCollectionDetailResponse>;
+
+  // Contract method: listCustomerProduct. Public storefront product list; active products only.
+  // Query: src/Modules/ProductCatalog/DTOs/Products/ListCustomerProductsRequest.cs
+  // Item response: src/Modules/ProductCatalog/DTOs/Products/CustomerProductResponse.cs
+  listCustomerProduct(query?: ListCustomerProductsQuery): Promise<ListCustomerProductsResponse>;
+
+  // Contract method: getCustomerProduct. Public storefront product detail; active products only.
+  // Response: src/Modules/ProductCatalog/DTOs/Products/CustomerProductResponse.cs
+  getCustomerProduct(id: string): Promise<CustomerProductResponse>;
+
+  // Contract method: getCustomerProductBySlug. Public storefront product detail by slug.
+  // Response: src/Modules/ProductCatalog/DTOs/Products/CustomerProductResponse.cs
+  getCustomerProductBySlug(slug: string): Promise<CustomerProductResponse>;
+
+  // Auth: TenantModeratorUp.
   // Query: src/Modules/ProductCatalog/DTOs/Products/ListProductsRequest.cs
   // Item response: src/Modules/ProductCatalog/DTOs/Products/ProductSummaryResponse.cs
   // Wrapper response is generated in src/clients/shared/api/types/productcatalog.ts.
   listProduct(query?: ListProductsQuery): Promise<ListProductsResponse>;
 
+  // Auth: TenantModeratorUp.
   // Response: src/Modules/ProductCatalog/DTOs/Products/ProductResponse.cs
   getProduct(id: string): Promise<ProductResponse>;
 
@@ -49,11 +98,16 @@ export interface IProductCatalogClient {
   // Response: src/Modules/ProductCatalog/DTOs/Products/ProductResponse.cs
   updateProduct(id: string, input: UpdateProductRequest): Promise<UpdateProductResponse>;
 
+  // Contract method: deleteProduct. Auth: TenantAdminUp. Deletes a product by id; returns 204/no body.
+  deleteProduct(id: string): Promise<DeleteProductResponse>;
+
+  // Auth: TenantModeratorUp.
   // Query alias is generated in src/clients/shared/api/types/productcatalog.ts.
   // Item response: src/Modules/ProductCatalog/DTOs/Categories/CategoryResponse.cs
   // Wrapper response is generated in src/clients/shared/api/types/productcatalog.ts.
   listCategory(query?: ListCategoriesQuery): Promise<ListCategoriesResponse>;
 
+  // Auth: TenantModeratorUp.
   // Response: src/Modules/ProductCatalog/DTOs/Categories/CategoryResponse.cs
   getCategory(name: string): Promise<CategoryResponse>;
 
@@ -70,11 +124,13 @@ export interface IProductCatalogClient {
   // Auth: TenantAdminUp. No response body. Alias is generated in src/clients/shared/api/types/productcatalog.ts.
   deleteCategory(name: string): Promise<DeleteCategoryResponse>;
 
+  // Auth: TenantModeratorUp.
   // Query alias is generated in src/clients/shared/api/types/productcatalog.ts.
   // Item response: src/Modules/ProductCatalog/DTOs/Collections/CollectionResponse.cs
   // Wrapper response is generated in src/clients/shared/api/types/productcatalog.ts.
   listCollection(query?: ListCollectionsQuery): Promise<ListCollectionsResponse>;
 
+  // Auth: TenantModeratorUp.
   // Method: getCollection - returns collection detail with assigned product summaries.
   // Response: src/Modules/ProductCatalog/DTOs/Collections/CollectionResponse.cs
   getCollection(id: number): Promise<CollectionDetailResponse>;

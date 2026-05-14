@@ -32,6 +32,8 @@ import type {
   ListAdminBlogPostsResponse,
   ListPublishedBlogPostsQuery,
   ListPublishedBlogPostsResponse,
+  ListPublicBlogPostCollectionsQuery,
+  ListPublicBlogPostCollectionsResponse,
   PresignedUploadBulkUrlResponse,
   PublishBlogPostResponse,
   UpdateBlogPostCollectionRequest,
@@ -169,6 +171,16 @@ export class ContentClient implements IContentClient {
       `/api/Content/blog-post-collections/${encodeURIComponent(key)}`,
       undefined,
       "Blog post collection response was empty.",
+    );
+  }
+
+  async listPublicBlogPostCollections(
+    query?: ListPublicBlogPostCollectionsQuery,
+  ): Promise<ListPublicBlogPostCollectionsResponse> {
+    return this.requestJson<ListPublicBlogPostCollectionsResponse>(
+      `/api/Content/blog-post-collections/public${this.toQueryString(query)}`,
+      undefined,
+      "Public blog post collections response was empty.",
     );
   }
 

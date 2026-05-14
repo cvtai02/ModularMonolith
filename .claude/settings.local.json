@@ -17,7 +17,19 @@
       "Bash(grep -v \"^npm\\\\|^C:\\\\\\\\\\\\\\\\Users.*node_modules\")",
       "WebFetch(domain:github.com)",
       "Skill(shadcn)",
-      "Skill(shadcn:*)"
+      "Skill(shadcn:*)",
+      "Bash(node -e \"const p = require\\('C:/Users/TaiChuVan/OneDriveNASHTECH/Desktop/CakeTeaCofi/src/clients/node_modules/next/package.json'\\); console.log\\(p.version\\)\")",
+      "Bash(mkdir \"C:\\\\Users\\\\TaiChuVan\\\\OneDriveNASHTECH\\\\Desktop\\\\CakeTeaCofi\\\\src\\\\clients\\\\nekomin\\\\app\\\\categories\\\\[name]\")",
+      "Bash(mkdir \"C:\\\\Users\\\\TaiChuVan\\\\OneDriveNASHTECH\\\\Desktop\\\\CakeTeaCofi\\\\src\\\\clients\\\\nekomin\\\\app\\\\collections\\\\[id]\")",
+      "Bash(move \"C:\\\\Users\\\\TaiChuVan\\\\OneDriveNASHTECH\\\\Desktop\\\\CakeTeaCofi\\\\requirements\\\\frontend-handoff\\\\customer-product-catalog.md\" \"C:\\\\Users\\\\TaiChuVan\\\\OneDriveNASHTECH\\\\Desktop\\\\CakeTeaCofi\\\\requirements\\\\frontend-handoff\\\\done\\\\customer-product-catalog.md\")",
+      "PowerShell(New-Item -ItemType Directory -Force \"C:\\\\Users\\\\TaiChuVan\\\\OneDriveNASHTECH\\\\Desktop\\\\CakeTeaCofi\\\\requirements\\\\frontend-handoff\\\\done\")",
+      "PowerShell(Move-Item \"C:\\\\Users\\\\TaiChuVan\\\\OneDriveNASHTECH\\\\Desktop\\\\CakeTeaCofi\\\\requirements\\\\frontend-handoff\\\\customer-product-catalog.md\" \"C:\\\\Users\\\\TaiChuVan\\\\OneDriveNASHTECH\\\\Desktop\\\\CakeTeaCofi\\\\requirements\\\\frontend-handoff\\\\done\\\\customer-product-catalog.md\")",
+      "Bash(mv \"C:/Users/TaiChuVan/OneDriveNASHTECH/Desktop/CakeTeaCofi/src/clients/nekomin/app/collections/[id]\" \"C:/Users/TaiChuVan/OneDriveNASHTECH/Desktop/CakeTeaCofi/src/clients/nekomin/app/collections/[slug]\")",
+      "Bash(dir \"C:\\\\Users\\\\TaiChuVan\\\\OneDriveNASHTECH\\\\Desktop\\\\CakeTeaCofi\\\\src\\\\clients\\\\nekomin\\\\node_modules\\\\next\\\\dist\\\\docs\")",
+      "Bash(dir app *)",
+      "Bash(dir node_modules\\\\next\\\\dist)",
+      "Bash(gh api *)",
+      "WebFetch(domain:raw.githubusercontent.com)"
     ],
     "deny": [
       "Read(.git/**)",

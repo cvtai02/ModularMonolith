@@ -23,6 +23,7 @@ Client contract: [ContentClient](../../../clients/shared/api/clients/content.ts)
 - [Delete](BlogPostController.cs#L97)
 
 ### BlogPostCollection
+- [GetPublic](BlogPostCollectionController.cs#L23) - public grouped collection list with published post summaries
 - [GetPublicByKey](BlogPostCollectionController.cs#L22)
 - [GetAdmin](BlogPostCollectionController.cs#L32)
 - [GetAdminBlogPostsByCollection](BlogPostCollectionController.cs#L39) - admin grouped blog post list by collection

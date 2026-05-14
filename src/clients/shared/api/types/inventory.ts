@@ -2,6 +2,8 @@ export type InitializeProductInventoryParams = {
     productId: string;
 };
 
+export type DeleteProductInventoryResponse = void;
+
 export type InitializeProductInventoryRequest = {
     trackInventory?: boolean;
     allowBackorder?: boolean;

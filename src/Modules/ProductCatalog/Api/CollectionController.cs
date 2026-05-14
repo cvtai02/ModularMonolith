@@ -18,6 +18,7 @@ public class CollectionController(
     UpdateCollection updateCollection,
     DeleteCollection deleteCollection) : ControllerBase
 {
+    [Authorize(Policy = Policies.TenantModeratorUp)]
     [HttpGet]
     public async Task<ActionResult<PaginatedList<CollectionResponse>>> GetAll(
         [Range(1, int.MaxValue)]
@@ -28,6 +29,7 @@ public class CollectionController(
         CancellationToken cancellationToken = default)
         => Ok(await listCollections.ExecuteAsync(pageNumber, pageSize, search, cancellationToken));
 
+    [Authorize(Policy = Policies.TenantModeratorUp)]
     [HttpGet("{id:int}")]
     public async Task<ActionResult<CollectionDetailResponse>> GetById(int id, CancellationToken cancellationToken)
     {

@@ -1,4 +1,5 @@
 import type {
+  DeleteProductInventoryResponse,
   ImportVariantInventoryRequest,
   ImportVariantInventoryResponse,
   InitializeProductInventoryRequest,
@@ -15,6 +16,9 @@ export interface IInventoryClient {
     productId: string,
     input: InitializeProductInventoryRequest,
   ): Promise<InitializeProductInventoryResponse>;
+
+  // Contract method: deleteProductInventory. Auth: TenantAdminUp. Deletes inventory rows by product id; returns 204/no body.
+  deleteProductInventory(productId: string): Promise<DeleteProductInventoryResponse>;
 
   // Auth: TenantAdminUp.
   // Method: importVariantInventory - imports absolute variant quantities in bulk.
